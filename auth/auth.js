@@ -50,11 +50,10 @@ const toastText = document.querySelector(".toast-text");
 
 
 
-const ipAddress = "https://targeted-copy-adams-producer.trycloudflare.com";
-//const ipAddress = "http://10.66.103.228:8080";
+const ipAddress = "https://relevance-playback-organisation-organisms.trycloudflare.com";
+//const ipAddress = "http://10.109.111.228:8080";
 //const ipAddress = "http://localhost:8080";
 // ==================== LOCAL STORAGE ====================
-
 
 document.addEventListener("DOMContentLoaded", async () => {
     toast.classList.add("hide");

@@ -30,8 +30,8 @@ const toastText = document.querySelector(".toast-text");
 
 const input = document.querySelector(".customer-number-input");
 
-const ipAddress = "https://targeted-copy-adams-producer.trycloudflare.com";
-//const ipAddress = "http://10.66.103.228:8080";
+const ipAddress = "https://relevance-playback-organisation-organisms.trycloudflare.com";
+//const ipAddress = "http://10.109.111.228:8080";
 //const ipAddress = "http://localhost:8080";
 // Initially hide elements
 const User = JSON.parse(localStorage.getItem("user") || "null");
@@ -92,6 +92,13 @@ function CheckUser() {
         ProfileImage.src = "https://via.placeholder.com/35"; // optional fallback
     }
 }
+
+
+// 1. Define the formatter once
+const formatter = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+});
 
 CheckUser();
 
@@ -207,7 +214,7 @@ async function MakeSearch(Input) {
                     </div>
                 </div>
                 <h4 class="product-name">${prod.Name}</h4>
-                <h3 class="product-price">${prod.currencyCode} : ${prod.Price}</h3>
+                <h3 class="product-price">${prod.currencyCode} : ${formatter.format(prod.Price)}</h3>
                 <p class="product-description">${prod.Description}</p>
                 <div class="prouduct-cart-bottom">
                     <p class="posted-at">posted ${prod.postedAt}</p>
@@ -216,6 +223,7 @@ async function MakeSearch(Input) {
                     </button>
                 </div>
             </div>`;
+
             fragment.appendChild(ProductCard);
         });
 
@@ -350,7 +358,7 @@ async function GetProducts(KeyWord1) {
                     </div>
                 </div>
                 <h4 class="product-name">${prod.Name}</h4>
-                <h3 class="product-price">${prod.currencyCode} : ${prod.Price}</h3>
+                <h3 class="product-price">${prod.currencyCode} ${formatter.format(prod.Price)}</h3>
                 <p class="product-description">${prod.Description}</p>
                 <div class="prouduct-cart-bottom">
                     <p class="posted-at">posted ${prod.postedAt}</p>
@@ -376,7 +384,14 @@ Main.addEventListener("click", async e => {
     if (e.target.closest(".cart")) {
         const productCard = e.target.closest(".product-card"); // this specific product
         const productName = productCard.querySelector(".product-name").textContent;
-        const productPrice = productCard.querySelector(".product-price").textContent;
+        
+        const priceString = productCard.querySelector(".product-price").textContent.split(" ")[1];// 1. Get the raw string piece: "1,250.00"
+        counryCode = productCard.querySelector(".product-price").textContent.split(" ")[0];
+
+        const cleanNumericString = priceString.replace(/,/g, ""); // 2. LOGIC FIX: Strip out commas so JavaScript reads it as "1250.00"
+        unitPrice = parseFloat(cleanNumericString); // 3. Convert to a true Number float
+        const productPrice = formatter.format(unitPrice); // 4. Now the formatter will work perfectly without NaN
+
         const productDescription = productCard.querySelector(".product-description").textContent;
         const retailerName = productCard.querySelector(".name").textContent;
         const retailerID = productCard.querySelector(".retailerID").textContent;
@@ -402,7 +417,7 @@ Main.addEventListener("click", async e => {
                 Cart_Overlay.querySelector(".cart-retailer__image").src = Retailer_Profile_Pic;
                 Cart_Overlay.querySelector(".cart-product__image").src = productImage;
                 Cart_Overlay.querySelector(".cart-product__name").textContent = productName;
-                Cart_Overlay.querySelector(".cart-product__price").textContent = productPrice;
+                Cart_Overlay.querySelector(".cart-product__price").textContent = counryCode + " " + productPrice;
                 Cart_Overlay.querySelector(".cart-product__description").textContent = productDescription;
                 Cart_Overlay.querySelector(".cart-retailer__name").textContent = retailerName;
 
@@ -414,9 +429,7 @@ Main.addEventListener("click", async e => {
 
                 // optionally reset quantity to 1
                 Cart_Overlay.querySelector(".qty-number").textContent = "1";
-                Car_Total_Amount.textContent = productPrice;
-                unitPrice = parseFloat(productPrice.replace(/[^\d.]/g, ""));
-                counryCode = productPrice.split(":")[0].trim();
+                Car_Total_Amount.textContent = counryCode + " " + productPrice;
 
                 Cart_Overlay.querySelector(".cart-buy-btn").onclick = () => {
 
@@ -433,7 +446,6 @@ Main.addEventListener("click", async e => {
                     Cart_Overlay.style.display = "none";
                     Purchase_Overlay.style.display = "flex";
 
-
                     Cancel_Purchase.onclick = () => {
                         Cart_Overlay.style.display = "flex";
                         Purchase_Overlay.style.display = "none";
@@ -447,14 +459,14 @@ Main.addEventListener("click", async e => {
                         }
 
                         let Phone = iti.getNumber();
-                        let newProductPrice = parseFloat(productPrice.replace(/[^\d.]/g, ""));
+                        
                         let Payload = {
                             INSTRUCTION: "PLACE-ORDER",
                             ProductId: ProductID,
                             Quantity: quantity,
                             CustomerPhone: Phone,
                             ProductName: productName,
-                            ProductPrice: newProductPrice
+                            ProductPrice: unitPrice
                         }
 
                         let Result = null;
@@ -477,6 +489,7 @@ Main.addEventListener("click", async e => {
                 };
             }
         } catch (err) {
+            alert(err);
             showToast(
                 "fa-solid fa-exclamation",
                 "Error",
@@ -533,7 +546,7 @@ Main.addEventListener("click", async e => {
                     ProductCard.innerHTML = `
                     <img src="${ipAddress}/products/${product.Url}" alt="">
                     <p class="view-prod-name">${product.name}</p>
-                    <p class="view-prod-price">${product.currencyCode}: ${product.price}</p>
+                    <p class="view-prod-price">${product.currencyCode} ${formatter.format(product.price)}</p>
                     <p class="view-prod-description">${product.description}</p>
                     <div class="prouduct-cart-bottom">
                        <p class="posted-at">Posted ${product.postedAt}</p>
@@ -583,7 +596,16 @@ Main.addEventListener("click", async e => {
 
                         // 🔥 SAFE EXTRACTION
                         const productName = productCard.querySelector(".view-prod-name")?.textContent || "";
-                        const productPrice = productCard.querySelector(".view-prod-price")?.textContent || "0";
+                       
+                        const priceString = productCard.querySelector(".view-prod-price").textContent.split(" ")[1]; // 1. Get the raw string piece: "1,250.00"
+                        counryCode = productCard.querySelector(".view-prod-price").textContent.split(" ")[0];
+
+                       
+                        const cleanNumericString = priceString.replace(/,/g, ""); // 2. LOGIC FIX: Strip out commas so JavaScript reads it as "1250.00"
+                        unitPrice = parseFloat(cleanNumericString); // 3. Convert to a true Number float
+                        
+                        const productPrice = formatter.format(unitPrice); // 4. Now the formatter will work perfectly without NaN
+
                         const productDescription = productCard.querySelector(".view-prod-description")?.textContent || "";
                         const productImage = productCard.querySelector(".a-product > img")?.src || "";
 
@@ -609,7 +631,7 @@ Main.addEventListener("click", async e => {
 
                         Cart_Overlay.querySelector(".cart-product__image").src = productImage;
                         Cart_Overlay.querySelector(".cart-product__name").textContent = productName;
-                        Cart_Overlay.querySelector(".cart-product__price").textContent = productPrice;
+                        Cart_Overlay.querySelector(".cart-product__price").textContent = counryCode + " " + productPrice;
                         Cart_Overlay.querySelector(".cart-product__description").textContent = productDescription;
 
                         Cart_Overlay.querySelector(".cart-retailer__name").textContent = Retailer_Name;
@@ -645,11 +667,7 @@ Main.addEventListener("click", async e => {
 
                         // 🔥 Reset values
                         Cart_Overlay.querySelector(".qty-number").textContent = "1";
-
-                        unitPrice = parseFloat(productPrice.replace(/[^\d.]/g, ""));
-                        counryCode = productPrice.split(":")[0].trim();
-
-                        Car_Total_Amount.textContent = productPrice;
+                        Car_Total_Amount.textContent =counryCode + " "+ productPrice;
 
                         const Purchase_Overlay = document.querySelector(".payment-overlay");
                         const Purchase_Btn = Purchase_Overlay.querySelector(".purchase-btn");
@@ -742,7 +760,7 @@ Cart_Order_Minus.addEventListener("click", () => {
         Orderquantity--;
         Cart_Order_Quantity.textContent = Orderquantity;
         let total = unitPrice * Orderquantity;
-        Car_Total_Amount.textContent = `${counryCode} : ${total}`;
+        Car_Total_Amount.textContent = `${counryCode} ${formatter.format(total)}`;
     }
 });
 
@@ -751,7 +769,7 @@ Cart_Order_Add.addEventListener("click", () => {
     Orderquantity++;
     Cart_Order_Quantity.textContent = Orderquantity;
     let total = unitPrice * Orderquantity;
-    Car_Total_Amount.textContent = `${counryCode} : ${total}`;
+    Car_Total_Amount.textContent = `${counryCode} ${formatter.format(total)}`;
 });
 
 // ====== FETCH HELPERS ======

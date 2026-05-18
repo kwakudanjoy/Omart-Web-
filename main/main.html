@@ -2,315 +2,756 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
-    <link rel="stylesheet" href="main.css">
-    <title>Sign-In / Sign-Up</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="main.css" />
+    <title>Bicycon — My Store</title>
 </head>
 
 <body>
-    <div class="bg"></div>
-    <div id="loading-overlay">
-        <div class="loader-circle"></div>
-    </div>
-    <nav>
-        <header>
-            <div class="back"><i class="fa-solid fa-arrow-left"></i></div>
-            <div class="profile" tabindex="0">
-                <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                <div class="pro-pic"><img src="" alt=""></div>
-                <span class="name">Cryptorn</span>
-            </div>
 
-        </header>
-        <div class="nav">
-            <div class="stores" style="display: none;">
-                <i class="fa-solid fa-house"></i>
-                <span>Stores</span>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="loader-ring"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast hide">
+        <div class="toast-icon-wrap"><i class="toast-icon-i"></i></div>
+        <div class="toast-body">
+            <h4 class="toast-header-text">Notification</h4>
+            <p class="toast-text">Message here.</p>
+        </div>
+        <button class="toast-close"><i class="fa-solid fa-x"></i></button>
+    </div>
+
+    <!-- ══════════ NAV ══════════ -->
+    <nav>
+        <div class="nav-logo">
+            <svg width="26" height="17" viewBox="0 0 40 26" fill="none">
+                <circle cx="7" cy="19" r="6" stroke="#1a8a00" stroke-width="2.2" />
+                <circle cx="33" cy="19" r="6" stroke="#1a8a00" stroke-width="2.2" />
+                <path d="M7 19 L14 7 L22 7 L28 19" stroke="#1a8a00" stroke-width="2.2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M22 7 L33 19" stroke="#1a8a00" stroke-width="2.2" stroke-linecap="round" />
+                <path d="M14 7 L20 19" stroke="#1a8a00" stroke-width="2.2" stroke-linecap="round" />
+                <circle cx="20" cy="7" r="2" fill="#1a8a00" />
+            </svg>
+            <span class="nav-brand">Bicycon</span>
+        </div>
+
+        <div class="nav-back back" title="Go back">
+            <i class="fa-solid fa-arrow-left"></i>
+        </div>
+
+        <div class="nav-tabs">
+            <div class="nav-tab dash active">
+                <i class="fas fa-th-large"></i>
+                <span>DashBoard</span>
             </div>
-            <div class="products">
+            <div class="nav-tab products">
                 <i class="fa-solid fa-list"></i>
                 <span>Products</span>
             </div>
-            <div class="orders">
+            <div class="nav-tab orders">
                 <i class="fa-solid fa-shopping-cart"></i>
                 <span>Orders</span>
             </div>
-        </div>
-    </nav>
-    <div class="toast show">
-        <div class="toast-icon">
-            <i class=""></i>
-        </div>
-        <div class="toast-content">
-            <h4>Connection Restored</h4>
-            <p class="toast-text">
-                Your internet connection is now stable.
-            </p>
-        </div>
-    </div>
-    <div class="add-prod-overlay">
-        <form class="add-prod">
-            <h5>Add a product</h5>
-            <!-- PRODUCT PROFILE MOBILE-FRIENDLY -->
-            <div class="prod-profile-wrapper">
-                <div class="prod-profile">
-                    <!-- Product icon -->
-                    <div class="prod-icon"><i class="fa-solid fa-shopping-cart"></i></div>
-                    <!-- Product image -->
-                    <img class="prod-pro-pic" src="" alt="" style="display:none;">
-                </div>
-
-                <!-- Camera / Cancel buttons overlay -->
-                <div class="image-buttons">
-                    <div class="camera"><i class="fa-solid fa-camera"></i></div>
-                    <div class="cancel" style="display:none;"><i class="fa-solid fa-x"></i></div>
-                </div>
-
-                <!-- Hidden file input -->
-                <input type="file" accept="image/*" class="file-input" style="display:none;">
+            <div class="nav-tab store">
+                <i class="fa-solid fa-store"></i>
+                <span>Stores</span>
             </div>
 
-            <!-- INPUTS -->
+        </div>
+
+        <div class="nav-profile profile" tabindex="0">
+            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
+            <div class="pro-pic"><img src="" alt="" /></div>
+            <span class="name">My Store</span>
+        </div>
+    </nav>
+
+    <!-- ══════════ ADD PRODUCT OVERLAY ══════════ -->
+    <div class="add-prod-overlay">
+        <form class="add-prod">
+            <div class="modal-header">
+                <h5><i class="fa-solid fa-plus-circle"></i> Add Product</h5>
+                <button type="button" class="modal-close cancel-btn"><i class="fa-solid fa-x"></i></button>
+            </div>
+
+            <div class="prod-profile-wrapper">
+                <div class="prod-profile">
+                    <div class="prod-icon"><i class="fa-solid fa-image"></i></div>
+                    <img class="prod-pro-pic" src="" alt="" style="display:none;" />
+                </div>
+                <div class="image-buttons">
+                    <div class="camera" title="Choose image"><i class="fa-solid fa-camera"></i></div>
+                    <div class="cancel" style="display:none;" title="Remove image"><i class="fa-solid fa-x"></i></div>
+                </div>
+                <input type="file" accept="image/*" class="file-input" style="display:none;" />
+            </div>
+
             <div class="inputs">
                 <div class="split-input">
-                    <input type="text" placeholder="Product Name" class="prod-name">
-                    <input type="number" placeholder="Price" class="prod-price">
+                    <input type="text" placeholder="Product Name" class="prod-name" />
+                    <input type="number" placeholder="Price" class="prod-price" />
                 </div>
                 <div class="custom-select-wrapper">
                     <div class="custom-select">
-                        <div class="selected">Select Category</div>
-                        <div class="options">
-                            <!-- Options will be added dynamically with JS -->
-                        </div>
+                        <div class="selected">Select Category <i class="fa-solid fa-chevron-down sel-arrow"></i></div>
+                        <div class="options"></div>
                     </div>
                 </div>
-                <textarea placeholder="Product Description" class="prod-description"></textarea>
+                <textarea placeholder="Product Description…" class="prod-description"></textarea>
             </div>
 
-            <!-- BUTTONS -->
             <div class="add-or-cancel-prod">
-                <button class="add-btn" type="button">Add</button>
-                <button class="cancel-btn" type="button">Cancel</button>
+                <button class="add-btn" type="button"><i class="fa-solid fa-check"></i> Add Product</button>
+                <button class="cancel-btn-2 cancel-btn" type="button"><i class="fa-solid fa-x"></i> Cancel</button>
             </div>
         </form>
     </div>
+
+    <!-- ══════════ EDIT PRODUCT OVERLAY ══════════ -->
     <div class="edith-prod-overlay">
         <div class="prod-edit">
-            <img src="" alt="" class="prod-image-update">
-            <!-- Hidden file input -->
-            <input type="file" accept="image/*" class="prod-image-edit-file-input" style="display:none;">
-            <div class="edit-image-button">
-                <div class="select-image"><i class="fa-solid fa-camera"></i></div>
-                <div class="cancel-selected-image"><i class="fa-solid fa-x"></i></div>
+            <div class="modal-header">
+                <h5><i class="fa-solid fa-pen"></i> Edit Product</h5>
+            </div>
+            <div class="edit-img-wrapper">
+                <img src="" alt="" class="prod-image-update" />
+                <input type="file" accept="image/*" class="prod-image-edit-file-input" style="display:none;" />
+                <div class="edit-image-button">
+                    <div class="select-image" title="Change image"><i class="fa-solid fa-camera"></i></div>
+                    <div class="cancel-selected-image" title="Remove"><i class="fa-solid fa-x"></i></div>
+                </div>
             </div>
             <div class="edith-input">
                 <div class="edith-split-input">
-                    <input type="text" name="" id="" class="edith-prod-name" placeholder="Enter new name">
-                    <input type="number" name="" id="" class="edith-prod-price" placeholder="Enter new price">
+                    <input type="text" class="edith-prod-name" placeholder="Product name" />
+                    <input type="number" class="edith-prod-price" placeholder="Price" />
                 </div>
                 <div class="edith-prod-category">
-                    <p>Shoe</p>
+                    <p>Category</p>
                 </div>
-                <textarea name="" id="" class="edith-prod-discription"
-                    placeholder="Enter new product discription"></textarea>
+                <textarea class="edith-prod-discription" placeholder="Product description…"></textarea>
             </div>
             <div class="save-or-cancel">
-                <button class="save-edith" type="button">Save</button>
-                <button class="cancel-edth" type="button">Cancel</button>
+                <button class="save-edith" type="button"><i class="fa-solid fa-check"></i> Save</button>
+                <button class="cancel-edth" type="button"><i class="fa-solid fa-x"></i> Cancel</button>
             </div>
         </div>
     </div>
+
+    <!-- ══════════ UPGRADE OVERLAY ══════════ -->
     <div class="upgrade-overlay">
         <button class="cancel-upgrade"><i class="fa-solid fa-x"></i></button>
         <div class="upgrade-modal">
-            <div class="free-plan">
+
+            <div class="plan-card free-plan">
+                <div class="plan-badge-top">Current Plan</div>
                 <header>
-                    <h4>Free Plan</h4>
-                    <p>Already in use</p>
+                    <h4>Free</h4>
+                    <p class="plan-price">GH₵ 0</p>
                 </header>
-                <div class="body">
-                    <div>Features involved</div>
-                    <div><i class="fa-solid fa-check-square"></i>Products : 50</div>
-                    <div><i class="fa-solid fa-check-square"></i>No adds</div>
-                    <div><i class="fa-solid fa-check-square"></i>No Inventory</div>
-                    <div><i class="fa-solid fa-check-square"></i>Limited Exposure</div>
-                    <div><i class="fa-solid fa-check-square"></i>Basic Analitics</div>
-                </div>
+                <ul class="plan-features">
+                    <li><i class="fa-solid fa-check"></i> 50 Products</li>
+                    <li><i class="fa-solid fa-check"></i> No Ads</li>
+                    <li><i class="fa-solid fa-times muted"></i> No Inventory</li>
+                    <li><i class="fa-solid fa-times muted"></i> Limited Exposure</li>
+                    <li><i class="fa-solid fa-check"></i> Basic Analytics</li>
+                </ul>
             </div>
-            <div class="plus-plan">
+
+            <div class="plan-card plus-plan">
                 <header>
-                    <h4>Plus Plan</h4>
-                    <p>GHC 200</p>
+                    <h4>Plus</h4>
+                    <p class="plan-price">GH₵ 200</p>
                 </header>
-                <div class="body">
-                    <div>Features involved</div>
-                    <div><i class="fa-solid fa-check-square"></i>Products : 500</div>
-                    <div><i class="fa-solid fa-check-square"></i>20 Adds</div>
-                    <div><i class="fa-solid fa-check-square"></i>Inventory (Plus)</div>
-                    <div><i class="fa-solid fa-check-square"></i>Google Exposure</div>
-                    <div><i class="fa-solid fa-check-square"></i>Analitics (Plus)</div>
-                </div>
-                <button>Upgrade</button>
+                <ul class="plan-features">
+                    <li><i class="fa-solid fa-check"></i> 500 Products</li>
+                    <li><i class="fa-solid fa-check"></i> 20 Ads</li>
+                    <li><i class="fa-solid fa-check"></i> Inventory (Plus)</li>
+                    <li><i class="fa-solid fa-check"></i> Google Exposure</li>
+                    <li><i class="fa-solid fa-check"></i> Analytics (Plus)</li>
+                </ul>
+                <button class="plan-btn">Upgrade to Plus</button>
             </div>
-            <div class="pro-plan">
+
+            <div class="plan-card pro-plan">
+                <div class="plan-badge-top popular">Most Popular</div>
                 <header>
-                    <h4>Pro Plan</h4>
-                    <p>GHC 500</p>
+                    <h4>Pro</h4>
+                    <p class="plan-price">GH₵ 500</p>
                 </header>
-                <div class="body">
-                    <div>Features involved</div>
-                    <div><i class="fa-solid fa-check-square"></i>Products : Unlimited</div>
-                    <div><i class="fa-solid fa-check-square"></i>50 Adds</div>
-                    <div><i class="fa-solid fa-check-square"></i>Inventory (Pro)</div>
-                    <div><i class="fa-solid fa-check-square"></i>Google Exposure</div>
-                    <div><i class="fa-solid fa-check-square"></i>Analitics (Pro)</div>
-                </div>
-                <button>Upgrade</button>
+                <ul class="plan-features">
+                    <li><i class="fa-solid fa-check"></i> Unlimited Products</li>
+                    <li><i class="fa-solid fa-check"></i> 50 Ads</li>
+                    <li><i class="fa-solid fa-check"></i> Inventory (Pro)</li>
+                    <li><i class="fa-solid fa-check"></i> Google Exposure</li>
+                    <li><i class="fa-solid fa-check"></i> Analytics (Pro)</li>
+                </ul>
+                <button class="plan-btn">Upgrade to Pro</button>
             </div>
+
         </div>
     </div>
 
+    <!-- ══════════ MAIN ══════════ -->
     <main>
+        <section class="dash-section">
+            <div class="all-dash">
+                <!-- Total Estimated Revenue -->
+                <div class="dash-card estimated-revenue">
+                    <!-- Refresh button moved to the top right corner -->
+                    <i class="fa-solid fa-rotate refresh" title="Refresh Data"></i>
+
+                    <div class="card-header">
+                        <div class="header-title">
+                            <h3>Estimated Revenue</h3>
+                            <div class="date-range">
+                                <div class="date-group">
+                                    <label>From:</label>
+                                    <input type="date" class="date-input from-date">
+                                </div>
+                                <div class="date-group">
+                                    <label>To:</label>
+                                    <input type="date" class="date-input to-date">
+                                </div>
+                            </div>
+                        </div>
+                        <span class="currency-code"></span>
+                    </div>
+                    <div class="card-body">
+                        <p class="amount highlight"></p>
+                    </div>
+                </div>
+
+                <!-- Actual Revenue -->
+                <div class="dash-card actual-revenue">
+                    <div class="card-header">
+                        <h3>Actual Revenue</h3>
+                        <span class="currency-code"></span>
+                    </div>
+                    <div class="card-body">
+                        <p class="amount"></p>
+                    </div>
+                </div>
+
+                <!-- Pending Orders -->
+                <div class="dash-card pending-orders">
+                    <div class="card-header">
+                        <h3>Pending Orders</h3>
+                        <i class="fas fa-clock"></i> <!-- Optional icon -->
+                    </div>
+                    <div class="card-body">
+                        <span class="order-count pending"></span>
+                        <p class="amount"></p>
+                    </div>
+                </div>
+
+                <!-- Approved Orders -->
+                <div class="dash-card rejected-orders">
+                    <div class="card-header">
+                        <h3>Rejected Orders</h3>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="order-count rejected"></span>
+                        <p class="amount"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="revenu-body">
+                <div class="revenu-graph">
+                    <div class="graph-header">
+                        <h3>Revenue Graph</h3>
+                        <div class="color-coding">
+                            <div class="legend-item">
+                                <div class="dot approved"></div> <span>Approved</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="dot pending"></div> <span>Pending</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="dot rejected"></div> <span>Rejected</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="graph-container">
+
+                    </div>
+                </div>
+
+                <div class="pending-rejected-order-list">
+
+                    <div class="list-tabs">
+                        <div class="tab pending-tab active">
+                            <i class="fa-solid fa-clock"></i> Pending Orders
+                        </div>
+                        <div class="tab rejected-tab">
+                            <i class="fa-solid fa-circle-xmark"></i> Rejected Orders
+                        </div>
+                    </div>
+
+                    <div class="list-body">
+                        <div class="list-section rejected-section">
+                        </div>
+
+                        <div class="list-section pending-section">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Products Section -->
         <div class="product-section">
             <div class="product-count">
-                <h5>Product Count:</h5>
+                <span><i class="fa-solid fa-box"></i> Products</span>
                 <p>0</p>
             </div>
-            <div class="no-product-section">
-                <div class="no-product-icon">
-                    <i class="fa-solid fa-box-open"></i>
-                </div>
-                <h4>Sorry, you have no products yet</h4>
-                <p>
-                    <i class="fa-solid fa-circle-plus"></i>
-                    Press the <b>+</b> button below to add your first product.
-                </p>
-                <p>
-                    <i class="fa-solid fa-wifi"></i>
-                    Or check your internet connection — there may be a connectivity issue.
-                </p>
 
+            <div class="no-product-section">
+                <div class="no-product-icon"><i class="fa-solid fa-box-open"></i></div>
+                <h4>No Products Yet</h4>
+                <p><i class="fa-solid fa-circle-plus"></i> Tap the <strong>+</strong> button to add your first product.
+                </p>
+                <p><i class="fa-solid fa-wifi"></i> Or check your internet connection.</p>
             </div>
-            <div class="product-list">
-            </div>
+
+            <div class="product-list"></div>
             <div class="plus">
-                <div class="plus-btn"><i class="fa-solid fa-plus"></i></div>
+                <div class="plus-btn" title="Add product"><i class="fa-solid fa-plus"></i></div>
             </div>
         </div>
-        <div class="my-profile">
-            <!-- Profile Top Section -->
-            <div class="edith-profile">
-                <div class="top">
-                    <div class="edith-user-icon"><i class="fa-solid fa-user"></i></div>
-                    <div class="profile-pic">
-                        <img src="" alt="">
-                        <input type="file" accept="image/*" id="profile-file">
+
+        <!-- Stores Section -->
+        <div class="my-store">
+            <section class="stores">
+                <div class="store-count">
+                    <span><i class="fa-solid fa-store"></i> Stores</span>
+                    <p>0</p>
+                </div>
+                <div class="store-container">
+                    <div class="store-card">
+                        <div class="store-data-top">
+                            <div class="store-image">
+                                <img src="/image/background.jpg" alt="Store Image">
+                            </div>
+                            <div class="store-data-info">
+                                <h2>Motana Store</h2>
+                                <span>
+                                    <i class="fa-solid fa-user"></i>
+                                    Motana
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-envelope"></i>
+                                    kwakudanjoy12@gmail.com
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-phone"></i>
+                                    +233 20 354 4784
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    Omanjor, Accra
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="view-btn">
+                                <i class="fa-solid fa-store"></i>
+                                View Store
+                            </button>
+                            <button class="edit-btn">
+                                <i class="fa-solid fa-pen"></i>
+                                Edit Data
+                            </button>
+                            <button class="delete-btn">
+                                <i class="fa-solid fa-trash"></i>
+                                Delete Store
+                            </button>
+                        </div>
                     </div>
-                    <!-- Profile Actions -->
-                    <div class="profile-actions">
-                        <div class="select-new-profile"><i class="fa-solid fa-camera"></i></div>
+                    <div class="store-card">
+                        <div class="store-data-top">
+                            <div class="store-image">
+                                <img src="/image/photo-1555617766-c94804975da3.avif" alt="Store Image">
+                            </div>
+                            <div class="store-data-info">
+                                <h2>Motana Store</h2>
+                                <span>
+                                    <i class="fa-solid fa-user"></i>
+                                    Motana
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-envelope"></i>
+                                    kwakudanjoy12@gmail.com
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-phone"></i>
+                                    +233 20 354 4784
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    Omanjor, Accra
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="view-btn">
+                                <i class="fa-solid fa-store"></i>
+                                View Store
+                            </button>
+                            <button class="edit-btn">
+                                <i class="fa-solid fa-pen"></i>
+                                Edit Data
+                            </button>
+                            <button class="delete-btn">
+                                <i class="fa-solid fa-trash"></i>
+                                Delete Store
+                            </button>
+                        </div>
+                    </div>
+                    <div class="store-card">
+                        <div class="store-data-top">
+                            <div class="store-image">
+                                <img src="/image/background.jpg" alt="Store Image">
+                            </div>
+                            <div class="store-data-info">
+                                <h2>Motana Store</h2>
+                                <span>
+                                    <i class="fa-solid fa-user"></i>
+                                    Motana
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-envelope"></i>
+                                    kwakudanjoy12@gmail.com
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-phone"></i>
+                                    +233 20 354 4784
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    Omanjor, Accra
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="view-btn">
+                                <i class="fa-solid fa-store"></i>
+                                View Store
+                            </button>
+                            <button class="edit-btn">
+                                <i class="fa-solid fa-pen"></i>
+                                Edit Data
+                            </button>
+                            <button class="delete-btn">
+                                <i class="fa-solid fa-trash"></i>
+                                Delete Store
+                            </button>
+                        </div>
+                    </div>
+                    <div class="store-card">
+                        <div class="store-data-top">
+                            <div class="store-image">
+                                <img src="/image/background.jpg" alt="Store Image">
+                            </div>
+                            <div class="store-data-info">
+                                <h2>Motana Store</h2>
+                                <span>
+                                    <i class="fa-solid fa-user"></i>
+                                    Motana
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-envelope"></i>
+                                    kwakudanjoy12@gmail.com
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-phone"></i>
+                                    +233 20 354 4784
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    Omanjor, Accra
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="view-btn">
+                                <i class="fa-solid fa-store"></i>
+                                View Store
+                            </button>
+                            <button class="edit-btn">
+                                <i class="fa-solid fa-pen"></i>
+                                Edit Data
+                            </button>
+                            <button class="delete-btn">
+                                <i class="fa-solid fa-trash"></i>
+                                Delete Store
+                            </button>
+                        </div>
+                    </div>
+                    <div class="store-card">
+                        <div class="store-data-top">
+                            <div class="store-image">
+                                <img src="/image/background.jpg" alt="Store Image">
+                            </div>
+                            <div class="store-data-info">
+                                <h2>Motana Store</h2>
+                                <span>
+                                    <i class="fa-solid fa-user"></i>
+                                    Motana
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-envelope"></i>
+                                    kwakudanjoy12@gmail.com
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-phone"></i>
+                                    +233 20 354 4784
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    Omanjor, Accra
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="view-btn">
+                                <i class="fa-solid fa-store"></i>
+                                View Store
+                            </button>
+                            <button class="edit-btn">
+                                <i class="fa-solid fa-pen"></i>
+                                Edit Data
+                            </button>
+                            <button class="delete-btn">
+                                <i class="fa-solid fa-trash"></i>
+                                Delete Store
+                            </button>
+                        </div>
+                    </div>
+                    <div class="store-card">
+                        <div class="store-data-top">
+                            <div class="store-image">
+                                <img src="/image/background.jpg" alt="Store Image">
+                            </div>
+                            <div class="store-data-info">
+                                <h2>Motana Store</h2>
+                                <span>
+                                    <i class="fa-solid fa-user"></i>
+                                    Motana
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-envelope"></i>
+                                    kwakudanjoy12@gmail.com
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-phone"></i>
+                                    +233 20 354 4784
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    Omanjor, Accra
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="view-btn">
+                                <i class="fa-solid fa-store"></i>
+                                View Store
+                            </button>
+                            <button class="edit-btn">
+                                <i class="fa-solid fa-pen"></i>
+                                Edit Data
+                            </button>
+                            <button class="delete-btn">
+                                <i class="fa-solid fa-trash"></i>
+                                Delete Store
+                            </button>
+                        </div>
+                    </div>
+                    <div class="store-card">
+                        <div class="store-data-top">
+                            <div class="store-image">
+                                <img src="/image/background.jpg" alt="Store Image">
+                            </div>
+                            <div class="store-data-info">
+                                <h2>Motana Store</h2>
+                                <span>
+                                    <i class="fa-solid fa-user"></i>
+                                    Motana
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-envelope"></i>
+                                    kwakudanjoy12@gmail.com
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-phone"></i>
+                                    +233 20 354 4784
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    Omanjor, Accra
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="view-btn">
+                                <i class="fa-solid fa-store"></i>
+                                View Store
+                            </button>
+                            <button class="edit-btn">
+                                <i class="fa-solid fa-pen"></i>
+                                Edit Data
+                            </button>
+                            <button class="delete-btn">
+                                <i class="fa-solid fa-trash"></i>
+                                Delete Store
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </section>
+        </div>
 
-                <!-- Quick Buttons -->
+        <!-- My Profile Section -->
+        <div class="my-profile">
+
+            <div class="profile-hero">
+                <div class="edith-user-icon"><i class="fa-solid fa-user"></i></div>
+                <div class="profile-pic">
+                    <img src="" alt="" />
+                    <input type="file" accept="image/*" id="profile-file" />
+                </div>
+                <div class="profile-actions">
+                    <div class="select-new-profile" title="Change photo"><i class="fa-solid fa-camera"></i></div>
+                </div>
                 <div class="quick-buttons">
-                    <button type="button" class="upload-new-profile"><i class="fa-solid fa-upload"></i></button>
-                    <button type="button" class="edith-old-profile"><i class="fa-solid fa-pen"></i></button>
-                    <button type="button" class="cance-profile-update"><i class="fa-solid fa-x"></i></button>
+                    <button type="button" class="upload-new-profile" title="Upload"><i
+                            class="fa-solid fa-upload"></i></button>
+                    <button type="button" class="edith-old-profile" title="Edit"><i
+                            class="fa-solid fa-pen"></i></button>
+                    <button type="button" class="cance-profile-update" title="Cancel"><i
+                            class="fa-solid fa-x"></i></button>
                 </div>
             </div>
 
-            <!-- Account Info -->
             <div class="account-info">
                 <p class="display-account-name"></p>
                 <p class="display-account-id"></p>
                 <div class="plan-badge">
-                    <span class="label">Subscription</span>
+                    <span class="label">Plan</span>
                     <span class="value">Free Plan</span>
                 </div>
             </div>
 
             <div class="account-country-info">
-                <img src="" alt="" class="country-flag">
+                <img src="" alt="" class="country-flag" />
                 <p class="country-name"></p>
-                <span>||</span>
+                <span class="divider">|</span>
                 <p class="country-currency"></p>
             </div>
-            <!--coppy -->
+
             <div class="copy-container">
-                <a href="" class="copy-link" target="blank"></a>
+                <i class="fa-solid fa-link"></i>
+                <a href="" class="copy-link" target="_blank"></a>
                 <i class="fa-solid fa-copy copy-icon"></i>
             </div>
-            <!-- Editable Email Section -->
-            <div class="edit-account-email">
-                <p class="display-email"></p>
-                <input type="email" placeholder="Enter new email" class="new-email-input">
-                <div class="field-buttons">
-                    <button type="button" class="upload-new-email"><i class="fa-solid fa-upload"></i></button>
-                    <button type="button" class="edith-old-email"><i class="fa-solid fa-pen"></i></button>
-                    <button type="button" class="cancel-email-update"><i class="fa-solid fa-x"></i></button>
+
+            <div class="profile-fields">
+                <!-- Email -->
+                <div class="field-row edit-account-email">
+                    <div class="field-icon"><i class="fa-solid fa-envelope"></i></div>
+                    <div class="field-content">
+                        <label>Email</label>
+                        <p class="display-email"></p>
+                        <input type="email" placeholder="Enter new email" class="new-email-input" />
+                    </div>
+                    <div class="field-buttons">
+                        <button type="button" class="upload-new-email" title="Save"><i
+                                class="fa-solid fa-upload"></i></button>
+                        <button type="button" class="edith-old-email" title="Edit"><i
+                                class="fa-solid fa-pen"></i></button>
+                        <button type="button" class="cancel-email-update" title="Cancel"><i
+                                class="fa-solid fa-x"></i></button>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="field-row edit-account-phone">
+                    <div class="field-icon"><i class="fa-solid fa-phone"></i></div>
+                    <div class="field-content">
+                        <label>Phone</label>
+                        <p class="display-phone"></p>
+                        <input type="tel" placeholder="Enter new phone" class="new-phone-input" />
+                    </div>
+                    <div class="field-buttons">
+                        <button type="button" class="upload-new-phone" title="Save"><i
+                                class="fa-solid fa-upload"></i></button>
+                        <button type="button" class="edith-old-phone" title="Edit"><i
+                                class="fa-solid fa-pen"></i></button>
+                        <button type="button" class="cancel-phone-update" title="Cancel"><i
+                                class="fa-solid fa-x"></i></button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Editable Phone Section -->
-            <div class="edit-account-phone">
-                <p class="display-phone"></p>
-                <input type="tel" placeholder="Enter new phone number" class="new-phone-input">
-                <div class="field-buttons">
-                    <button type="button" class="upload-new-phone"><i class="fa-solid fa-upload"></i></button>
-                    <button type="button" class="edith-old-phone"><i class="fa-solid fa-pen"></i></button>
-                    <button type="button" class="cancel-phone-update"><i class="fa-solid fa-x"></i></button>
-                </div>
-            </div>
             <div class="log-out">
-                <button type="button">Log Out</button>
+                <button type="button"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
             </div>
+
             <div class="delete-account">
                 <header>
-                    <p>Delete Account</p>
-                    <span>
-                        Please note: once your password is confirmed, everything associated with this account will be
-                        permanently deleted.
-                    </span>
+                    <p><i class="fa-solid fa-triangle-exclamation"></i> Delete Account</p>
+                    <span>Once confirmed, everything linked to this account will be permanently deleted.</span>
                 </header>
-
-                <input type="password" placeholder="Enter Password">
-
-                <button type="button">Delete Account</button>
+                <input type="password" placeholder="Enter your password to confirm" />
+                <button type="button"><i class="fa-solid fa-trash"></i> Delete Account</button>
             </div>
+
             <div class="upgrade">
-                <div class="upgrade-btn"><i class="fa-solid fa-upload"></i></div>
+                <div class="upgrade-btn" title="Upgrade plan">
+                    <i class="fa-solid fa-rocket"></i>
+                    <span>Upgrade Plan</span>
+                </div>
             </div>
-        </div>
-        <div class="no-found-products">
-            <div class="icon-container">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </div>
-            <h3>No Orders found</h3>
-            <p>Please be noted that no Orders hass been placed yet , Thank you.
-            </p>
 
-            <!-- Action buttons help the user stay on the site -->
-            <div class="empty-actions">
-                <button type="button" class="btn-browse" onclick="window.location.reload()">Refresh Page</button>
-            </div>
+        </div><!-- /my-profile -->
+
+        <!-- No Orders Found -->
+        <div class="no-found-products empty-state">
+            <div class="empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <h3>No Orders Found</h3>
+            <p>No orders have been placed yet. Check back soon!</p>
+            <button type="button" class="btn-browse" onclick="window.location.reload()">
+                <i class="fa-solid fa-rotate-right"></i> Refresh
+            </button>
         </div>
-        <div class="no-internet">
-            <div class="icon-container">
-                <i class="fas fa-wifi"></i>
-            </div>
+
+        <!-- No Internet -->
+        <div class="no-internet empty-state">
+            <div class="empty-icon wifi-icon"><i class="fas fa-wifi"></i></div>
             <h3>Connection Lost</h3>
             <p>Something went wrong. Please check your internet connection and try again.</p>
             <button type="button" class="btn-refresh" onclick="window.location.reload()">
-                Refresh Page
+                <i class="fa-solid fa-rotate-right"></i> Refresh Page
             </button>
         </div>
-        <div class="order-section">
-        </div>
+
+        <!-- Orders Section -->
+        <div class="order-section"></div>
+
     </main>
+
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/intlTelInput.min.js"></script>
     <script type="module" src="main.js"></script>
 </body>

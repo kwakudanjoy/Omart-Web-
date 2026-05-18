@@ -1,251 +1,267 @@
-// ====== ELEMENTS ======
+// ═══════════════════════════════════════
+//  BICYCON — RETAILER APP  |  main.js
+// ═══════════════════════════════════════
+
+// ── CONFIG ──────────────────────────────
+const ipAddress = "https://relevance-playback-organisation-organisms.trycloudflare.com";
+//const ipAddress = "http://10.109.111.228:8080";
+const User = JSON.parse(localStorage.getItem("user") || "{}");
+
+// ── ELEMENT REFS ─────────────────────────
+const DashSection = document.querySelector(".dash-section");
 const ProductSection = document.querySelector(".product-section");
-const Products = document.querySelector(".products");
-const Orders = document.querySelector(".orders");
 const ProductList = document.querySelector(".product-list");
 const NoProduct = document.querySelector(".no-product-section");
-const EdithProduct = document.querySelector(".edith-prod-overlay");
-const AddProduct = document.querySelector(".add-prod-overlay");
 const ProductCount = document.querySelector(".product-count > p");
 const Plus = document.querySelector(".plus");
 const Back = document.querySelector(".back");
-const UserIcon = document.querySelector(".user-icon");
-const ProfileImg = document.querySelector(".pro-pic > img");
-const Pro_Pic = document.querySelector(".pro-pic");
 const MyProfile = document.querySelector(".my-profile");
-
-//Variable for add iv 
-const prodProfile = AddProduct.querySelector('.prod-profile');
-const prodIcon = prodProfile.querySelector('.prod-icon');
-const prodImage = prodProfile.querySelector('.prod-pro-pic');
-const ProdName = document.querySelector(".prod-name");
-const cameraBtn = AddProduct.querySelector('.camera');
-const cancelBtn = AddProduct.querySelector('.cancel');
-const fileInput = AddProduct.querySelector('.file-input');
-const AddNewProd = AddProduct.querySelector(".add-btn");
-const ProdPrice = AddProduct.querySelector(".prod-price");
-const PordCart = AddProduct.querySelector(".custom-select");
-const ProdDiscription = AddProduct.querySelector(".prod-description");
-const CancelNewProd = AddProduct.querySelector(".cancel-btn");
-const Profile = document.querySelector(".profile");
-
+const PlacedOrdersList = document.querySelector(".order-section");
+const NoInternet = document.querySelector(".no-internet");
+const NoFoundOrders = document.querySelector(".no-found-products");
 const Loading = document.querySelector("#loading-overlay");
+const Upgrade_Overlay = document.querySelector(".upgrade-overlay");
+const Upgrade = document.querySelector(".upgrade-btn");
+const LogOut = document.querySelector(".log-out > button");
+const copyIcon = document.querySelector(".copy-icon");
+const copyLink = document.querySelector(".copy-link");
+const Store_Section = document.querySelector(".my-store");
 
-//Account Edithing element
-const Edit_User_Icon = document.querySelector(".edith-user-icon"); // for displaying no file pic
-const Display_Profile_Contanner = document.querySelector(".profile-pic") // profile containner
+// Nav tabs
+const NavDash = document.querySelector(".nav-tab.dash");
+const NavProducts = document.querySelector(".nav-tab.products");
+const NavOrders = document.querySelector(".nav-tab.orders");
+const Profile = document.querySelector(".nav-profile");
+const NavStore = document.querySelector(".store");
+
+// Profile nav display
+const UserIcon = document.querySelector(".user-icon");
+const Pro_Pic = document.querySelector(".pro-pic");
+const ProfileImg = document.querySelector(".pro-pic > img");
+
+// Toast
+const toast = document.querySelector(".toast");
+const toastIconI = document.querySelector(".toast-icon-i");
+const toastHead = document.querySelector(".toast-header-text");
+const toastText = document.querySelector(".toast-text");
+
+// Add product form
+const AddProduct = document.querySelector(".add-prod-overlay");
+const prodProfile = AddProduct.querySelector(".prod-profile");
+const prodIcon = AddProduct.querySelector(".prod-icon");
+const prodImage = AddProduct.querySelector(".prod-pro-pic");
+const ProdName = AddProduct.querySelector(".prod-name");
+const ProdPrice = AddProduct.querySelector(".prod-price");
+const ProdDisc = AddProduct.querySelector(".prod-description");
+const cameraBtn = AddProduct.querySelector(".camera");
+const cancelImgBtn = AddProduct.querySelector(".cancel");
+const fileInput = AddProduct.querySelector(".file-input");
+const AddNewProd = AddProduct.querySelector(".add-btn");
+const CancelNewProd = AddProduct.querySelectorAll(".cancel-btn");
+const PordCart = AddProduct.querySelector(".custom-select");
+
+// Edit product
+const EdithProduct = document.querySelector(".edith-prod-overlay");
+const EditProdImg = EdithProduct.querySelector(".prod-image-update");
+const EditFileInput = EdithProduct.querySelector(".prod-image-edit-file-input");
+const SelectEditImg = EdithProduct.querySelector(".select-image");
+const CancelEditImg = EdithProduct.querySelector(".cancel-selected-image");
+const EditProdName = EdithProduct.querySelector(".edith-prod-name");
+const EditProdPrice = EdithProduct.querySelector(".edith-prod-price");
+const EditProdCat = EdithProduct.querySelector(".edith-prod-category > p");
+const EditProdDisc = EdithProduct.querySelector(".edith-prod-discription");
+const SaveEdit = EdithProduct.querySelector(".save-edith");
+const CancelEdits = EdithProduct.querySelectorAll(".cancel-edth");
+
+// Profile editing
+const Edit_User_Icon = document.querySelector(".edith-user-icon");
+const Display_Profile_Contanner = document.querySelector(".profile-pic");
 const Display_Profile_Image = document.querySelector(".profile-pic > img");
-const PickNew_Image = document.querySelector(".select-new-profile"); // camera for piccking images
-const PickNew_Image_Container = document.querySelector(".profile-actions");
-const NewImage_Input = document.querySelector("#profile-file"); // input for taking image file for device
+const PickNew_Image = document.querySelector(".select-new-profile");
+const NewImage_Input = document.querySelector("#profile-file");
 const Upload_New_Image = document.querySelector(".upload-new-profile");
-const Edith_OldPro_file_Image = document.querySelector(".edith-old-profile");
-const Cancel_New_Profile_Update = document.querySelector(".cance-profile-update");
+const Edith_OldPro = document.querySelector(".edith-old-profile");
+const Cancel_Profile_Update = document.querySelector(".cance-profile-update");
 const Display_Account_Id = document.querySelector(".display-account-id");
 const Display_Account_Name = document.querySelector(".display-account-name");
 const Display_Old_Email = document.querySelector(".display-email");
 const New_Email_Input = document.querySelector(".new-email-input");
 const Upload_New_Email = document.querySelector(".upload-new-email");
 const Edit_Old_Email = document.querySelector(".edith-old-email");
-const Cancel_New_Email_Upload = document.querySelector(".cancel-email-update");
+const Cancel_New_Email = document.querySelector(".cancel-email-update");
 const Display_Old_Phone = document.querySelector(".display-phone");
 const New_Phone_Input = document.querySelector(".new-phone-input");
 const Upload_New_Phone = document.querySelector(".upload-new-phone");
 const Edit_Old_Phone = document.querySelector(".edith-old-phone");
-const Cancel_New_Phone_Upload = document.querySelector(".cancel-phone-update");
-const Upgrade_Overlay = document.querySelector(".upgrade-overlay");
-const Upgrade = document.querySelector(".upgrade-btn");
-const PlacedOrdersList = document.querySelector(".order-section");
-
-const copyIcon = document.querySelector(".copy-icon");
-const copyLink = document.querySelector(".copy-link");
-
-const NoInternet = document.querySelector(".no-internet");
-const NoFoundOrders = document.querySelector(".no-found-products");
-
-const LogOut = document.querySelector(".log-out > button");
-
-const toast = document.querySelector(".toast");
-const toastIcon = document.querySelector(".toast-icon > i");
-const toastHeader = document.querySelector(".toast-content > h4");
-const toastText = document.querySelector(".toast-text");
-
-//toast.classList.add("hide");
-// ====== CONFIG ======
-const User = JSON.parse(localStorage.getItem("user") || '{}');
-const ipAddress = "https://targeted-copy-adams-producer.trycloudflare.com"; //"http://localhost:8080";
-//const ipAddress = "http://10.66.103.228:8080";
-//const ipAddress = "http://localhost:8080";
+const Cancel_New_Phone = document.querySelector(".cancel-phone-update");
 
 
-document.addEventListener("DOMContentLoaded", async () => {
+// ── INIT ─────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
     toast.classList.add("hide");
+    SetProfile();
+    // Hide quick-action buttons by default
+    Upload_New_Image.style.display = "none";
+    Cancel_Profile_Update.style.display = "none";
 });
 
-// ====== DISPLAY FUNCTIONS ======
-function showProducts() {
-    NoProduct.style.display = "none";
-    ProductSection.style.display = "flex";
-    ProductList.style.display = "grid";
-    Products.classList.add("active");
-    Plus.style.display = "flex";
-    MyProfile.style.display = "none";
-    NoFoundOrders.style.display = "none";
-    NoInternet.style.display = "none";
+window.addEventListener("load", () => {
+    setTimeout(() => NavDash.click(), 0);
+});
 
-}
 
-function showAddProduct() {
-    AddProduct.style.display = "flex";
-    // Reset image preview
-    prodImage.src = '';
-    prodImage.style.display = 'none';
-    prodIcon.style.display = 'flex';
-    cancelBtn.style.display = 'none';
-    fileInput.value = '';
-}
-
-function showMyProfile() {
-    ProductSection.style.display = "none";
-    MyProfile.style.display = "block";
-    Profile.classList.add("active-profile");
-    Products.classList.remove("active");
-    Orders.classList.remove("active");
-    NoFoundOrders.style.display = "none";
-    NoInternet.style.display = "none";
-}
-
+// ── PROFILE SETUP ────────────────────────
 function SetProfile() {
-
     if (User && User.profilePic) {
         UserIcon.style.display = "none";
         Pro_Pic.style.display = "flex";
-        ProfileImg.src = `${ipAddress}/profile/${User["profilePic"]}`;
+        ProfileImg.src = `${ipAddress}/profile/${User.profilePic}`;
     } else {
         UserIcon.style.display = "flex";
         Pro_Pic.style.display = "none";
     }
 }
 
-function showOrders() {
+
+// ── DISPLAY HELPERS ──────────────────────
+function showDash() {
+    DashSection.style.display = "block"
     ProductSection.style.display = "none";
+    ProductList.style.display = "none";
     MyProfile.style.display = "none";
-    PlacedOrdersList.style.display = "grid";
+    PlacedOrdersList.style.display = "none";
+    Store_Section.style.display = "none";
     NoFoundOrders.style.display = "none";
     NoInternet.style.display = "none";
-}
-
-
-function showToast(icon, header, text, iconColor) {
-    toastIcon.className = "toast-icon"; // safe reset
-    toastIcon.className = "";
-    icon.split(" ").forEach(cls => {
-        toastIcon.classList.add(cls);
-    });
-
-    toastIcon.style.color = iconColor;
-    toastHeader.textContent = header;
-    toastText.textContent = text;
-    toast.classList.remove("hide");
-
-    setTimeout(() => {
-        toast.classList.add("show");
-    }, 100);
-
-    setTimeout(() => {
-        toast.classList.remove("show");
-        toast.classList.add("hide");
-    }, 3000);
-}
-
-
-async function Load_Image(Url) {
-
-    const res = await fetch(`${ipAddress}/profile/${User["profilePic"]}`, {
-        headers: {
-            "ngrok-skip-browser-warning": "true"
-        }
-    });
-
-    const blob = await res.blob();
-    const imageUrl = URL.createObjectURL(blob);
-    return imageUrl;
-}
-
-SetProfile();
-
-Back.addEventListener("click", () => {
-    if (!window.history.back()) {
-        location.href = "/index.html";
-        window.history.clear();
-    }
-});
-
-window.addEventListener('popstate', function (event) {
-    if (!window.history.back()) {
-        location.href = "/index.html";
-        window.history.clear();
-    }
-});
-
-Products.addEventListener("click", async (e) => {
+    Plus.style.display = "none";
     Profile.classList.remove("active-profile");
+    NavDash.classList.add("active");
+    NavProducts.classList.remove("active");
+    NavOrders.classList.remove("active");
+    NavStore.classList.remove("active");
+}
 
-    // Check if the list is empty OR contains the 'no product' message
-    const isEmpty = ProductList.children.length === 0;
-    const hasNoProductMessage = ProductList.querySelector(".no-product-section");
+function showProducts() {
+    DashSection.style.display = "none";
+    ProductSection.style.display = "flex";
+    ProductList.style.display = "grid";
+    Store_Section.style.display = "none";
+    MyProfile.style.display = "none";
+    PlacedOrdersList.style.display = "none";
+    NoFoundOrders.style.display = "none";
+    NoInternet.style.display = "none";
+    Plus.style.display = "flex";
+    NavDash.classList.remove("active");
+    NavProducts.classList.add("active");
+    NavOrders.classList.remove("active");
+    NavStore.classList.remove("active");
+}
 
-    if (isEmpty || hasNoProductMessage) {
-        // This ensures data is fetched if the list is blank
-        await getMyProducts();
-    }
-
-    // Always show the section regardless of whether we just fetched or not
+function showNoProduct() {
+    DashSection.style.display = "none";
+    NoProduct.style.display = "block";
+    ProductList.style.display = "none";
     ProductSection.style.display = "flex";
     MyProfile.style.display = "none";
     PlacedOrdersList.style.display = "none";
     NoFoundOrders.style.display = "none";
     NoInternet.style.display = "none";
-});
+    Plus.style.display = "flex";
+}
 
-Orders.addEventListener("click", () => {
+function showAddProduct() {
+    DashSection.style.display = "none";
+    AddProduct.style.display = "flex";
+    prodImage.src = "";
+    prodImage.style.display = "none";
+    prodIcon.style.display = "flex";
+    cancelImgBtn.style.display = "none";
+    fileInput.value = "";
+}
+
+function showMyProfile() {
+    DashSection.style.display = "none";
+    ProductSection.style.display = "none";
+    MyProfile.style.display = "flex";
+    PlacedOrdersList.style.display = "none";
+    NoFoundOrders.style.display = "none";
+    NoInternet.style.display = "none";
+    Plus.style.display = "none";
+    Profile.classList.add("active-profile");
+    NavProducts.classList.remove("active");
+    NavOrders.classList.remove("active");
+    NavDash.classList.remove("active");
+    NavStore.classList.remove("active");
+}
+
+function showOrders() {
+    DashSection.style.display = "none";
+    ProductSection.style.display = "none";
+    MyProfile.style.display = "none";
+    PlacedOrdersList.style.display = "grid";
+    Store_Section.style.display = "none";
+    NoFoundOrders.style.display = "none";
+    NoInternet.style.display = "none";
+    Plus.style.display = "none";
+    NavDash.classList.remove("active");
+    NavOrders.classList.add("active");
+    NavProducts.classList.remove("active");
+}
+
+function showStores(){
+    DashSection.style.display = "none";
+    ProductSection.style.display = "none";
+    MyProfile.style.display = "none";
+    PlacedOrdersList.style.display = "none";
+    Store_Section.style.display = "flex";
+    NoFoundOrders.style.display = "none";
+    NoInternet.style.display = "none";
+    Plus.style.display = "none";
     Profile.classList.remove("active-profile");
-    if (PlacedOrdersList.children.length === 0) {
-        getPlacedOrders();
-    } else {
-        ProductSection.style.display = "none";
-        MyProfile.style.display = "none";
-        PlacedOrdersList.style.display = "grid";
-        NoOrderSection.style.display = "none";
-    }
-});
+    NavDash.classList.remove("active");
+    NavOrders.classList.remove("active");
+    NavProducts.classList.remove("active");
+    NavStore.classList.add("active");
+    
+}
 
-// ====== INITIAL LOAD ======
 
-window.addEventListener("load", () => {
+// ── TOAST ────────────────────────────────
+function showToast(iconClasses, header, text, iconColor) {
+    toastIconI.className = "";
+    iconClasses.split(" ").forEach(c => toastIconI.classList.add(c));
+    toastIconI.style.color = iconColor;
+    toastHead.textContent = header;
+    toastText.textContent = text;
+
+    toast.classList.remove("hide");
+    setTimeout(() => toast.classList.add("show"), 50);
     setTimeout(() => {
-        getMyProducts();
-    }, 0);
+        toast.classList.remove("show");
+        setTimeout(() => toast.classList.add("hide"), 300);
+    }, 4500);
+}
+
+document.querySelector(".toast-close").addEventListener("click", () => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.classList.add("hide"), 300);
 });
 
 
-// ====== FETCH HELPERS ======
+// ── FETCH HELPERS ────────────────────────
 async function fetchData(payload) {
     try {
-        const response = await fetch(`${ipAddress}/api/process`, {
+        const res = await fetch(`${ipAddress}/api/process`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
-
-        if (!response.ok) throw new Error(`Network Error: ${response.status}`);
-        const data = await response.json();
-        if (!data) throw new Error("Server returned empty data");
-
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data) throw new Error("Empty response");
         return data;
-
     } catch (err) {
-        console.error("Fetch error:", err);
+        console.error("fetchData:", err);
         Loading.style.display = "none";
         return null;
     }
@@ -253,113 +269,375 @@ async function fetchData(payload) {
 
 async function UploadFileWithData(formData) {
     try {
-        const response = await fetch(`${ipAddress}/api/file`, {
+        const res = await fetch(`${ipAddress}/api/file`, {
             method: "POST",
             body: formData
         });
-
-        // ✅ Only fail if the network response itself failed
-        if (!response.ok) {
-            throw new Error(`Network Error: ${response.status}`);
-        }
-
-        // Try to parse JSON, but fallback to text if server returns something else
-        let result;
-        const text = await response.text();
-        console.log("RAW RESPONSE:", text);
-
-        try {
-            result = JSON.parse(text); // attempt to parse JSON
-        } catch {
-            result = text; // fallback to raw text
-        }
-
-        // ✅ Return whatever server gave back
-        return result;
-
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        try { return JSON.parse(text); } catch { return text; }
     } catch (err) {
-        console.error("Upload error:", err);
-        throw err; // let caller decide what to do
+        console.error("UploadFileWithData:", err);
+        throw err;
     }
 }
 
+// 1. Define the formatter once
+const formatter = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+});
 
-// ====== GET MY PRODUCTS ======
+async function Dash() {
+    const user = JSON.parse(localStorage.getItem("user")); // getting user data
+
+    //Variables
+    const PendingOrdersTab = DashSection.querySelector(".pending-tab"); //Pending tab Variable
+    const PendingOrdersList = DashSection.querySelector(".pending-section");//Pending order List Variable
+    const RejectedOrdersTabe = DashSection.querySelector(".rejected-tab");// Rejected tab variable
+    const RejectedOrdersList = DashSection.querySelector(".rejected-section");//Rejected order List Variable
+    DashSection.querySelector(".dash-card .currency-code").textContent = `${user["currecyCode"]}`;
+    DashSection.querySelector(".actual-revenue .currency-code").textContent = `${user["currecyCode"]}`;
+    const Graph = DashSection.querySelector(".graph-container");
+
+    RejectedOrdersList.style.display = "none";
+
+    PendingOrdersTab.onclick = () => {
+        PendingOrdersTab.classList.add("active");
+        PendingOrdersList.style.display = "flex";
+        RejectedOrdersTabe.classList.remove("active");
+        RejectedOrdersList.style.display = "none";
+    }
+
+    RejectedOrdersTabe.onclick = () => {
+        PendingOrdersTab.classList.remove("active");
+        PendingOrdersList.style.display = "none";
+        RejectedOrdersTabe.classList.add("active");
+        RejectedOrdersList.style.display = "flex";
+    }
+
+    PendingOrdersTab.click();
+
+    //assigining Current Date 
+    const nowDate = () => new Date().toISOString().split('T')[0];
+    const FromDateInput = DashSection.querySelector(".from-date");
+    const ToDateInput = DashSection.querySelector(".to-date");
+
+
+    FromDateInput.value = nowDate();
+    ToDateInput.value = nowDate();
+
+
+    let getFromDate = null;
+    let getToDate = null;
+
+    const refreshBtn = DashSection.querySelector(".refresh");
+
+    refreshBtn.onclick = async () => {
+        // Get fresh values INSIDE the handler
+        getFromDate = FromDateInput.value;
+        getToDate = ToDateInput.value;
+
+        if (new Date(getFromDate).getTime() > new Date(getToDate).getTime()) {
+            showToast("fa-solid fa-exclamation", "Date Range", "The date range you selected is incorrect", "#e53935");
+            return;
+        }
+
+        Get_Dash_Data();
+
+    }
+
+    // creating two fragments that will be used to append the children in the pending order list and Rejected order list
+    const orderPendingFragment = document.createDocumentFragment();
+    const orderRejectedFragment = document.createDocumentFragment();
+
+    async function Get_Dash_Data() {
+
+        //payload which caries the instruction which will be performed by the server
+        let Payload = {
+            INSTRUCTION: "GET-REVENUE-DATA",
+            fromDate: getFromDate,
+            toDate: getToDate,
+            userid: user["User-ID"]
+        }
+
+        let EstimatedRevenue = 0;
+        let ActualRevenue = 0;
+        let PendingRevenue = 0;
+        let AprovedRevenue = 0;
+        let RejectedRevenue = 0;
+
+        let ApprovedOrdersCount = 0;
+        let PendingOrdersCount = 0;
+        let RejectedOrdersCount = 0;
+
+      
+            refreshBtn.classList.add("refresh-spinning");
+            let Result = await fetchData(Payload);
+
+            if (Result) {
+
+                refreshBtn.classList.remove("refresh-spinning");
+                // Clear all lists exactly once before structural layout changes
+                PendingOrdersList.innerHTML = "";
+                RejectedOrdersList.innerHTML = "";
+                Graph.innerHTML = "";
+
+                // Safely extract currency code once to avoid object lookup thrashing
+                const currency = user["currencyCode"] || "$";
+
+                for (let key in Result) {
+                    let rows = Result[key];
+                    if (!Array.isArray(rows) || rows.length === 0) continue;
+
+                    const dateObj = new Date(key);
+                    const dayLabel = dateObj.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
+
+                    let localEstimatedRevenue = 0;
+                    let localApproved = 0;
+                    let localPending = 0;
+                    let localRejected = 0;
+
+                    // Optional: If fragments are instantiated globally, ensure they clear per day loop
+                    // const orderPendingFragment = document.createDocumentFragment(); 
+                    // const orderRejectedFragment = document.createDocumentFragment();
+
+                    rows.forEach(row => {
+                        let orderAmount = Number(row["orderTotal"]) || 0;
+                        let orderStatus = row["orderStatus"];
+
+                        localEstimatedRevenue += orderAmount;
+
+                        if (orderStatus === "accepted") {
+                            localApproved += orderAmount;
+                            ApprovedOrdersCount++;
+                        } else if (orderStatus === "Pending") {
+                            localPending += orderAmount;
+                            PendingOrdersCount++;
+
+                            const orderPending = document.createElement("div");
+                            orderPending.classList.add("list-card");
+                            orderPending.innerHTML = `
+                                <div class="left-info">
+                                    <span class="list-number">${PendingOrdersCount}</span>
+                                    <span class="list-order-id">#${row.orderID}</span>
+                                </div>
+                                <div class="right-info">
+                                    <span class="status-badge status-pending">Pending</span>
+                                    <button class="list-action">View order</button>
+                                </div>`;
+                            orderPendingFragment.appendChild(orderPending);
+                        } else {
+                            localRejected += orderAmount;
+                            RejectedOrdersCount++;
+
+                            const rejectedOrder = document.createElement("div");
+                            rejectedOrder.classList.add("list-card");
+                            rejectedOrder.innerHTML = `
+                                <div class="left-info">
+                                    <span class="list-number">${RejectedOrdersCount}</span>
+                                    <span class="list-order-id">#${row.orderID}</span>
+                                </div>
+                                <div class="right-info">
+                                    <span class="status-badge status-rejected">Rejected</span>
+                                    <button class="list-action">View order</button>
+                                </div>`;
+                            orderRejectedFragment.appendChild(rejectedOrder);
+                        }
+                    });
+
+                    // Flush out localized fragments to the UI tree structure safely
+                    PendingOrdersList.appendChild(orderPendingFragment);
+                    RejectedOrdersList.appendChild(orderRejectedFragment);
+
+                    // Calculate metrics aggregates
+                    EstimatedRevenue += localEstimatedRevenue;
+                    ActualRevenue += localApproved;
+                    PendingRevenue += localPending;
+                    RejectedRevenue += localRejected;
+
+                    // Render Charts Logic Layer
+                    if (localEstimatedRevenue > 0) {
+                        const createBar = (amt, typeClass, label) => {
+                            let percentage = (amt / localEstimatedRevenue) * 100 + "%";
+                            return `
+                                <div class="bar-wrapper">
+                                    <div class="amount-tooltip">${currency} ${amt.toLocaleString()}</div>
+                                    <div class="date-tooltip">${key}</div>
+                                    <div class="parent-bar">
+                                        <div class="inner-bar ${typeClass}" style="height: ${percentage};"></div>
+                                    </div>
+                                    <div class="day-label">${label}</div>
+                                </div>`;
+                        };
+
+                        if (localApproved > 0) Graph.insertAdjacentHTML('beforeend', createBar(localApproved, "approved-bg", dayLabel));
+                        if (localPending > 0) Graph.insertAdjacentHTML('beforeend', createBar(localPending, "pending-bg", dayLabel));
+                        if (localRejected > 0) Graph.insertAdjacentHTML('beforeend', createBar(localRejected, "rejected-bg", dayLabel));
+                    }
+                }
+            }else{
+                refreshBtn.classList.remove("refresh-spinning");
+                showToast("fa-solid fa-exclamation", "Error", "An error occured while fetching dash dada, Please check your internet connection", "#e53935");
+            }
+
+            // Logic DRY Optimization: Update the metric node text properties once down here
+            const currency = user["currecyCode"] || "$";
+            
+            DashSection.querySelector(".estimated-revenue .amount").textContent = `${currency} ${formatter.format(EstimatedRevenue)}`;
+            DashSection.querySelector(".actual-revenue .amount").textContent = `${currency} ${formatter.format(ActualRevenue)}`;
+            DashSection.querySelector(".pending-orders .amount").textContent = `${currency} ${formatter.format(PendingRevenue)}`;
+            DashSection.querySelector(".rejected-orders .amount").textContent = `${currency} ${formatter.format(RejectedRevenue)}`;
+
+            // Corrected format logic engine for string representations of counts
+            const countFormatter = new Intl.NumberFormat();
+            DashSection.querySelector(".pending-orders .order-count").textContent = `${countFormatter.format(PendingOrdersCount)} Orders`;
+            DashSection.querySelector(".rejected-orders .order-count").textContent = `${countFormatter.format(RejectedOrdersCount)} Orders`;     
+    }
+
+    if (refreshBtn) {
+        refreshBtn.click();
+    }
+
+
+    //Method for mapping the card order to the order card
+    async function findOrder(selectedOrderid) {
+
+        let placedOrders = document.querySelectorAll(".order-section .order-cart");
+        if (placedOrders.length === 0) {
+
+            try {
+                const orderList = await fetchData({ INSTRUCTION: "GET-MY-ORDERS", User_id: user["User-ID"] });
+
+                insertOrdersCard(orderList, user["currecyCode"]);
+
+                placedOrders = document.querySelectorAll(".order-section .order-cart");
+                placedOrders.forEach(orderCard => {
+                    let targetedOrderId = orderCard.querySelector(".order-id").textContent.split("Order ")[1].trim();
+                    if (targetedOrderId === selectedOrderid) {
+
+                        orderCard.classList.add("active");
+                        setTimeout(() => orderCard.classList.remove("active"), 3000);
+                        showOrders();
+                        orderCard.scrollIntoView({
+                            behavior: "smooth", block: "center"
+                        });
+                    }
+                });
+
+            } catch (err) {
+
+            }
+
+        } else {
+            placedOrders.forEach(orderCard => {
+                let targetedOrderId = orderCard.querySelector(".order-id").textContent.split("Order ")[1].trim();
+                if (targetedOrderId === selectedOrderid) {
+
+                    orderCard.classList.add("active");
+                    setTimeout(() => orderCard.classList.remove("active"), 3000);
+                    showOrders();
+                    orderCard.scrollIntoView({
+                        behavior: "smooth", block: "center"
+                    });
+                }
+            });
+        }
+
+    }
+
+    PendingOrdersList.onclick = async (e) => {
+        if (e.target.closest(".list-action")) {
+            const PendingOrder = e.target.closest(".list-card");
+            let selectedOrderid = PendingOrder.querySelector(".list-order-id").textContent.trim();
+
+            findOrder(selectedOrderid); // maps the user to the order card
+        }
+    }
+
+    RejectedOrdersList.onclick = async (e) => {
+        if (e.target.closest(".list-action")) {
+
+            const RejectedOrder = e.target.closest(".list-card");
+            let selectedOrderid = RejectedOrder.querySelector(".list-order-id").textContent.trim();
+
+            findOrder(selectedOrderid); // maps the user to the order card
+        }
+    }
+
+    showDash();
+}
+
+// ── GET PRODUCTS ─────────────────────────
 async function getMyProducts() {
-    let User = JSON.parse(localStorage.getItem("user")); // get user data
-    //Loading.style.display = "flex";
-    if (!User["User-ID"]) return showNoProduct();
-
-    let payload = {
-        INSTRUCTION: "GET-MY-PRODUCTS",
-        User_id: User["User-ID"]
-
-    };
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user["User-ID"]) return showNoProduct();
 
     Loading.style.display = "flex";
-
-    const productList = await fetchData(payload);
-    if (Array.isArray(productList) && productList.length > 0) {
-
-        Loading.style.display = "none";
-
-        ProductList.innerHTML = "";
-        let count = 0;
-        const fragment = document.createDocumentFragment();
-
-        productList.forEach(prod => {
-            const card = document.createElement("div");
-            card.classList.add("list-card");
-            card.innerHTML = `
-            <img src="${ipAddress}/products/${prod.Url}" alt="image" class="prod-img">
-            <p class="pord-name">${prod.name}</p>
-            <p class="prod-id">${prod.Id}</p>
-            <p class="prod-price">${prod.currencyCode}: ${prod.price}</p>
-            <p class="final-prod-description">${prod.description}</p>
-            <div class="edith-delete-prod">
-                <div class="edith-prod"><i class="fa-solid fa-pen"></i>Edit</div>
-                <div class="delete-prod"><i class="fa-solid fa-x"></i>Delete</div>
-            </div>
-            <p class="posted-at">posted ${prod.postedAt}</p>
-        `;
-            fragment.appendChild(card);
-            count++;
-        });
-
-
-        ProductList.appendChild(fragment);
-        ProductCount.textContent = count;
-        showProducts();
-
-        //Loading.style.display = "flex";
-    } else {
-        Loading.style.display = "none";
-    }
-}
-
-async function getPlacedOrders() {
-
-    let User = JSON.parse(localStorage.getItem("user"));
-    if (!User || !User["User-ID"]) return showNoProduct();
-
-    let payload = {
-        INSTRUCTION: "GET-MY-ORDERS",
-        User_id: User["User-ID"]
-    };
-
-    Loading.style.display = "flex";
-    let OrderList = await fetchData(payload);
+    const list = await fetchData({ INSTRUCTION: "GET-MY-PRODUCTS", User_id: user["User-ID"] });
     Loading.style.display = "none";
 
-    // ❌ No data case
-    if (!Array.isArray(OrderList)) {
+    if (!Array.isArray(list) || list.length === 0) return showNoProduct();
+
+    ProductList.innerHTML = "";
+    NoProduct.style.display = "none";
+    const frag = document.createDocumentFragment();
+    let count = 0;
+
+    list.forEach(prod => {
+        const card = document.createElement("div");
+        card.classList.add("list-card");
+        card.innerHTML = `
+      <img src="${ipAddress}/products/${prod.Url}" alt="${prod.name}" class="prod-img" loading="lazy"/>
+      <div class="card-body">
+        <p class="pord-name">${prod.name}</p>
+        <p class="prod-price">${prod.currencyCode} ${formatter.format(prod.price)}</p>
+        <p class="prod-id">${prod.Id}</p>
+        <p class="final-prod-description">${prod.description}</p>
+      </div>
+      <div class="edith-delete-prod">
+        <div class="edith-prod" data-id="${prod.Id}"><i class="fa-solid fa-pen"></i> Edit</div>
+        <div class="delete-prod" data-id="${prod.Id}"><i class="fa-solid fa-trash"></i> Delete</div>
+      </div>
+      <p class="posted-at">Posted ${prod.postedAt}</p>
+    `;
+        frag.appendChild(card);
+        count++;
+    });
+
+    ProductList.appendChild(frag);
+    ProductCount.textContent = count;
+    showProducts();
+
+    // Wire up edit/delete buttons
+    ProductList.querySelectorAll(".edith-prod").forEach(btn => {
+        btn.addEventListener("click", () => openEditProduct(btn.dataset.id, list));
+    });
+    
+    ProductList.querySelectorAll(".delete-prod").forEach(btn => {
+        btn.addEventListener("click", () => deleteProduct(btn.dataset.id));
+    });
+}
+
+
+// ── GET ORDERS ───────────────────────────
+async function getPlacedOrders() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user["User-ID"]) return;
+
+    Loading.style.display = "flex";
+    const orderList = await fetchData({ INSTRUCTION: "GET-MY-ORDERS", User_id: user["User-ID"] });
+    Loading.style.display = "none";
+
+    if (!Array.isArray(orderList)) {
         ProductSection.style.display = "none";
         MyProfile.style.display = "none";
         PlacedOrdersList.style.display = "none";
         NoInternet.style.display = "flex";
         return;
+    }
 
-    } else if (Array.isArray(OrderList) && OrderList.length === 0) {
+    if (orderList.length === 0) {
         ProductSection.style.display = "none";
         MyProfile.style.display = "none";
         PlacedOrdersList.style.display = "none";
@@ -367,67 +645,49 @@ async function getPlacedOrders() {
         return;
     }
 
-    // ✅ ONLY runs if data is valid
+    insertOrdersCard(orderList, user["currecyCode"]);
+    showOrders();
+}
+
+//This method is used to insert all orders into the orders tab
+function insertOrdersCard(orderList, currencyCode) {
+
     PlacedOrdersList.innerHTML = "";
+    const frag = document.createDocumentFragment();
 
-    const fragment = document.createDocumentFragment();
-
-    OrderList.forEach(ord => {
-
-        let status = (ord.status || "").toLowerCase().trim();
-
+    orderList.forEach(ord => {
+        const status = (ord.status || "").toLowerCase().trim();
         const card = document.createElement("div");
         card.classList.add("order-cart");
-
         card.innerHTML = `
-            <div class="order-cart-top">
-
-                <div class="order-header">
-                    <span class="order-index">#${ord.index}</span>
-                    <span class="order-id">Order #${ord.orderId}</span>
-                    <span class="order-date">${ord.date}</span>
-                    <span class="order-time">${ord.time}</span>
-                </div>
-
-                <div class="product-info">
-                    <h4 class="product-name">${ord.productName}</h4>
-                    <span class="product-id">Product id: #${ord.productId}</span>
-                </div>
-
-                <div class="customer-phone">
-                    <span class="phone">${ord.customerPhone}</span>
-                    <div class="phone-icon"><i class="fa-solid fa-phone"></i></div>
-                </div>
-
-                <div class="order-details">
-                    <div class="detail">
-                        <span>Quantity</span>
-                        <strong>${ord.quantity}</strong>
-                    </div>
-
-                    <div class="detail">
-                        <span>Price</span>
-                        <strong>GHC: ${ord.amountPerProduct}</strong>
-                    </div>
-
-                    <div class="detail total">
-                        <span>Total</span>
-                        <strong>GHC: ${ord.totalAmount}</strong>
-                    </div>
-                </div>
-
+            <div class="order-header">
+                <span class="order-index">#${ord.index}</span>
+                <span class="order-id">Order #${ord.orderId}</span>
+                <span class="order-date">${ord.date}</span>
+                <span class="order-time">${ord.time}</span>
             </div>
-
+            <div class="product-info">
+                <h4 class="product-name">${ord.productName}</h4>
+                <span class="product-id">Product ID: #${ord.productId}</span>
+            </div>
+            <div class="customer-phone">
+                <span class="phone">${ord.customerPhone}</span>
+                <div class="phone-icon"><i class="fa-solid fa-phone"></i></div>
+            </div>
+            <div class="order-details">
+                <div class="detail"><span>Quantity</span><strong>${formatter.format(ord.quantity)}</strong></div>
+                <div class="detail"><span>Price</span><strong>${currencyCode} ${formatter.format(ord.amountPerProduct)}</strong></div>
+                <div class="detail total"><span>Total</span><strong>${currencyCode} ${formatter.format(ord.totalAmount)}</strong></div>
+            </div>
             <div class="order-cart-actions">
-                <button type="button" class="accept-btn">Accept</button>
-                <button type="button" class="reject-btn">Reject</button>
+                <button class="accept-btn" type="button"><i class="fa-solid fa-check"></i> Accept</button>
+                <button class="reject-btn" type="button"><i class="fa-solid fa-x"></i> Reject</button>
             </div>
-
             <div class="order-cart-status">
-                <span class="status accepted">Accepted</span>
-                <span class="status rejected">Rejected</span>
+                <span class="status accepted">Accepted ✓</span>
+                <span class="status rejected">Rejected ✗</span>
             </div>
-        `;
+            `;
 
         const actions = card.querySelector(".order-cart-actions");
         const statusBox = card.querySelector(".order-cart-status");
@@ -439,7 +699,7 @@ async function getPlacedOrders() {
         accepted.style.display = "none";
         rejected.style.display = "none";
 
-        if (!status) {
+        if (status === "pending") {
             actions.style.display = "flex";
         } else if (status === "accepted") {
             statusBox.style.display = "block";
@@ -449,851 +709,566 @@ async function getPlacedOrders() {
             rejected.style.display = "inline-block";
         }
 
-        fragment.appendChild(card);
+        frag.appendChild(card);
     });
 
-    PlacedOrdersList.appendChild(fragment);
+    PlacedOrdersList.appendChild(frag);
 
-    showOrders();
 }
 
-PlacedOrdersList.addEventListener("click", async (e) => {
-    const Item = e.target.closest(".order-cart");
+// Order actions (accept / reject / call)
+PlacedOrdersList.addEventListener("click", async e => {
+    const item = e.target.closest(".order-cart");
+    if (!item) return;
 
-
-    let raw = Item.querySelector(".order-id").textContent;
-    let orderId = raw.replace("Order #", "").trim();
-
-    if (!Item) return;
-    if (e.target.closest(".accept-btn")) {
-        let Payload = {
-            INSTRUCTION: "SET-ORDER-STATUS",
-            OrderID: orderId,
-            status: "accepted"
-        }
-
-        Loading.style.display = "flex";
-        let Result = await fetchData(Payload);
-        if (Result && Result.status === "OK") {
-            Loading.style.display = "none";
-            getPlacedOrders();
-        }
-
-    } else if (e.target.closest(".reject-btn")) {
-        let Payload = {
-            INSTRUCTION: "SET-ORDER-STATUS",
-            OrderID: orderId,
-            status: "rejected"
-        }
-
-        Loading.style.display = "flex";
-        let Result = await fetchData(Payload);
-        if (Result && Result.status === "OK") {
-            Loading.style.display = "none";
-            getPlacedOrders();
-        }
-    } else if (e.target.closest(".phone-icon")) {
-
-        const phone = Item.querySelector(".phone").textContent.trim();
-
+    if (e.target.closest(".phone-icon")) {
+        const phone = item.querySelector(".phone").textContent.trim();
         window.location.href = `tel:${phone}`;
-    }
-});
-
-async function Insert_Categories() {
-    const selectWrapper = document.querySelector(".custom-select");
-    const selected = selectWrapper.querySelector(".selected");
-    const optionsContainer = selectWrapper.querySelector(".options");
-
-    const storedCategories = getLocalCategories();
-
-    let online = true;
-
-    // Check internet connection
-    try {
-        const pingResponse = await Get({ INSTRUCTION: "PING" });
-        alert(JSON.stringify(pingResponse));
-        if (!pingResponse || pingResponse.status !== "OK") online = false;
-    } catch {
-        online = false;
-    }
-
-    let categories = [];
-
-    if (online) {
-        // Online → fetch from server
-        try {
-            const data = await fetchData({ INSTRUCTION: "GET-CATEGORIES" });
-            if (data && data.Product_Categories) {
-                categories = data.Product_Categories;
-                saveLocalCategories(categories);
-            } else if (storedCategories) {
-                categories = storedCategories;
-            }
-        } catch (err) {
-            console.error("Failed to fetch categories online:", err);
-            if (storedCategories) categories = storedCategories;
-        }
-
-    } else {
-        // Offline → use localStorage
-        if (storedCategories) categories = storedCategories;
-    }
-
-    // Fallback if no categories
-    if (!categories || categories.length === 0) {
-
-        optionsContainer.innerHTML = `<div class="option">No categories available</div>`;
-        selected.textContent = "No categories available";
         return;
     }
 
-    // Always add "All" at the top
-    categories = [...categories.filter(cat => cat && cat !== "All")];
+    const rawId = item.querySelector(".order-id").textContent;
+    const orderId = rawId.replace("Order #", "").trim();
 
-    // Clear previous options
-    optionsContainer.innerHTML = "";
+    let newStatus = null;
+    if (e.target.closest(".accept-btn")) newStatus = "accepted";
+    if (e.target.closest(".reject-btn")) newStatus = "rejected";
+    if (!newStatus) return;
 
-    // Populate custom dropdown
-    categories.forEach(cat => {
-        const option = document.createElement("div");
-        option.classList.add("option");
-        option.textContent = cat;
-        optionsContainer.appendChild(option);
+    Loading.style.display = "flex";
+    const result = await fetchData({ INSTRUCTION: "SET-ORDER-STATUS", OrderID: orderId, status: newStatus });
+    Loading.style.display = "none";
 
-        // Handle option click
-        option.addEventListener("click", () => {
-            selected.textContent = cat;
-
-            // ✅ ADD THIS LINE (VERY IMPORTANT)
-            selectWrapper.dataset.value = cat;
-
-            optionsContainer.style.display = "none";
-
-            console.log("Selected category:", cat);
-        });
-    });
-
-    // Toggle dropdown when clicking the box
-    selected.addEventListener("click", () => {
-        optionsContainer.style.display = optionsContainer.style.display === "block" ? "none" : "block";
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener("click", (e) => {
-        if (!selectWrapper.contains(e.target)) {
-            optionsContainer.style.display = "none";
-        }
-    });
-}
-
-// Save categories to localStorage
-function saveLocalCategories(categories) {
-    alert(JSON.stringify(categories));
-    try {
-        localStorage.setItem("Product-Categories", JSON.stringify(categories));
-    } catch (err) {
-        console.warn("localStorage not available:", err);
+    if (result && result.status === "OK") {
+        showToast("fa-solid fa-check", "Order Updated", `Order has been ${newStatus}.`, newStatus === "accepted" ? "#1a8a00" : "#e53935");
+        getPlacedOrders();
     }
-}
+});
 
-// Get categories from localStorage
-function getLocalCategories() {
-    try {
-        const stored = localStorage.getItem("Product-Categories");
-        return stored ? JSON.parse(stored) : null;
-    } catch {
-        return null;
-    }
-}
 
-// ====== ADD PRODUCT UI ======
-Plus.addEventListener("click", showAddProduct);
-Loading.style.display = "flex";
-Insert_Categories();
-Loading.style.display = "none";
-// ====== IMAGE HANDLING ======
-cameraBtn.addEventListener('click', () => fileInput.click());
+// ============== code for stores activities ==========
+NavStore.addEventListener("click",()=>{
 
-fileInput.addEventListener('change', e => {
+    showStores();
+});
+
+
+// ── ADD PRODUCT ──────────────────────────
+Plus.addEventListener("click", () => {
+    showAddProduct();
+    Insert_Categories();
+});
+
+// Cancel buttons on add form
+CancelNewProd.forEach(btn => btn.addEventListener("click", () => {
+    AddProduct.style.display = "none";
+}));
+
+// Image pick
+cameraBtn.addEventListener("click", () => fileInput.click());
+
+fileInput.addEventListener("change", e => {
     const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (evt) {
-            prodImage.src = evt.target.result;
-            prodImage.style.display = 'block';
-            prodIcon.style.display = 'none';
-            cancelBtn.style.display = 'flex';
-        };
-        reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = evt => {
+        prodImage.src = evt.target.result;
+        prodImage.style.display = "block";
+        prodIcon.style.display = "none";
+        cancelImgBtn.style.display = "flex";
+    };
+    reader.readAsDataURL(file);
 });
 
-cancelBtn.addEventListener('click', () => {
-
-    prodImage.src = '';
-    prodImage.style.display = 'none';
-    prodIcon.style.display = 'flex';
-    cancelBtn.style.display = 'none';
-    fileInput.value = '';
-
-
+cancelImgBtn.addEventListener("click", () => {
+    prodImage.src = "";
+    prodImage.style.display = "none";
+    prodIcon.style.display = "flex";
+    cancelImgBtn.style.display = "none";
+    fileInput.value = "";
 });
 
-AddNewProd.addEventListener("click", async (e) => {
-    e.preventDefault();
+AddNewProd.addEventListener("click", async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return alert("Not logged in!");
 
-    // Get user from localStorage
-    let User = JSON.parse(localStorage.getItem("user"));
-    if (!User) return alert("User not logged in!");
-
-    // DOM elements
-    const selectWrapper = document.querySelector(".custom-select");
-    const selected = selectWrapper.querySelector(".selected");
     const file = fileInput.files[0];
-    const Value = selectWrapper.dataset.value;
+    const value = PordCart.dataset.value;
 
-    // Validation
-    if (!file || !ProdName.value.trim() || !ProdPrice.value.trim() || Value === "Select Category" || !ProdDiscription.value.trim()) {
-        toast.style.zIndex = 10000;
-        showToast(
-            "fa-solid fa-keyboard",
-            "Required Inputs",
-            "All inputs are required to proceed and also remember to select a cartegory",
-            "green"
-        );
-        
+    if (!file || !ProdName.value.trim() || !ProdPrice.value.trim() || !value || !ProdDisc.value.trim()) {
+        showToast("fa-solid fa-keyboard", "Missing Fields", "Please fill all fields and select a category.", "#e53935");
         return;
     }
 
-    // Prepare payload
     const payload = {
         INSTRUCTION: "UPLOAD-NEW-PROD",
-        owner: User["User-ID"],
+        owner: user["User-ID"],
         name: ProdName.value.trim(),
         price: ProdPrice.value.trim(),
-        Category: Value,
-        Description: ProdDiscription.value.trim()
+        Category: value,
+        Description: ProdDisc.value.trim()
     };
 
+  
     const formData = new FormData();
     formData.append("file", file);
     formData.append("Data", JSON.stringify(payload));
 
     try {
         Loading.style.display = "flex";
-        const uploadResult = await UploadFileWithData(formData);
+        const result = await UploadFileWithData(formData);
+        Loading.style.display = "none";
 
-        if (uploadResult && uploadResult.status === "OK") {
-            // Hide loading
-            Loading.style.display = "none";
-            // Refresh products
-            getMyProducts();
-            showToast("fa-solid fa-check", "New added product", "The push prodcut was suscessfully added", "green");
-            // Hide add product modal
+        if (result && result.status === "OK") {
             AddProduct.style.display = "none";
-
-            // Clear input fields
             ProdName.value = "";
             ProdPrice.value = "";
-            ProdDiscription.value = "";
-            fileInput.value = ""; // clear file input
-
-            // Reset custom select
-            selected.textContent = "Select Category";
-            selectWrapper.dataset.value = "Select Category";
-        } else {
-            throw new Error("Upload failed or server returned an error");
-        }
-    } catch (err) {
-        console.error(err);
-        showToast(
-            "fa-solid fa-exclamation",
-            "Error",
-            "An error occured",
-            "red"
-        );
-        Loading.style.display = "none";
-    }
-});
-
-CancelNewProd.addEventListener("click", (e) => {
-    e.preventDefault();
-    AddProduct.style.display = "none";
-});
-
-
-// GLOBAL STATE (important)
-let selectedFile = null;
-
-const fileInput1 = EdithProduct.querySelector(".prod-image-edit-file-input");
-const previewImg = EdithProduct.querySelector(".prod-image-update");
-const cancelImgBtn = EdithProduct.querySelector(".cancel-selected-image");
-const selectImgBtn = EdithProduct.querySelector(".select-image");
-const saveBtn = EdithProduct.querySelector(".save-edith");
-const cancelBtn1 = EdithProduct.querySelector(".cancel-edth");
-
-// =========================
-// STATIC EVENT LISTENERS (RUN ONCE)
-// =========================
-
-// SELECT IMAGE
-selectImgBtn.onclick = (e) => {
-    e.preventDefault();
-    fileInput1.click();
-};
-
-// CHANGE IMAGE
-fileInput1.onchange = (e) => {
-    selectedFile = e.target.files[0];
-
-    if (selectedFile) {
-        const reader = new FileReader();
-
-        reader.onload = (evt) => {
-            previewImg.src = evt.target.result;
-            cancelImgBtn.style.display = "flex";
-        };
-
-        reader.readAsDataURL(selectedFile);
-    }
-
-    fileInput1.value = ""; // allow reselect same file
-};
-
-// CANCEL IMAGE
-cancelImgBtn.onclick = () => {
-    previewImg.src = previewImg.dataset.oldImage;
-    cancelImgBtn.style.display = "none";
-    selectedFile = null;
-};
-
-// CLOSE MODAL
-cancelBtn1.onclick = () => {
-    EdithProduct.style.display = "none";
-    selectedFile = null;
-};
-
-// =========================
-// MAIN CLICK HANDLER
-// =========================
-
-ProductList.addEventListener("click", async (e) => {
-
-    const Item = e.target.closest(".list-card");
-    if (!Item) return;
-
-    // =========================
-    // EDIT PRODUCT
-    // =========================
-    if (e.target.closest(".edith-prod")) {
-
-        selectedFile = null; // reset every time modal opens
-
-        let Product_ID = Item.querySelector(".prod-id").textContent;
-        let Old_Image = Item.querySelector(".prod-img").src;
-        let Old_Name = Item.querySelector(".pord-name").textContent;
-        let Old_Price = Item.querySelector(".prod-price").textContent;
-        let Old_Description = Item.querySelector(".final-prod-description").textContent;
-
-        let GET_Category_Payload = {
-            INSTRUCTION: "GET-PRODUCT-CATEGORY",
-            ProductID: Product_ID
-        };
-
-        Loading.style.display = "flex";
-        let Result = await fetchData(GET_Category_Payload);
-
-        Loading.style.display = "none";
-
-        if (!Result) return;
-
-        let Category = Result["category"];
-
-        // SET OLD DATA
-        previewImg.src = Old_Image;
-        previewImg.dataset.oldImage = Old_Image;
-
-        EdithProduct.querySelector(".edith-prod-name").value = Old_Name;
-        EdithProduct.querySelector(".edith-prod-price").value = Number(Old_Price.split(" ")[1]);
-        EdithProduct.querySelector(".edith-prod-category").textContent = Category;
-        EdithProduct.querySelector(".edith-prod-discription").value = Old_Description;
-
-        cancelImgBtn.style.display = "none";
-
-        EdithProduct.style.display = "flex";
-
-        // =========================
-        // SAVE BUTTON (NO DUPLICATION)
-        // =========================
-        saveBtn.onclick = async () => {
-
-            let New_Name = EdithProduct.querySelector(".edith-prod-name").value.trim();
-            let New_Price = EdithProduct.querySelector(".edith-prod-price").value.trim();
-            let New_Description = EdithProduct.querySelector(".edith-prod-discription").value.trim();
-
-            // VALIDATION
-            if (!New_Name || !New_Price || !New_Description) {
-                showToast(
-                    "fa-solid fa-keyboard",
-                    "Required Inputs",
-                    "Name , Price and Description inputs are required to proceed",
-                    "green"
-                );
-                return;
-            }
-
-            let Payload = {
-                INSTRUCTION: "UPDATE-PROD-DATA",
-                ProductID: Product_ID,
-                NewName: New_Name,
-                NewPrice: New_Price,
-                NewDescription: New_Description
-            };
-
-            Loading.style.display = "flex";
-
-            // =========================
-            // WITH IMAGE
-            // =========================
-
-            if (selectedFile) {
-                const formData = new FormData();
-                formData.append("file", selectedFile);
-                formData.append("Data", JSON.stringify(Payload));
-
-                let Result = null;
-
-                try {
-                    Result = await UploadFileWithData(formData);
-                } catch (err) {
-                    showToast("fa-solid fa-check", "New added product", "The push prodcut was suscessfully added", "green");
-                }
-
-                Loading.style.display = "none";
-
-                if (Result && Result.status === "OK") {
-                    showToast("fa-solid fa-check", "Save product", "The product you edited has been save", "green");
-                    getMyProducts();
-                    EdithProduct.style.display = "none";
-                }
-
-            }
-            // =========================
-            // WITHOUT IMAGE
-            // =========================
-            else {
-
-                let Result = null;
-                try {
-                    Result = await fetchData(Payload);
-                } catch (err) {
-                    showToast("fa-solid fa-exclamation", "Save product", "Error Occured", "red");
-                }
-                Loading.style.display = "none";
-
-                if (Result && Result.status === "OK") {
-                    showToast("fa-solid fa-check", "Save product", "The product you edited has been save", "green");
-                    getMyProducts();
-                    EdithProduct.style.display = "none";
-                }
-            }
-        };
-    }
-
-    // =========================
-    // DELETE PRODUCT
-    // =========================
-    else if (e.target.closest(".delete-prod")) {
-
-        let Product_ID = Item.querySelector(".prod-id").textContent;
-
-        let Payload = {
-            INSTRUCTION: "DELETE-MY-PRODUCT",
-            ProductID: Product_ID
-        };
-
-        Loading.style.display = "flex";
-
-        let Result = null;
-
-        try {
-            Result = await fetchData(Payload);
-        } catch (err) {
-            showToast("fa-solid fa-exclamation", "Deleted product", "Error Occured", "red");
-        }
-
-        if (Result && Result.status === "OK") {
-            Loading.style.display = "none";
-            showToast("fa-solid fa-check", "Deleted product", "The product has been deleted", "green");
+            ProdDisc.value = "";
+            fileInput.value = "";
+            //cancelImgBtn.click();
+            showToast("fa-solid fa-check", "Product Added", "Your product was uploaded successfully.", "#1a8a00");
             getMyProducts();
+        } else if (result && result.status === "LIMIT_REACHED") {
+            showToast("fa-solid fa-exclamation", "Upload Limit reached", "You’ve reached the maximum number of products for this plan. Upgrade to add more.", "#e53935");
+
         }
-    }
-
-});
-
-Profile.addEventListener("click", async () => {
-    let currencyCode = null;
-
-    let User = JSON.parse(localStorage.getItem("user"));
-
-    let Payload = {
-        INSTRUCTION: "GET-COUNTRY-CURRENCY-CODE",
-        countryISO: User["CountryisoCode"]
-    }
-
-    let Result = await fetchData(Payload);
-
-    if (Result) {
-        currencyCode = Result["currencyCode"];
-    }
-
-    if (User) {
-        //showing nessary items for fist star
-
-        PickNew_Image_Container.style.display = "none";
-        Upload_New_Image.style.display = "none";
-        Cancel_New_Profile_Update.style.display = "none";
-        Upload_New_Email.style.display = "none";
-        Upload_New_Phone.style.display = "none";
-        Cancel_New_Email_Upload.style.display = "none";
-        Cancel_New_Phone_Upload.style.display = "none";
-        document.querySelector(".iti").style.display = "none";
-
-        Display_Account_Name.textContent = User["User-Name"];
-        Display_Account_Id.textContent = User["User-ID"];
-        document.querySelector(".account-country-info > img").src = `https://flagcdn.com/w320/${User["CountryisoCode"]}.png`;
-        document.querySelector(".country-name").textContent = `${User["CountryName"]}`
-        document.querySelector(".country-currency").textContent = `${currencyCode}`
-        document.querySelector(".copy-link").textContent = `${ipAddress}/retailer/${User["User-ID"]}`;
-        document.querySelector(".copy-container > a").href = `${ipAddress}/retailer/${User["User-ID"]}`;
-        Display_Old_Email.textContent = User["Email"];
-        Display_Old_Phone.textContent = User["Phone"];
-
-        if (User.profilePic) {
-
-            Edit_User_Icon.style.display = "none";
-            Display_Profile_Image.src = `${ipAddress}/profile/${User["profilePic"]}`;
-            Display_Profile_Image.style.display = "block";
-            Display_Profile_Contanner.style.display = "flex";
-            PlacedOrdersList.style.display = "none";
-
-        } else {
-
-            UserIcon.style.display = "flex";
-            Display_Profile_Image.style.display = "none";
-            Display_Profile_Image.style.display = "none";
-            PlacedOrdersList.style.display = "none";
-        }
-
-        showMyProfile(); // showing my profile
-    } else {
-        alert("Sorry cant find any user data because browsing data has be deleted");
-        window.location.href = "/auth/auth.html";
+    } catch {
+        Loading.style.display = "none";
+        showToast("fa-solid fa-exclamation", "Upload Failed", "Something went wrong. Please try again.", "#e53935");
     }
 });
 
-Edith_OldPro_file_Image.addEventListener("click", () => {
-    PickNew_Image_Container.style.display = "flex";
-    Cancel_New_Profile_Update.style.display = "block";
-    Edith_OldPro_file_Image.style.display = "none";
+
+// ── EDIT PRODUCT ─────────────────────────
+let currentEditId = null;
+
+function openEditProduct(prodId, list) {
+    const prod = list.find(p => p.Id === prodId);
+    if (!prod) return;
+    currentEditId = prodId;
+    EditProdImg.src = `${ipAddress}/products/${prod.Url}`;
+    EditProdName.value = prod.name;
+    EditProdPrice.value = prod.price;
+    EditProdCat.textContent = prod.Category || "—";
+    EditProdDisc.value = prod.description;
+    EdithProduct.style.display = "flex";
+}
+
+CancelEdits.forEach(btn => btn.addEventListener("click", () => {
+    EdithProduct.style.display = "none";
+}));
+
+SelectEditImg.addEventListener("click", () => EditFileInput.click());
+
+EditFileInput.addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = evt => {
+        EditProdImg.src = evt.target.result;
+        //CancelEditImg.style.display = "flex";
+        //SelectEditImg.style.display = "flex";
+    };
+    reader.readAsDataURL(file);
 });
 
+CancelEditImg.addEventListener("click", () => {
+    EditProdImg.src = "";
+    EditFileInput.value = "";
+   // SelectEditImg.style.display = "flex";
+});
 
-Upload_New_Image.addEventListener("click", async () => {
+SaveEdit.addEventListener("click", async () => {
+    if (!currentEditId) return;
+   
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return;
 
-    let User = JSON.parse(localStorage.getItem("user"));
+    const payload = {
+        INSTRUCTION: "UPDATE-PROD-DATA",
+        ProdID: currentEditId,
+        name: EditProdName.value.trim(),
+        price: EditProdPrice.value.trim(),
+        description: EditProdDisc.value.trim()
+    };
 
-    if (!User || !User["User-ID"]) {
-        return;
-    }
+    const file = EditFileInput.files[0];
+    Loading.style.display = "flex";
 
-    if (NewImage_Input.files.length > 0) {
-
-        let Payload = {
-            INSTRUCTION: "UPDATE-PROFILE",
-            UserID: User["User-ID"]
-        }
-
-        const file = NewImage_Input.files[0];
-
+    let result;
+   
+    if (file) {
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("Data", JSON.stringify(Payload));
-
-        Loading.style.display = "flex";
-        const Result = await UploadFileWithData(formData);
-
-        if (Result && Result.status === "OK") {
-            Loading.style.display = "none";
-            User.profilePic = Result["url"];
-
-            localStorage.setItem("user", JSON.stringify(User));
-
-            // reload updated user
-            User = JSON.parse(localStorage.getItem("user"));
-
-            UserIcon.style.display = "none";
-            Pro_Pic.style.display = "flex";
-            ProfileImg.src = `${ipAddress}/profile/${User["profilePic"]}`;
-
-            Edit_User_Icon.style.display = "none";
-            Display_Profile_Contanner.style.display = "flex";
-            Display_Profile_Image.src = `${ipAddress}/profile/${User["profilePic"]}`;
-
-        }
-
+        formData.append("Data", JSON.stringify(payload));
+        result = await UploadFileWithData(formData);
     } else {
-        alert("nofile");
-        Loading.style.display = "none";
+        result = await fetchData(payload);
+    }
+
+    Loading.style.display = "none";
+
+    if (result && result.status === "OK") {
+        EdithProduct.style.display = "none";
+        showToast("fa-solid fa-check", "Product Updated", "Changes saved successfully.", "#1a8a00");
+        getMyProducts();
+    } else {
+        showToast("fa-solid fa-exclamation", "Update Failed", "Could not save changes. Try again.", "#e53935");
     }
 });
 
 
+// ── DELETE PRODUCT ───────────────────────
+async function deleteProduct(prodId) {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return;
 
-Cancel_New_Profile_Update.addEventListener("click", () => {
+    Loading.style.display = "flex";
+    const result = await fetchData({ INSTRUCTION: "DELETE-PRODUCT", UserID: user["User-ID"], ProdID: prodId });
+    Loading.style.display = "none";
 
-    PickNew_Image_Container.style.display = "none";
-    Cancel_New_Profile_Update.style.display = "none";
-    Edith_OldPro_file_Image.style.display = "block";
-    Upload_New_Image.style.display = "none";
+    if (result && result.status === "OK") {
+        showToast("fa-solid fa-trash", "Deleted", "Product removed from your store.", "#e53935");
+        getMyProducts();
+    }
+}
 
-});
 
-copyIcon.addEventListener("click", () => {
+// ── CATEGORIES ───────────────────────────
+function saveLocalCategories(cats) {
+    try { localStorage.setItem("Product-Categories", JSON.stringify(cats)); } catch { }
+}
+function getLocalCategories() {
+    try {
+        const s = localStorage.getItem("Product-Categories");
+        return s ? JSON.parse(s) : null;
+    } catch { return null; }
+}
 
-    const urlToCopy = copyLink.href;
+async function Insert_Categories() {
+    const selectWrapper = PordCart;
+    const selectedDiv = selectWrapper.querySelector(".selected");
+    const optionsContainer = selectWrapper.querySelector(".options");
 
-    if (!urlToCopy || urlToCopy === window.location.href + "#") {
-        console.warn("Nothing to copy yet!");
+    const stored = getLocalCategories();
+    let categories = [];
+
+    try {
+        const data = await fetchData({ INSTRUCTION: "GET-CATEGORIES" });
+        if (data && data.Product_Categories) {
+            categories = data.Product_Categories;
+            saveLocalCategories(categories);
+        } else if (stored) {
+            categories = stored;
+        }
+    } catch {
+        if (stored) categories = stored;
+    }
+
+    if (!categories.length) {
+        optionsContainer.innerHTML = `<div class="option">No categories available</div>`;
         return;
     }
 
-    // Modern clipboard API
-    if (navigator.clipboard && window.isSecureContext) {
+    categories = categories.filter(c => c && c !== "All");
+    optionsContainer.innerHTML = "";
 
-        navigator.clipboard.writeText(urlToCopy)
-            .then(() => {
-                showCopySuccess();
-            })
-            .catch(err => {
-                console.error("Clipboard API failed:", err);
-                fallbackCopy(urlToCopy);
-            });
+    categories.forEach(cat => {
+        const opt = document.createElement("div");
+        opt.classList.add("option");
+        opt.textContent = cat;
+        optionsContainer.appendChild(opt);
 
+        opt.addEventListener("click", () => {
+            selectedDiv.innerHTML = `${cat} <i class="fa-solid fa-chevron-down sel-arrow"></i>`;
+            selectWrapper.dataset.value = cat;
+            optionsContainer.style.display = "none";
+        });
+    });
+
+    selectedDiv.addEventListener("click", e => {
+        e.stopPropagation();
+        optionsContainer.style.display = optionsContainer.style.display === "block" ? "none" : "block";
+    });
+
+    document.addEventListener("click", e => {
+        if (!selectWrapper.contains(e.target)) optionsContainer.style.display = "none";
+    });
+}
+
+
+// ── NAVIGATION ───────────────────────────
+Back.addEventListener("click", () => {
+    window.history.back() || (location.href = "/index.html");
+});
+
+NavDash.addEventListener("click", () => {
+    Dash();
+});
+
+NavProducts.addEventListener("click", async () => {
+    Profile.classList.remove("active-profile");
+    const isEmpty = ProductList.children.length === 0 || ProductList.querySelector(".no-product-section");
+    if (isEmpty) await getMyProducts();
+    showProducts();
+});
+
+NavOrders.addEventListener("click", () => {
+    Profile.classList.remove("active-profile");
+    if (PlacedOrdersList.children.length === 0) {
+        getPlacedOrders();
     } else {
-        // Fallback for mobile browsers
-        fallbackCopy(urlToCopy);
+        showOrders();
+    }
+});
+
+Profile.addEventListener("click", () => {
+    if (MyProfile.style.display === "flex") {
+        // Already on profile — toggle back to products
+        Profile.classList.remove("active-profile");
+
+        NavProducts.click();
+    } else {
+        showMyProfile();
+        loadAccountInfo();
     }
 });
 
 
-function fallbackCopy(text) {
-    const textArea = document.createElement("textarea");
+// ── ACCOUNT INFO ─────────────────────────
+async function loadAccountInfo() {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (!user) return;
 
-    textArea.value = text;
-    // Prevent scrolling on iPhone
-    textArea.style.position = "fixed";
-    textArea.style.opacity = "0";
+    Display_Account_Name.textContent = user.name || user["User-Name"] || "My Store";
+    Display_Account_Id.textContent = user["User-ID"] ? `ID: ${user["User-ID"]}` : "";
 
-    document.body.appendChild(textArea);
+    if (user.Email) Display_Old_Email.textContent = user.Email;
+    if (user.Phone) Display_Old_Phone.textContent = user.Phone;
 
-    textArea.focus();
-    textArea.select();
+    const countryFlag = document.querySelector(".country-flag");
+    const countryName = document.querySelector(".country-name");
+    document.querySelector(".country-currency").textContent = user["currecyCode"];
+    countryFlag.src = `https://flagcdn.com/w320/${user.CountryisoCode}.png`;
 
-    try {
+    if (user.CountryName) countryName.textContent = user.CountryName;
 
-        const successful = document.execCommand("copy");
 
-        if (successful) {
-            showCopySuccess();
-        } else {
-            console.error("Fallback copy failed");
-        }
+    const link = document.querySelector(".copy-link");
 
-    } catch (err) {
-        console.error("Fallback error:", err);
+    link.href = `${ipAddress}/retailer/${user["User-ID"]}`;
+    link.textContent = `${ipAddress}/retailer/${user["User-ID"]}`;
+
+    if (user.profilePic) {
+        Edit_User_Icon.style.display = "none";
+        Display_Profile_Contanner.style.display = "flex";
+        Display_Profile_Image.src = `${ipAddress}/profile/${user.profilePic}`;
     }
 
-    document.body.removeChild(textArea);
+    //==== Making the upload new emel and cancel new email disaapear 
+    Upload_New_Email.style.display = "none";
+    Cancel_New_Email.style.display = "none";
+
+    // ==== Making the upload , cancel and input of the phone update vanish
+    Upload_New_Phone.style.display = "none";
+    Cancel_New_Phone.style.display = "none";
+    New_Phone_Input.closest(".iti").style.display = "none";
+
+}
+
+
+// ── PROFILE PHOTO ────────────────────────
+PickNew_Image.addEventListener("click", () => NewImage_Input.click());
+
+NewImage_Input.addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = evt => {
+        Display_Profile_Image.src = evt.target.result;
+        Display_Profile_Image.style.display = "block";
+        Edit_User_Icon.style.display = "none";
+        Display_Profile_Contanner.style.display = "flex";
+        Upload_New_Image.style.display = "inline-flex";
+        Cancel_Profile_Update.style.display = "flex";
+    };
+
+    reader.readAsDataURL(file);
+});
+
+Upload_New_Image.addEventListener("click", async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !NewImage_Input.files[0]) return;
+
+    const formData = new FormData();
+    formData.append("file", NewImage_Input.files[0]);
+    formData.append("Data", JSON.stringify({ INSTRUCTION: "UPDATE-PROFILE-PIC", UserID: user["User-ID"] }));
+
+    try {
+        Loading.style.display = "flex";
+        const result = await UploadFileWithData(formData);
+        Loading.style.display = "none";
+        if (result && result.status === "OK") {
+            user.profilePic = result.url;
+            localStorage.setItem("user", JSON.stringify(user));
+            ProfileImg.src = `${ipAddress}/profile/${result.profilePic}`;
+            SetProfile();
+            Upload_New_Image.style.display = "none";
+            showToast("fa-solid fa-check", "Photo Updated", "Your profile photo was updated.", "#1a8a00");
+        }
+    } catch {
+        Loading.style.display = "none";
+        showToast("fa-solid fa-exclamation", "Upload Failed", "Could not update photo.", "#e53935");
+    }
+});
+
+Edith_OldPro.addEventListener("click", () =>{
+    Cancel_Profile_Update.style.display = "flex";
+    Upload_New_Image.style.display = "flex";
+    Edith_OldPro.style.display = "none";
+});
+
+
+Cancel_Profile_Update.addEventListener("click", () => {
+    Upload_New_Image.style.display = "none";
+    Cancel_Profile_Update.style.display = "none";
+    NewImage_Input.value = "";
+    Edith_OldPro.style.display = "flex";
+});
+
+
+// ── EMAIL ────────────────────────────────
+Edit_Old_Email.addEventListener("click", () => {
+    Display_Old_Email.style.display = "none";
+    New_Email_Input.style.display = "block";
+    New_Email_Input.focus();
+    Upload_New_Email.style.display = "inline-flex";
+    Cancel_New_Email.style.display = "inline-flex";
+    Edit_Old_Email.style.display = "none";
+});
+
+Upload_New_Email.addEventListener("click", async () => {
+    const email = New_Email_Input.value.trim();
+    if (!email) return showToast("fa-solid fa-keyboard", "Empty Field", "Please enter a new email address.", "#e53935");
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return;
+
+    Loading.style.display = "flex";
+    const result = await fetchData({ INSTRUCTION: "UPDATE-EMAIL", UserID: user["User-ID"], NewEmail: email });
+    Loading.style.display = "none";
+
+    if (result && result.status === "OK") {
+        user.Email = result.Email;
+        localStorage.setItem("user", JSON.stringify(user));
+        Display_Old_Email.textContent = result.Email;
+        Cancel_New_Email.click();
+        showToast("fa-solid fa-check", "Email Updated", "Your email was changed successfully.", "#1a8a00");
+    }
+});
+
+Cancel_New_Email.addEventListener("click", () => {
+    Display_Old_Email.style.display = "block";
+    New_Email_Input.style.display = "none";
+    New_Email_Input.value = "";
+    Upload_New_Email.style.display = "none";
+    Cancel_New_Email.style.display = "none";
+    Edit_Old_Email.style.display = "inline-flex";
+});
+
+
+// ── PHONE ────────────────────────────────
+const iti = window.intlTelInput(New_Phone_Input, {
+    initialCountry: "auto",
+    geoIpLookup: cb => fetch("https://ipapi.co/json/").then(r => r.json()).then(d => cb(d.country_code)).catch(() => cb("gh")),
+    separateDialCode: true,
+    useFullscreenPopup: false,
+    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js"
+});
+
+Edit_Old_Phone.addEventListener("click", () => {
+    Display_Old_Phone.style.display = "none";
+    document.querySelector(".iti").style.display = "block";
+    New_Phone_Input.style.display = "block";
+    Upload_New_Phone.style.display = "inline-flex";
+    Cancel_New_Phone.style.display = "inline-flex";
+    Edit_Old_Phone.style.display = "none";
+    New_Phone_Input.focus();
+});
+
+Upload_New_Phone.addEventListener("click", async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const phone = iti.getNumber();
+    if (!user || !phone) return;
+
+    Loading.style.display = "flex";
+    const result = await fetchData({ INSTRUCTION: "UPDATE-MY-PHONE", UserID: user["User-ID"], new_Phone: phone });
+    Loading.style.display = "none";
+
+    if (result && result.status === "OK") {
+        user.Phone = result.New_Phone;
+        localStorage.setItem("user", JSON.stringify(user));
+        Display_Old_Phone.textContent = result.New_Phone;
+        Cancel_New_Phone.click();
+        showToast("fa-solid fa-check", "Phone Updated", "Your phone number was changed.", "#1a8a00");
+    }
+});
+
+Cancel_New_Phone.addEventListener("click", () => {
+    Display_Old_Phone.style.display = "block";
+    New_Phone_Input.style.display = "none";
+    document.querySelector(".iti").style.display = "none";
+    Upload_New_Phone.style.display = "none";
+    Cancel_New_Phone.style.display = "none";
+    Edit_Old_Phone.style.display = "inline-flex";
+});
+
+
+// ── COPY LINK ────────────────────────────
+copyIcon.addEventListener("click", () => {
+    const url = copyLink.href;
+    if (!url || url === window.location.href + "#") return;
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(showCopySuccess).catch(() => fallbackCopy(url));
+    } else {
+        fallbackCopy(url);
+    }
+});
+
+function fallbackCopy(text) {
+    const ta = Object.assign(document.createElement("textarea"), {
+        value: text,
+        style: "position:fixed;opacity:0"
+    });
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try { if (document.execCommand("copy")) showCopySuccess(); } catch { }
+    document.body.removeChild(ta);
 }
 
 function showCopySuccess() {
-
     copyIcon.classList.replace("fa-copy", "fa-check");
-    copyIcon.style.color = "#28a745";
-
+    copyIcon.style.color = "#1a8a00";
     setTimeout(() => {
         copyIcon.classList.replace("fa-check", "fa-copy");
         copyIcon.style.color = "";
     }, 2000);
 }
 
-PickNew_Image.addEventListener("click", () => {
-    NewImage_Input.click();
-});
-
-NewImage_Input.addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (evt) {
-            Display_Profile_Image.src = evt.target.result;
-            Display_Profile_Image.style.display = "block";
-            Edit_User_Icon.style.display = "none";
-            Display_Profile_Contanner.style.display = "flex";
-            Upload_New_Image.style.display = "block";
-        }
-
-        reader.readAsDataURL(file);
-    }
-});
-
-Edit_Old_Email.addEventListener("click", () => {
-    Display_Old_Email.style.display = "none";
-    New_Email_Input.style.display = "block";
-    New_Email_Input.focus();
-    Upload_New_Email.style.display = "block";
-    Cancel_New_Email_Upload.style.display = "block"
-    Edit_Old_Email.style.display = "none";
-
-});
-
-Upload_New_Email.addEventListener("click", async () => {
-    let New_Email = New_Email_Input.value.trim();
-
-    if (!New_Email) return alert("Please fill the email input");
-    let User = JSON.parse(localStorage.getItem("user"));
-    if (!User) return alert("noaccount found");
-
-    let Payload = {
-        INSTRUCTION: "UPDATE-EMAIL",
-        UserID: User["User-ID"],
-        NewEmail: New_Email
-    }
-
-    try {
-        Loading.style.display = "flex";
-        const Result = await fetchData(Payload);
-
-
-        if (Result && Result.status === "OK") {
-
-            User.Email = Result["Email"];
-            localStorage.setItem("user", JSON.stringify(User));
-            Loading.style.display = "none";
-            Display_Old_Email.textContent = Result["Email"];
-            Cancel_New_Email_Upload.click();
-        }
-    } catch {
-        Loading.style.display = "none";
-        alert("Error Updating Email");
-    }
-
-
-});
-
-Cancel_New_Email_Upload.addEventListener("click", () => {
-    Display_Old_Email.style.display = "block";
-    New_Email_Input.style.display = "none";
-    New_Email_Input.value = "";
-    Upload_New_Email.style.display = "none";
-    Cancel_New_Email_Upload.style.display = "none"
-    Edit_Old_Email.style.display = "block";
-});
-
-
-
-
-
-const iti = window.intlTelInput(New_Phone_Input, {
-    initialCountry: "auto",
-    geoIpLookup: function (callback) {
-        fetch("https://ipapi.co")
-            .then(res => res.json())
-            .then(data => callback(data.country_code))
-            .catch(() => callback("us"));
-    },
-    separateDialCode: true,
-    // Add this line to fix the mobile positioning bug
-    useFullscreenPopup: false,
-    utilsScript: "https://jsdelivr.net"
-});
-
-
-Upload_New_Phone.addEventListener("click", async () => {
-
-    let User = JSON.parse(localStorage.getItem("user"));
-
-    let New_Phone = iti.getNumber();
-
-    alert(New_Phone);
-    if (User) {
-        let Payload = {
-            INSTRUCTION: "UPDATE-MY-PHONE",
-            UserID: User["User-ID"],
-            new_Phone: New_Phone
-        }
-
-        Loading.style.display = "flex";
-        let Result = await fetchData(Payload);
-        if (Result && Result.status === "OK") {
-            User.Phone = Result["New_Phone"];
-            localStorage.setItem("user", JSON.stringify(User));
-            Loading.style.display = "none";
-            Display_Old_Phone.textContent = Result["New_Phone"];
-            Cancel_New_Phone_Upload.click();
-        }
-    }
-});
-
-
-
-Edit_Old_Phone.addEventListener("click", () => {
-    Display_Old_Phone.style.display = "none";
-    New_Phone_Input.style.display = "block";
-    New_Phone_Input.value = "";
-    document.querySelector(".iti").style.display = "block";
-    New_Phone_Input.focus();
-    Upload_New_Phone.style.display = "block";
-    Cancel_New_Phone_Upload.style = "block";
-    Edit_Old_Phone.style.display = "none";
-
-});
-
-Cancel_New_Phone_Upload.addEventListener("click", () => {
-    Display_Old_Phone.style.display = "block";
-    New_Phone_Input.style.display = "none";
-    Upload_New_Phone.style.display = "none";
-    Cancel_New_Phone_Upload.style.display = "none";
-    Edit_Old_Phone.style.display = "block";
-    document.querySelector(".iti").style.display = "none";
-});
-
-//logout button
+// ── LOG OUT ──────────────────────────────
 LogOut.addEventListener("click", () => {
-    let User = JSON.parse(localStorage.getItem("user"));
-    if (User) {
-        localStorage.clear("user");
-        window.location.href = "/auth/auth.html"
-    } else {
-        window.location.href = "/auth/auth.html"
-    }
+    localStorage.clear();
+    window.location.href = "/auth/auth.html";
 });
 
+// ── UPGRADE OVERLAY ──────────────────────
 Upgrade.addEventListener("click", () => {
     Upgrade_Overlay.style.display = "flex";
-
-    Upgrade_Overlay.querySelector(".cancel-upgrade").addEventListener("click", () => {
-        Upgrade_Overlay.style.display = "none";
-    });
 });
 
-// ====== NAVIGATION ======
-document.querySelectorAll('.nav > div').forEach(item => {
-    item.addEventListener('click', () => {
-        document.querySelector('.nav .active')?.classList.remove('active');
-        item.classList.add('active');
-    });
+document.querySelector(".cancel-upgrade").addEventListener("click", () => {
+    Upgrade_Overlay.style.display = "none";
 });
-
