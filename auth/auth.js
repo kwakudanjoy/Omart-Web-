@@ -52,7 +52,7 @@ const toastText = document.querySelector(".toast-text");
 
 const ipAddress = "https://relevance-playback-organisation-organisms.trycloudflare.com";
 //const ipAddress = "http://10.109.111.228:8080";
-//const ipAddress = "http://localhost:8080";
+//const ipAddress = "http://localhost:8080";z
 // ==================== LOCAL STORAGE ====================
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -232,12 +232,10 @@ signIn.addEventListener("click", async (event) => {
                 //signInForm.classList.remove("show-card");
                 signInForm.style.display = "none";
                 CompleteAccount.style.display = "block";
+                
             } else {
                 window.location.href = "/main/main.html";
-                if (window.history.back()) {
-                    window.history.clear();
-                }
-
+                window.history.clear();
             }
         } else if (Result && Result.status === "!OK") {
             SignInPassword.classList.add("password-mis-match");

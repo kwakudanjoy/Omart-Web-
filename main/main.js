@@ -638,9 +638,11 @@ async function getPlacedOrders() {
     }
 
     if (orderList.length === 0) {
+        DashSection.style.display = "none";
         ProductSection.style.display = "none";
         MyProfile.style.display = "none";
         PlacedOrdersList.style.display = "none";
+        Store_Section.style.display = "none";
         NoFoundOrders.style.display = "flex";
         return;
     }
@@ -1021,6 +1023,7 @@ NavOrders.addEventListener("click", () => {
         getPlacedOrders();
     } else {
         showOrders();
+       
     }
 });
 
