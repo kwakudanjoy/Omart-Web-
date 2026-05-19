@@ -30,7 +30,7 @@ const toastText = document.querySelector(".toast-text");
 
 const input = document.querySelector(".customer-number-input");
 
-const ipAddress = "https://relevance-playback-organisation-organisms.trycloudflare.com";
+const ipAddress = "https://portable-deeply-kelly-parameters.trycloudflare.com";
 //const ipAddress = "http://10.109.111.228:8080";
 //const ipAddress = "http://localhost:8080";
 // Initially hide elements
@@ -384,7 +384,7 @@ Main.addEventListener("click", async e => {
     if (e.target.closest(".cart")) {
         const productCard = e.target.closest(".product-card"); // this specific product
         const productName = productCard.querySelector(".product-name").textContent;
-        
+
         const priceString = productCard.querySelector(".product-price").textContent.split(" ")[1];// 1. Get the raw string piece: "1,250.00"
         counryCode = productCard.querySelector(".product-price").textContent.split(" ")[0];
 
@@ -454,12 +454,16 @@ Main.addEventListener("click", async e => {
 
                     Purchase_Btn.addEventListener("click", async () => {
                         if (!iti.isValidNumber()) {
-                            alert("Please enter a valid phone number");
+                            showToast(
+                                "fa-solid fa-phone",
+                                "Invalid Number",
+                                "The number you entered is invalid",
+                                "red");
                             return;
                         }
 
                         let Phone = iti.getNumber();
-                        
+
                         let Payload = {
                             INSTRUCTION: "PLACE-ORDER",
                             ProductId: ProductID,
@@ -596,14 +600,14 @@ Main.addEventListener("click", async e => {
 
                         // 🔥 SAFE EXTRACTION
                         const productName = productCard.querySelector(".view-prod-name")?.textContent || "";
-                       
+
                         const priceString = productCard.querySelector(".view-prod-price").textContent.split(" ")[1]; // 1. Get the raw string piece: "1,250.00"
                         counryCode = productCard.querySelector(".view-prod-price").textContent.split(" ")[0];
 
-                       
+
                         const cleanNumericString = priceString.replace(/,/g, ""); // 2. LOGIC FIX: Strip out commas so JavaScript reads it as "1250.00"
                         unitPrice = parseFloat(cleanNumericString); // 3. Convert to a true Number float
-                        
+
                         const productPrice = formatter.format(unitPrice); // 4. Now the formatter will work perfectly without NaN
 
                         const productDescription = productCard.querySelector(".view-prod-description")?.textContent || "";
@@ -667,7 +671,7 @@ Main.addEventListener("click", async e => {
 
                         // 🔥 Reset values
                         Cart_Overlay.querySelector(".qty-number").textContent = "1";
-                        Car_Total_Amount.textContent =counryCode + " "+ productPrice;
+                        Car_Total_Amount.textContent = counryCode + " " + productPrice;
 
                         const Purchase_Overlay = document.querySelector(".payment-overlay");
                         const Purchase_Btn = Purchase_Overlay.querySelector(".purchase-btn");

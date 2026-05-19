@@ -50,9 +50,9 @@ const toastText = document.querySelector(".toast-text");
 
 
 
-const ipAddress = "https://relevance-playback-organisation-organisms.trycloudflare.com";
+const ipAddress = "https://portable-deeply-kelly-parameters.trycloudflare.com";
 //const ipAddress = "http://10.109.111.228:8080";
-//const ipAddress = "http://localhost:8080";z
+//const ipAddress = "http://localhost:8080";
 // ==================== LOCAL STORAGE ====================
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -241,7 +241,6 @@ signIn.addEventListener("click", async (event) => {
             SignInPassword.classList.add("password-mis-match");
             SignId.classList.remove("password-mis-match");
             Loading.style.display = "none";
-            
             showToast(
             "fa-solid fa-lock",
             "Password Mismatch",
@@ -386,6 +385,7 @@ Next.addEventListener("click", async (event) => {
             User.Phone = Result["Phone"];
             User.CountryisoCode = Result["countrisocode"];
             User.CountryName = Result["countryName"];
+            User.currecyCode = Result["currecyCode"];
             localStorage.setItem("user", JSON.stringify(User));
 
             if (fileInput.files.length > 0) {

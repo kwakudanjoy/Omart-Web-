@@ -3,8 +3,9 @@
 // ═══════════════════════════════════════
 
 // ── CONFIG ──────────────────────────────
-const ipAddress = "https://relevance-playback-organisation-organisms.trycloudflare.com";
+const ipAddress = "https://portable-deeply-kelly-parameters.trycloudflare.com";
 //const ipAddress = "http://10.109.111.228:8080";
+//const ipAddress = "http://localhost:8080";
 const User = JSON.parse(localStorage.getItem("user") || "{}");
 
 // ── ELEMENT REFS ─────────────────────────
@@ -187,6 +188,7 @@ function showMyProfile() {
     NoFoundOrders.style.display = "none";
     NoInternet.style.display = "none";
     Plus.style.display = "none";
+    Store_Section.style.display = "none";
     Profile.classList.add("active-profile");
     NavProducts.classList.remove("active");
     NavOrders.classList.remove("active");
@@ -203,12 +205,14 @@ function showOrders() {
     NoFoundOrders.style.display = "none";
     NoInternet.style.display = "none";
     Plus.style.display = "none";
+    Profile.classList.remove("active-profile");
     NavDash.classList.remove("active");
     NavOrders.classList.add("active");
     NavProducts.classList.remove("active");
+    NavStore.classList.remove("active");
 }
 
-function showStores(){
+function showStores() {
     DashSection.style.display = "none";
     ProductSection.style.display = "none";
     MyProfile.style.display = "none";
@@ -222,7 +226,7 @@ function showStores(){
     NavOrders.classList.remove("active");
     NavProducts.classList.remove("active");
     NavStore.classList.add("active");
-    
+
 }
 
 
@@ -256,6 +260,7 @@ async function fetchData(payload) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
+
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data) throw new Error("Empty response");
@@ -371,53 +376,53 @@ async function Dash() {
         let PendingOrdersCount = 0;
         let RejectedOrdersCount = 0;
 
-      
-            refreshBtn.classList.add("refresh-spinning");
-            let Result = await fetchData(Payload);
 
-            if (Result) {
+        refreshBtn.classList.add("refresh-spinning");
+        let Result = await fetchData(Payload);
 
-                refreshBtn.classList.remove("refresh-spinning");
-                // Clear all lists exactly once before structural layout changes
-                PendingOrdersList.innerHTML = "";
-                RejectedOrdersList.innerHTML = "";
-                Graph.innerHTML = "";
+        if (Result) {
 
-                // Safely extract currency code once to avoid object lookup thrashing
-                const currency = user["currencyCode"] || "$";
+            refreshBtn.classList.remove("refresh-spinning");
+            // Clear all lists exactly once before structural layout changes
+            PendingOrdersList.innerHTML = "";
+            RejectedOrdersList.innerHTML = "";
+            Graph.innerHTML = "";
 
-                for (let key in Result) {
-                    let rows = Result[key];
-                    if (!Array.isArray(rows) || rows.length === 0) continue;
+            // Safely extract currency code once to avoid object lookup thrashing
+            const currency = user["currencyCode"] || "$";
 
-                    const dateObj = new Date(key);
-                    const dayLabel = dateObj.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
+            for (let key in Result) {
+                let rows = Result[key];
+                if (!Array.isArray(rows) || rows.length === 0) continue;
 
-                    let localEstimatedRevenue = 0;
-                    let localApproved = 0;
-                    let localPending = 0;
-                    let localRejected = 0;
+                const dateObj = new Date(key);
+                const dayLabel = dateObj.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
 
-                    // Optional: If fragments are instantiated globally, ensure they clear per day loop
-                    // const orderPendingFragment = document.createDocumentFragment(); 
-                    // const orderRejectedFragment = document.createDocumentFragment();
+                let localEstimatedRevenue = 0;
+                let localApproved = 0;
+                let localPending = 0;
+                let localRejected = 0;
 
-                    rows.forEach(row => {
-                        let orderAmount = Number(row["orderTotal"]) || 0;
-                        let orderStatus = row["orderStatus"];
+                // Optional: If fragments are instantiated globally, ensure they clear per day loop
+                // const orderPendingFragment = document.createDocumentFragment(); 
+                // const orderRejectedFragment = document.createDocumentFragment();
 
-                        localEstimatedRevenue += orderAmount;
+                rows.forEach(row => {
+                    let orderAmount = Number(row["orderTotal"]) || 0;
+                    let orderStatus = row["orderStatus"];
 
-                        if (orderStatus === "accepted") {
-                            localApproved += orderAmount;
-                            ApprovedOrdersCount++;
-                        } else if (orderStatus === "Pending") {
-                            localPending += orderAmount;
-                            PendingOrdersCount++;
+                    localEstimatedRevenue += orderAmount;
 
-                            const orderPending = document.createElement("div");
-                            orderPending.classList.add("list-card");
-                            orderPending.innerHTML = `
+                    if (orderStatus === "accepted") {
+                        localApproved += orderAmount;
+                        ApprovedOrdersCount++;
+                    } else if (orderStatus === "Pending") {
+                        localPending += orderAmount;
+                        PendingOrdersCount++;
+
+                        const orderPending = document.createElement("div");
+                        orderPending.classList.add("list-card");
+                        orderPending.innerHTML = `
                                 <div class="left-info">
                                     <span class="list-number">${PendingOrdersCount}</span>
                                     <span class="list-order-id">#${row.orderID}</span>
@@ -426,14 +431,14 @@ async function Dash() {
                                     <span class="status-badge status-pending">Pending</span>
                                     <button class="list-action">View order</button>
                                 </div>`;
-                            orderPendingFragment.appendChild(orderPending);
-                        } else {
-                            localRejected += orderAmount;
-                            RejectedOrdersCount++;
+                        orderPendingFragment.appendChild(orderPending);
+                    } else {
+                        localRejected += orderAmount;
+                        RejectedOrdersCount++;
 
-                            const rejectedOrder = document.createElement("div");
-                            rejectedOrder.classList.add("list-card");
-                            rejectedOrder.innerHTML = `
+                        const rejectedOrder = document.createElement("div");
+                        rejectedOrder.classList.add("list-card");
+                        rejectedOrder.innerHTML = `
                                 <div class="left-info">
                                     <span class="list-number">${RejectedOrdersCount}</span>
                                     <span class="list-order-id">#${row.orderID}</span>
@@ -442,25 +447,25 @@ async function Dash() {
                                     <span class="status-badge status-rejected">Rejected</span>
                                     <button class="list-action">View order</button>
                                 </div>`;
-                            orderRejectedFragment.appendChild(rejectedOrder);
-                        }
-                    });
+                        orderRejectedFragment.appendChild(rejectedOrder);
+                    }
+                });
 
-                    // Flush out localized fragments to the UI tree structure safely
-                    PendingOrdersList.appendChild(orderPendingFragment);
-                    RejectedOrdersList.appendChild(orderRejectedFragment);
+                // Flush out localized fragments to the UI tree structure safely
+                PendingOrdersList.appendChild(orderPendingFragment);
+                RejectedOrdersList.appendChild(orderRejectedFragment);
 
-                    // Calculate metrics aggregates
-                    EstimatedRevenue += localEstimatedRevenue;
-                    ActualRevenue += localApproved;
-                    PendingRevenue += localPending;
-                    RejectedRevenue += localRejected;
+                // Calculate metrics aggregates
+                EstimatedRevenue += localEstimatedRevenue;
+                ActualRevenue += localApproved;
+                PendingRevenue += localPending;
+                RejectedRevenue += localRejected;
 
-                    // Render Charts Logic Layer
-                    if (localEstimatedRevenue > 0) {
-                        const createBar = (amt, typeClass, label) => {
-                            let percentage = (amt / localEstimatedRevenue) * 100 + "%";
-                            return `
+                // Render Charts Logic Layer
+                if (localEstimatedRevenue > 0) {
+                    const createBar = (amt, typeClass, label) => {
+                        let percentage = (amt / localEstimatedRevenue) * 100 + "%";
+                        return `
                                 <div class="bar-wrapper">
                                     <div class="amount-tooltip">${currency} ${amt.toLocaleString()}</div>
                                     <div class="date-tooltip">${key}</div>
@@ -469,30 +474,30 @@ async function Dash() {
                                     </div>
                                     <div class="day-label">${label}</div>
                                 </div>`;
-                        };
+                    };
 
-                        if (localApproved > 0) Graph.insertAdjacentHTML('beforeend', createBar(localApproved, "approved-bg", dayLabel));
-                        if (localPending > 0) Graph.insertAdjacentHTML('beforeend', createBar(localPending, "pending-bg", dayLabel));
-                        if (localRejected > 0) Graph.insertAdjacentHTML('beforeend', createBar(localRejected, "rejected-bg", dayLabel));
-                    }
+                    if (localApproved > 0) Graph.insertAdjacentHTML('beforeend', createBar(localApproved, "approved-bg", dayLabel));
+                    if (localPending > 0) Graph.insertAdjacentHTML('beforeend', createBar(localPending, "pending-bg", dayLabel));
+                    if (localRejected > 0) Graph.insertAdjacentHTML('beforeend', createBar(localRejected, "rejected-bg", dayLabel));
                 }
-            }else{
-                refreshBtn.classList.remove("refresh-spinning");
-                showToast("fa-solid fa-exclamation", "Error", "An error occured while fetching dash dada, Please check your internet connection", "#e53935");
             }
+        } else {
+            refreshBtn.classList.remove("refresh-spinning");
+            showToast("fa-solid fa-exclamation", "Error", "An error occured while fetching dash dada, Please check your internet connection", "#e53935");
+        }
 
-            // Logic DRY Optimization: Update the metric node text properties once down here
-            const currency = user["currecyCode"] || "$";
-            
-            DashSection.querySelector(".estimated-revenue .amount").textContent = `${currency} ${formatter.format(EstimatedRevenue)}`;
-            DashSection.querySelector(".actual-revenue .amount").textContent = `${currency} ${formatter.format(ActualRevenue)}`;
-            DashSection.querySelector(".pending-orders .amount").textContent = `${currency} ${formatter.format(PendingRevenue)}`;
-            DashSection.querySelector(".rejected-orders .amount").textContent = `${currency} ${formatter.format(RejectedRevenue)}`;
+        // Logic DRY Optimization: Update the metric node text properties once down here
+        const currency = user["currecyCode"] || "$";
 
-            // Corrected format logic engine for string representations of counts
-            const countFormatter = new Intl.NumberFormat();
-            DashSection.querySelector(".pending-orders .order-count").textContent = `${countFormatter.format(PendingOrdersCount)} Orders`;
-            DashSection.querySelector(".rejected-orders .order-count").textContent = `${countFormatter.format(RejectedOrdersCount)} Orders`;     
+        DashSection.querySelector(".estimated-revenue .amount").textContent = `${currency} ${formatter.format(EstimatedRevenue)}`;
+        DashSection.querySelector(".actual-revenue .amount").textContent = `${currency} ${formatter.format(ActualRevenue)}`;
+        DashSection.querySelector(".pending-orders .amount").textContent = `${currency} ${formatter.format(PendingRevenue)}`;
+        DashSection.querySelector(".rejected-orders .amount").textContent = `${currency} ${formatter.format(RejectedRevenue)}`;
+
+        // Corrected format logic engine for string representations of counts
+        const countFormatter = new Intl.NumberFormat();
+        DashSection.querySelector(".pending-orders .order-count").textContent = `${countFormatter.format(PendingOrdersCount)} Orders`;
+        DashSection.querySelector(".rejected-orders .order-count").textContent = `${countFormatter.format(RejectedOrdersCount)} Orders`;
     }
 
     if (refreshBtn) {
@@ -613,7 +618,7 @@ async function getMyProducts() {
     ProductList.querySelectorAll(".edith-prod").forEach(btn => {
         btn.addEventListener("click", () => openEditProduct(btn.dataset.id, list));
     });
-    
+
     ProductList.querySelectorAll(".delete-prod").forEach(btn => {
         btn.addEventListener("click", () => deleteProduct(btn.dataset.id));
     });
@@ -749,7 +754,293 @@ PlacedOrdersList.addEventListener("click", async e => {
 
 
 // ============== code for stores activities ==========
-NavStore.addEventListener("click",()=>{
+NavStore.addEventListener("click", () => {
+
+    //GETTING USER INFO
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user["User-ID"]) return;
+
+    const Add_Store_Overlay = Store_Section.querySelector(".add-store-overlay");
+    const Add_Store_Password_Overlay = Store_Section.querySelector(".add-store-password-overlay");
+    const Stores = Store_Section.querySelector(".stores");
+    const CardContainer = Store_Section.querySelector(".store-container");
+    const Edith_Store_Overlay = Store_Section.querySelector(".edith-store-overlay");
+    Edith_Store_Overlay.classList.add("active");
+
+    //Inputs Variable
+    const StoreName = Store_Section.querySelector(".store-name");
+    const StoreEmail = Store_Section.querySelector(".store-email");
+    const StorePhone = Store_Section.querySelector(".store-phone");
+    const StoreLocation = Store_Section.querySelector(".store-location");
+    const StorePassword = Store_Section.querySelector(".store-password");
+    const StoreConfrimPassword = Store_Section.querySelector(".store-confirm-password");
+    const PickLocation = Store_Section.querySelector(".pick-location-btn");
+    const NoStores = Store_Section.querySelector(".no-store");
+    const NoInternet = Store_Section.querySelector(".no-internet");
+    const StoreCountView = Store_Section.querySelector(".store-count > p");
+    const count = Store_Section.querySelector(".store-count");
+
+    //Store Count;
+    let StoreCount = 0;
+
+    //setting both the noInternet and Stores to display none
+    NoStores.style.display = "none";
+    NoInternet.style.disabled = "none";
+
+    //fragment for inserting card to view
+    const fragment = document.createDocumentFragment();
+
+    //setting country icon selector on the phone input 
+    const iti = window.intlTelInput(StorePhone, {
+        initialCountry: "auto",
+        geoIpLookup: cb => fetch("https://ipapi.co/json/").then(r => r.json()).then(d => cb(d.country_code)).catch(() => cb("gh")),
+        separateDialCode: true,
+        useFullscreenPopup: false,
+        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js"
+    });
+
+
+    //getting All stores
+    async function getAllStores() {
+        CardContainer.innerHTML = "";
+        let Payload = {
+            INSTRUCTION: "GET-MY-STORES",
+            owner: user["User-ID"]
+        }
+
+        Loading.style.display = "flex";
+        let Result = await fetchData(Payload);
+
+
+        if (!Array.isArray(Result)) {
+            Loading.style.display = "none";
+            Stores.style.display = "none";
+            NoInternet.style.display = "block";
+
+            return;
+        }
+
+        if (Result.length === 0) {
+            Loading.style.display = "none";
+            Stores.style.display = "flex";
+            CardContainer.style.display = "none";
+            NoStores.style.display = "block";
+            return;
+        }
+
+        Loading.style.display = "none";
+        StoreCount = 0
+        Result.forEach(store => {
+            
+            StoreCount++;
+            StoreCountView.textContent = StoreCount;
+
+            const storeCard = document.createElement("div");
+            storeCard.classList.add("store-card");
+            storeCard.innerHTML =
+                `
+                <button class="delete-btn">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                <div class="store-data-top">
+                    <div class="store-data-info">
+                        <h2>${store.name}</h2>
+                        <span class="storeid">
+                            StoreId : ${store.id}
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-user"></i>
+                            ${store.name}
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-envelope"></i>
+                            ${store.email}
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-phone"></i>
+                            ${store.phone}
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-location-dot"></i>
+                            ${store.location}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="view-btn">
+                        <i class="fa-solid fa-store"></i>
+                        View Store
+                    </button>
+                    <button class="edit-btn">
+                        <i class="fa-solid fa-pen"></i>
+                        Edit Data
+                    </button>
+                </div>
+            `
+
+            fragment.append(storeCard);
+
+        });
+
+        CardContainer.append(fragment);
+
+    }
+
+    //Next and upload buttons 
+    Store_Section.querySelector(".add-store").onclick = () => {
+        Add_Store_Overlay.classList.add("active");
+        StoreName.value = "";
+        StoreEmail.value = "";
+        StorePhone.value = "";
+        StoreLocation.value = "";
+
+
+        //Onclick funct for the next button in the create store overlay 
+        Add_Store_Overlay.querySelector(".next>button").onclick = () => {
+            if (StoreName.value.trim() === "" || StoreEmail.value.trim() === "" || StorePhone.value.trim() === "" || StoreLocation.value.trim() === "") {
+                showToast(
+                    "fa-solid fa-keyboard",
+                    "Required Inputs",
+                    "All inputs are required to proceed",
+                    "red");
+                return;
+            }
+
+            if (!iti.isValidNumber()) {
+                showToast(
+                    "fa-solid fa-phone",
+                    "Invalid Number",
+                    "The number you entered is invalid",
+                    "red");
+
+                return;
+            }
+
+            Add_Store_Overlay.classList.remove("active");
+            Add_Store_Password_Overlay.classList.add("active");
+
+            StorePassword.value = "";
+            StoreConfrimPassword.value = "";
+
+
+            //inclick fuction on the upload button in the create password overlay when creating a new store
+            Add_Store_Password_Overlay.querySelector(".upload").onclick = async () => {
+                if (StorePassword.value.trim() === "" || StoreConfrimPassword.value.trim() === "") {
+                    showToast(
+                        "fa-solid fa-keyboard",
+                        "Required Inputs",
+                        "All inputs are required to proceed",
+                        "red");
+                    return;
+                }
+
+                if (StorePassword.value.trim() !== StoreConfrimPassword.value.trim()) {
+                    StoreConfrimPassword.style.boxShadow = "0 0 10px red";
+                    StorePassword.style.boxShadow = "0 0 10px red";
+                    return;
+                }
+
+
+                let Payload = {
+                    INSTRUCTION: "INSERT-NEW-STORE",
+                    owner: user["User-ID"],
+                    name: StoreName.value.trim(),
+                    email: StoreEmail.value.trim(),
+                    phone: iti.getNumber(),
+                    location: StoreLocation.value.trim(),
+                    password: StorePassword.value.trim()
+                }
+
+                
+
+                Loading.style.display = "flex";
+                let Responce = await fetchData(Payload);
+                Loading.style.display = "none";
+
+
+                if (Responce && Responce.status === "OK") {
+                    Add_Store_Password_Overlay.style.display = "none";
+                    NoStores.style.display = "none";
+                    CardContainer.style.display = "grid";
+                    showToast(
+                        "fa-solid fa-check",
+                        "Added Store",
+                        "Your new store has been added successfully",
+                        "green");
+
+                    getAllStores();
+                }
+
+            }
+
+            //onclick on the close button to close the create store password overlay
+            Add_Store_Password_Overlay.querySelector(".close-btn-add-password").onclick = () => {
+                Add_Store_Overlay.classList.add("active");
+                Add_Store_Password_Overlay.classList.remove("active");
+            }
+        };
+
+
+        //onclick on cancel buttons to close the add store overlay
+        Add_Store_Overlay.querySelector(".close-btn-add-store").onclick = () => {
+            Add_Store_Overlay.classList.remove("active");
+        }
+    };
+
+    //onclikc for editing store data
+    CardContainer.onclick = (e) =>{
+        const store_Card = e.target.closest(".store-card");
+        let StoreID = null;
+        if(e.target.closest(".delete-btn")){
+            StoreID = store_Card.querySelector(".storeid").textContent.split("StoreId : ")[1];
+            alert(StoreID);
+
+        }else if(e.target.closest(".view-btn")){
+            
+        }else if(e.target.closest(".edit-btn")){
+
+        }
+    }
+
+
+    //PickLocation Algorithem
+    PickLocation.onclick = () => {
+
+        PickLocation.disabled = true;
+        PickLocation.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                StoreLocation.value = `${lat}, ${lng}`;
+
+                PickLocation.disabled = false;
+                PickLocation.innerHTML = `<i class="fa-solid fa-crosshairs"></i>`;
+
+            },
+            () => {
+
+                PickLocation.disabled = false;
+                PickLocation.innerHTML = `<i class="fa-solid fa-crosshairs"></i>`;
+
+                showToast(
+                    "fa-solid fa-exclamation",
+                    "Pick Location Error",
+                    "Unable to pick current location",
+                    "red"
+                );
+            }
+        );
+    };
+
+    if (CardContainer.children.length === 0) {
+        getAllStores();
+    } else {
+        CardContainer.style.display = "grid";
+    }
 
     showStores();
 });
@@ -811,7 +1102,7 @@ AddNewProd.addEventListener("click", async () => {
         Description: ProdDisc.value.trim()
     };
 
-  
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("Data", JSON.stringify(payload));
@@ -878,12 +1169,12 @@ EditFileInput.addEventListener("change", e => {
 CancelEditImg.addEventListener("click", () => {
     EditProdImg.src = "";
     EditFileInput.value = "";
-   // SelectEditImg.style.display = "flex";
+    // SelectEditImg.style.display = "flex";
 });
 
 SaveEdit.addEventListener("click", async () => {
     if (!currentEditId) return;
-   
+
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) return;
 
@@ -899,7 +1190,7 @@ SaveEdit.addEventListener("click", async () => {
     Loading.style.display = "flex";
 
     let result;
-   
+
     if (file) {
         const formData = new FormData();
         formData.append("file", file);
@@ -1023,7 +1314,7 @@ NavOrders.addEventListener("click", () => {
         getPlacedOrders();
     } else {
         showOrders();
-       
+
     }
 });
 
@@ -1127,7 +1418,7 @@ Upload_New_Image.addEventListener("click", async () => {
     }
 });
 
-Edith_OldPro.addEventListener("click", () =>{
+Edith_OldPro.addEventListener("click", () => {
     Cancel_Profile_Update.style.display = "flex";
     Upload_New_Image.style.display = "flex";
     Edith_OldPro.style.display = "none";

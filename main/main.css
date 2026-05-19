@@ -1848,40 +1848,43 @@ main {
     align-items: center;
     gap: 0;
     overflow: auto;
-    position: relative;
 }
 
 /* 1. Fix the middle-man container */
 .stores {
     display: flex;
     flex-direction: column;
-    flex: 1;          /* Tells the section to grow and fill all available space */
+    flex: 1 1 auto;          /* Tells the section to grow and fill all available space */
     width: 100%;
+    height: 100%;
+    overflow: auto;
+    position: relative;
+    
 }
 
 .store-container{
     padding: 6px;
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    /* 1. FIX: Force the rows to only take up as much space as their contents need */
-    grid-template-rows: max-content; 
-    /* 2. FIX: Pack all rows together at the top of the container instead of spreading them out */
-    align-content: start; 
-    /* Keep your small gap */
-    gap: 6px; 
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    /* Let rows size to content */
+    grid-auto-rows: max-content;
+    /* Keep rows packed at top */
+    align-content: start;
+    gap: 6px;
     width: 100%;
-    /* Ensure scrolling handles the cards correctly */
-    overflow-y: auto;        /* Changed to auto so you can scroll down through rows */
-    overflow-x: hidden;      /* Prevents unnecessary side-scrolling */
+    /* IMPORTANT */
+    height: calc(100vh - 60px);
+    /* Scrolling */
+    overflow-y: auto;
+    overflow-x: hidden;
     scrollbar-gutter: stable;
-    
-    /* Keep your spacing */
     margin-top: 60px;
+
 }
 
 .store-card{
-    background:black;
+    background:linear-gradient(45deg , black, black , orangered);
     border-radius: 22px;
     overflow: hidden;
     box-shadow: 0 5px 20px rgba(0,0,0,0.08);
@@ -1896,40 +1899,37 @@ main {
 .store-data-top{
     display: flex;
 }
-.store-image{
-    width: 50%;
-    height: 200px;
-   
-}
-
-.store-image img{
-    padding: 10px;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 20px;
-}
 
 .store-data-info{
-    padding: 20px;
+    padding: 20px 5px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 5px;
 }
 
 .store-data-info h2{
     font-size: 22px;
     color: white;
-    margin-bottom: 8px;
+    margin-bottom: 3px;
+}
+
+.storeid{
+    background: #333;
+    width: max-content;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 10px !important;
+    margin-bottom: 4px;
 }
 
 .store-data-info span{
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 14px;
+    font-size: 12px;
     color: white;
     word-break: break-word;
+    margin-left: 20px;
+   
 }
 
 .store-data-info span i{
@@ -1939,17 +1939,18 @@ main {
 }
 
 .card-actions{
-    padding: 0 20px 20px;
+    padding: 15px 0;
     display: flex;
     flex-direction: row;
     gap: 12px;
     margin-top: auto;
+    justify-content: center;
 }
 
 .card-actions button{
     border: none;
-    padding: 14px;
-    border-radius: 14px;
+    padding: 6px;
+    border-radius: 20px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -1961,31 +1962,220 @@ main {
 }
 
 .view-btn{
-    background: #2563eb;
+    background: green;
     color: white;
 }
 
 .view-btn:hover{
-    background: #1d4ed8;
+    transform: scale(1.035);
 }
 
 .edit-btn{
-    background: #f3f4f6;
-    color: #111827;
+    background: #333;
+    color: white;
+    border: 1px orangered solid;
 }
 
 .edit-btn:hover{
-    background: #e5e7eb;
+    transform: scale(1.035);
 }
 
 .delete-btn{
-    background: #fee2e2;
-    color: #dc2626;
+    background:black;
+    color: white;
+    width: 40px;
+    height: 40px;
+    margin: 10px 10px 10px auto;
+    border-radius: 50%;
+    border: none;
 }
 
-.delete-btn:hover{
-    background: #fecaca;
+/*========== Plus (Add store) =======*/
+.add-store{
+    display: flex;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: green;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    color: white;
+    transition: 0.3s ease;
 }
+
+/*========= Add store overlay =======*/
+.add-store-overlay,
+.add-store-password-overlay,.edith-store-overlay{
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease;
+}
+
+.add-store-overlay.active,
+.add-store-password-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.add-store-portal, .add-store-password{
+    background:linear-gradient(45deg , black, black , orangered);
+    width: 400px;
+    height: 300px;
+    align-content: center;
+    justify-items: center;
+    border-radius: 20px;
+    box-shadow: 0 0 60px black;
+}
+
+.portal-header{
+    display: flex;
+    gap: 180px;
+    margin-bottom: 40px;
+    align-items: center;
+}
+
+.portal-header h2{
+    color: white;
+}
+
+.portal-header .close-btn-add-store,.portal-header .close-btn-add-password{
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    color: red;
+    background: black;
+}
+
+.add-store:hover{
+    transform: scale(1.075);
+    rotate: 90deg;
+}
+.input-group{
+    margin: 5px 0;
+}
+.input-group{
+    display: flex;
+    align-items: center;
+}
+
+.input-group input{
+    border: none;
+    padding: 7px 10px;
+    width: 270px;
+    border-radius: 10px;
+    color:black;
+    outline: none;
+    font-weight: bold;
+}
+
+.input-group i{
+    color: green;
+    margin: 5px;
+}
+
+
+.upload-store-data-btn button{
+    margin-top: 30px;
+    background: green;
+    border: none;
+    padding: 7px 10px;
+    color: white;
+    border-radius: 20px;
+}
+
+
+.location-group {
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    gap: 10px;
+    background: transparent;
+}
+
+.location-group input{
+    width: 230px;
+}
+
+/* Make icon visible */
+.location-icon {
+    font-size: 18px;
+    color: #444;
+}
+
+/* Input takes full space */
+.store-location {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+/* Pick button */
+.pick-location-btn {
+    border: none;
+    background: black;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+.no-store{
+    height: 100%;
+    width: 100%;
+    align-content: center;
+    align-self: center;
+}
+
+.no-internet-overlay{
+    flex: 1;
+    background: transparent;
+    width: 100%;
+    justify-items: center;
+    align-content: center;
+}
+
+.no-internet-overlay > .no-internet{
+    width: max-content;
+    justify-items: center;
+}
+
+/*Editing store data*/
+.edith-store-overlay{
+    opacity: 1;
+    visibility: visible;
+}
+
+.edith-store-overlay .edith-store-portal{
+    background:linear-gradient(45deg , black, black , orangered);
+    width: 400px;
+    height: 300px;
+    align-content: center;
+    justify-items: center;
+    border-radius: 20px;
+    box-shadow: 0 0 60px black;
+}
+
 
 /* ══════════════ MY PROFILE ══════════════ */
 .my-profile {
