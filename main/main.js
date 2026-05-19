@@ -639,6 +639,11 @@ async function getPlacedOrders() {
         MyProfile.style.display = "none";
         PlacedOrdersList.style.display = "none";
         NoInternet.style.display = "flex";
+        Profile.classList.remove("active-profile");
+        NavDash.classList.remove("active");
+        NavOrders.classList.add("active");
+        NavProducts.classList.remove("active");
+        NavStore.classList.remove("active");
         return;
     }
 
@@ -649,6 +654,11 @@ async function getPlacedOrders() {
         PlacedOrdersList.style.display = "none";
         Store_Section.style.display = "none";
         NoFoundOrders.style.display = "flex";
+        Profile.classList.remove("active-profile");
+        NavDash.classList.remove("active");
+        NavOrders.classList.add("active");
+        NavProducts.classList.remove("active");
+        NavStore.classList.remove("active");
         return;
     }
 
@@ -831,7 +841,7 @@ NavStore.addEventListener("click", () => {
         Loading.style.display = "none";
         StoreCount = 0
         Result.forEach(store => {
-            
+
             StoreCount++;
             StoreCountView.textContent = StoreCount;
 
@@ -951,7 +961,7 @@ NavStore.addEventListener("click", () => {
                     password: StorePassword.value.trim()
                 }
 
-                
+
 
                 Loading.style.display = "flex";
                 let Responce = await fetchData(Payload);
@@ -988,16 +998,16 @@ NavStore.addEventListener("click", () => {
     };
 
     //onclikc for editing store data
-    CardContainer.onclick = (e) =>{
+    CardContainer.onclick = (e) => {
         const store_Card = e.target.closest(".store-card");
         let StoreID = null;
-        if(e.target.closest(".delete-btn")){
+        if (e.target.closest(".delete-btn")) {
             StoreID = store_Card.querySelector(".storeid").textContent.split("StoreId : ")[1];
             alert(StoreID);
 
-        }else if(e.target.closest(".view-btn")){
-            
-        }else if(e.target.closest(".edit-btn")){
+        } else if (e.target.closest(".view-btn")) {
+
+        } else if (e.target.closest(".edit-btn")) {
 
         }
     }
