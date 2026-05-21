@@ -3,9 +3,12 @@
 // ═══════════════════════════════════════
 
 // ── CONFIG ──────────────────────────────
-const ipAddress = "https://portable-deeply-kelly-parameters.trycloudflare.com";
-//const ipAddress = "http://10.109.111.228:8080";
-//const ipAddress = "http://localhost:8080";
+
+// ======== IMPORTINGING SERVER URL AND API,
+import { CONFIG } from "../config/config.js";
+import { fetchData, UploadFileWithData } from "../fetch_algorithms/algorithms.js";
+
+let ipAddress = CONFIG.SERVER_URL;
 const User = JSON.parse(localStorage.getItem("user") || "{}");
 
 // ── ELEMENT REFS ─────────────────────────
@@ -122,7 +125,6 @@ function SetProfile() {
         Pro_Pic.style.display = "none";
     }
 }
-
 
 // ── DISPLAY HELPERS ──────────────────────
 function showDash() {
@@ -251,42 +253,6 @@ document.querySelector(".toast-close").addEventListener("click", () => {
     setTimeout(() => toast.classList.add("hide"), 300);
 });
 
-
-// ── FETCH HELPERS ────────────────────────
-async function fetchData(payload) {
-    try {
-        const res = await fetch(`${ipAddress}/api/process`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (!data) throw new Error("Empty response");
-        return data;
-    } catch (err) {
-        console.error("fetchData:", err);
-        Loading.style.display = "none";
-        return null;
-    }
-}
-
-async function UploadFileWithData(formData) {
-    try {
-        const res = await fetch(`${ipAddress}/api/file`, {
-            method: "POST",
-            body: formData
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
-        try { return JSON.parse(text); } catch { return text; }
-    } catch (err) {
-        console.error("UploadFileWithData:", err);
-        throw err;
-    }
-}
-
 // 1. Define the formatter once
 const formatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
@@ -403,10 +369,6 @@ async function Dash() {
                 let localPending = 0;
                 let localRejected = 0;
 
-                // Optional: If fragments are instantiated globally, ensure they clear per day loop
-                // const orderPendingFragment = document.createDocumentFragment(); 
-                // const orderRejectedFragment = document.createDocumentFragment();
-
                 rows.forEach(row => {
                     let orderAmount = Number(row["orderTotal"]) || 0;
                     let orderStatus = row["orderStatus"];
@@ -423,14 +385,14 @@ async function Dash() {
                         const orderPending = document.createElement("div");
                         orderPending.classList.add("list-card");
                         orderPending.innerHTML = `
-                                <div class="left-info">
-                                    <span class="list-number">${PendingOrdersCount}</span>
-                                    <span class="list-order-id">#${row.orderID}</span>
-                                </div>
-                                <div class="right-info">
-                                    <span class="status-badge status-pending">Pending</span>
-                                    <button class="list-action">View order</button>
-                                </div>`;
+                            <div class="left-info">
+                                <span class="list-number">${PendingOrdersCount}</span>
+                                <span class="list-order-id">#${row.orderID}</span>
+                            </div>
+                            <div class="right-info">
+                                <span class="status-badge status-pending">Pending</span>
+                                <button class="list-action">View order</button>
+                            </div>`;
                         orderPendingFragment.appendChild(orderPending);
                     } else {
                         localRejected += orderAmount;
@@ -439,14 +401,14 @@ async function Dash() {
                         const rejectedOrder = document.createElement("div");
                         rejectedOrder.classList.add("list-card");
                         rejectedOrder.innerHTML = `
-                                <div class="left-info">
-                                    <span class="list-number">${RejectedOrdersCount}</span>
-                                    <span class="list-order-id">#${row.orderID}</span>
-                                </div>
-                                <div class="right-info">
-                                    <span class="status-badge status-rejected">Rejected</span>
-                                    <button class="list-action">View order</button>
-                                </div>`;
+                    <div class="left-info">
+                        <span class="list-number">${RejectedOrdersCount}</span>
+                        <span class="list-order-id">#${row.orderID}</span>
+                    </div>
+                    <div class="right-info">
+                        <span class="status-badge status-rejected">Rejected</span>
+                        <button class="list-action">View order</button>
+                    </div>`;
                         orderRejectedFragment.appendChild(rejectedOrder);
                     }
                 });
@@ -461,24 +423,45 @@ async function Dash() {
                 PendingRevenue += localPending;
                 RejectedRevenue += localRejected;
 
-                // Render Charts Logic Layer
+
+                // --- UPDATED CHARTS LOGIC LAYER ---
                 if (localEstimatedRevenue > 0) {
-                    const createBar = (amt, typeClass, label) => {
+                    // Helper to build an individual bar column with its amount label
+                    const createBarMarkup = (amt, typeClass) => {
                         let percentage = (amt / localEstimatedRevenue) * 100 + "%";
                         return `
-                                <div class="bar-wrapper">
-                                    <div class="amount-tooltip">${currency} ${amt.toLocaleString()}</div>
-                                    <div class="date-tooltip">${key}</div>
-                                    <div class="parent-bar">
-                                        <div class="inner-bar ${typeClass}" style="height: ${percentage};"></div>
-                                    </div>
-                                    <div class="day-label">${label}</div>
-                                </div>`;
+                            <div class="bar-column">
+                                <div class="amount-tooltip">${currency}${amt.toLocaleString()}</div>
+                                <div class="parent-bar">
+                                    <div class="inner-bar ${typeClass}" style="height: ${percentage};"></div>
+                                </div>
+                            </div>`;        
                     };
 
-                    if (localApproved > 0) Graph.insertAdjacentHTML('beforeend', createBar(localApproved, "approved-bg", dayLabel));
-                    if (localPending > 0) Graph.insertAdjacentHTML('beforeend', createBar(localPending, "pending-bg", dayLabel));
-                    if (localRejected > 0) Graph.insertAdjacentHTML('beforeend', createBar(localRejected, "rejected-bg", dayLabel));
+                    // Gather all bars available for this single day
+                    let daysBarsHTML = "";
+                    if (localApproved > 0) daysBarsHTML += createBarMarkup(localApproved, "approved-bg");
+                    if (localPending > 0) daysBarsHTML += createBarMarkup(localPending, "pending-bg");
+                    if (localRejected > 0) daysBarsHTML += createBarMarkup(localRejected, "rejected-bg");
+
+                    // Format a nice header date (e.g., "May 20") from your key
+                    const formattedDateHeader = new Date(key).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        timeZone: 'UTC'
+                    });
+
+                    // Wrap them inside a single shared day container with a Date Header and Weekday Badge
+                    const dayContainerHTML = `
+                        <div class="day-group" data-date="${key}">
+                            <div class="date-header">${formattedDateHeader}</div>
+                            <div class="bars-container">
+                                ${daysBarsHTML}
+                            </div>
+                            <div class="day-label-badge">${dayLabel}</div>
+                        </div>`;
+
+                    Graph.insertAdjacentHTML('beforeend', dayContainerHTML);
                 }
             }
         } else {
@@ -588,6 +571,8 @@ async function getMyProducts() {
     NoProduct.style.display = "none";
     const frag = document.createDocumentFragment();
     let count = 0;
+
+
 
     list.forEach(prod => {
         const card = document.createElement("div");
@@ -1103,15 +1088,64 @@ AddNewProd.addEventListener("click", async () => {
         return;
     }
 
+    let Price = ProdPrice.value.trim();
+
+    function ValidatePrice(inputValue) {
+        const MAX_INT = "9999999999999999"; // 16 digits
+
+        inputValue = inputValue.trim();
+
+        // 1. Validate format (max 2 decimals)
+        if (!/^\d+(\.\d{1,2})?$/.test(inputValue)) {
+            showToast(
+                "fa-solid fa-money-bill",
+                "Product Pricing",
+                "Max 2 decimal places allowed",
+                "#e53935"
+            );
+            return false;
+        }
+
+        // 2. Split integer and decimal
+        const parts = inputValue.split(".");
+        const intPart = parts[0];
+
+        // 3. Reject if input has MORE digits than MAX_INT
+        if (intPart.length > MAX_INT.length) {
+            showToast(
+                "fa-solid fa-money-bill",
+                "Product Pricing",
+                "The product price is too large",
+                "#e53935"
+            );
+            return false;
+        }
+
+        // 4. If same length, compare lexicographically (alphabetical string check)
+        if (intPart.length === MAX_INT.length && intPart > MAX_INT) {
+            showToast(
+                "fa-solid fa-money-bill",
+                "Product Pricing",
+                "The product price is too large",
+                "#e53935"
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    // FIX: Stop the execution if validation fails
+    if (!ValidatePrice(Price)) return;
+
     const payload = {
         INSTRUCTION: "UPLOAD-NEW-PROD",
         owner: user["User-ID"],
         name: ProdName.value.trim(),
-        price: ProdPrice.value.trim(),
+        price: Price, // Using the already trimmed variable
         Category: value,
         Description: ProdDisc.value.trim()
     };
-
 
     const formData = new FormData();
     formData.append("file", file);
@@ -1128,12 +1162,10 @@ AddNewProd.addEventListener("click", async () => {
             ProdPrice.value = "";
             ProdDisc.value = "";
             fileInput.value = "";
-            //cancelImgBtn.click();
             showToast("fa-solid fa-check", "Product Added", "Your product was uploaded successfully.", "#1a8a00");
             getMyProducts();
         } else if (result && result.status === "LIMIT_REACHED") {
             showToast("fa-solid fa-exclamation", "Upload Limit reached", "You’ve reached the maximum number of products for this plan. Upgrade to add more.", "#e53935");
-
         }
     } catch {
         Loading.style.display = "none";
@@ -1224,13 +1256,13 @@ SaveEdit.addEventListener("click", async () => {
 
 // ── DELETE PRODUCT ───────────────────────
 async function deleteProduct(prodId) {
-    if (!confirm("Are you sure you want to delete this product?")) return;
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) return;
 
     Loading.style.display = "flex";
-    const result = await fetchData({ INSTRUCTION: "DELETE-PRODUCT", UserID: user["User-ID"], ProdID: prodId });
+    const result = await fetchData({ INSTRUCTION: "DELETE-MY-PRODUCT", UserID: user["User-ID"], ProdID: prodId });
     Loading.style.display = "none";
+
 
     if (result && result.status === "OK") {
         showToast("fa-solid fa-trash", "Deleted", "Product removed from your store.", "#e53935");
@@ -1484,13 +1516,23 @@ Cancel_New_Email.addEventListener("click", () => {
 
 
 // ── PHONE ────────────────────────────────
-const iti = window.intlTelInput(New_Phone_Input, {
+const iti = window.intlTelInput(NewImage_Input, {
     initialCountry: "auto",
-    geoIpLookup: cb => fetch("https://ipapi.co/json/").then(r => r.json()).then(d => cb(d.country_code)).catch(() => cb("gh")),
+    geoIpLookup: function (success, failure) {
+        // ipinfo.io is more reliable and supports a fallback natively
+        fetch("https://ipinfo.io")
+            .then(res => {
+                if (!res.ok) throw new Error("API error");
+                return res.json();
+            })
+            .then(data => success(data.country)) // ipinfo uses 'country' instead of 'country_code'
+            .catch(() => success("us")); // Fallback to 'us' if the request fails
+    },
     separateDialCode: true,
     useFullscreenPopup: false,
     utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js"
 });
+
 
 Edit_Old_Phone.addEventListener("click", () => {
     Display_Old_Phone.style.display = "none";

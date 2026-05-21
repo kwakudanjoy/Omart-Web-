@@ -178,6 +178,13 @@ nav {
     text-decoration: none;
 }
 
+.nav-logo img{
+    height: 40px;
+   width: 40px;
+   border-radius: 50%;
+   margin: 5px;
+}
+
 .nav-brand {
     font-family: 'Fraunces', serif;
     font-size: 20px;
@@ -639,8 +646,8 @@ main {
     display: flex;
     align-items: flex-end;
     /* Keeps bars on the baseline */
-    padding-top: 20px;
-    border-bottom: 2px solid #f0f0f0;
+    gap: 2px;
+    padding: 20px 5px 5px 5px;
     overflow-x: auto;
     overflow-y: hidden;
 
@@ -651,109 +658,127 @@ main {
 
 }
 
-.bar-wrapper {
+/* --- Core Graph Container --- */
+#Graph {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    padding: 24px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+/* --- Container Card per Day --- */
+.day-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 40px;
-    height: 99%;
-    position: relative;
-    cursor: pointer;
-
-}
-
-/* Tooltip Styling */
-.amount-tooltip {
-    position: absolute;
-    top: -30px;
-    background: #333;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 10px;
-    opacity: 0;
-    /* Hidden by default */
-    transition: 0.3s ease;
-    white-space: nowrap;
-}
-
-.date-tooltip {
-    position: absolute;
-    top: 319px;
-    background: black;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 10px;
-    opacity: 0;
-    /* Hidden by default */
-    transition: 0.3s ease;
-    white-space: nowrap;
-}
-
-.bar-wrapper:hover .amount-tooltip {
-    opacity: 1;
-    /* Now this has room to shine */
-}
-
-.bar-wrapper:hover .date-tooltip {
-    opacity: 1;
-    z-index: 200;
-}
-
-
-/* The Bar Styling */
-.parent-bar {
-    width: 15px;
+    border-radius: 16px;
+    padding: 16px;
+    min-width: 140px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     height: 100%;
-    background: transparent;
-    /* Track color */
-    border-radius: 5px;
-    position: relative;
+    
+}
+
+.day-group:hover{
+    box-shadow: 0 0 3px white;
+}
+
+/* --- The Missing Date Header (e.g., May 20) --- */
+.date-header {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 5px;
+}
+
+/* --- Shared Bars Flex Track --- */
+.bars-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    
+    height: 100%; /* Set your fixed graph height framework */
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+/* --- Individual Column Structure --- */
+.bar-column {
+    position: relative; 
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: flex-end;
-    /* Grows from bottom */
-    overflow: hidden;
+    height: 100%;
+    flex: 1;
+    cursor: pointer;
+}
+
+/* --- The Styled Amount Labels --- */
+.amount-tooltip {
+    position: absolute;
+    top: 0px; 
+    font-size: 11px;
+    font-weight: 600;
+    color: #475569;
+    white-space: nowrap;
+    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
+
+    /* --- Hidden by default --- */
+    opacity: 0;
+    visibility: hidden;
+    
+    /* --- Smooth fade-in effect --- */
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+}
+
+/* --- Reveal tooltip when hovering over the column --- */
+.bar-column:hover .amount-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- Solid Vertical Bar Frames --- */
+.parent-bar {
+    width: 100%;
+    max-width: 20px; /* Controls the bar thickness */
+    height: 94%;
+    display: flex;
+    align-items: flex-end;
+    border-radius: 6px;
     transition: 0.3s ease;
 }
 
-.parent-bar:hover {
+.parent-bar:hover{
     box-shadow: 0 0 3px white;
 }
 
 .inner-bar {
     width: 100%;
-    border-radius: 5px;
-    transition: height 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    background: red;
+    border-radius: 6px;
+    transition: height 0.3s ease-in-out;
 }
 
-/* Background classes for inner bars */
-.approved-bg {
-    background: linear-gradient(to top, green, #2ecc71);
-}
+/* --- Background Color Profiles --- */
+.approved-bg { background-color: #10b981; }  /* Emerald Green */
+.pending-bg  { background-color: #f59e0b; }  /* Amber Orange */
+.rejected-bg { background-color: #ef4444; }  /* Crimson Red */
 
-.pending-bg {
-    background: linear-gradient(to top, #f39c12, #ff9f43);
-}
-
-.rejected-bg {
-    background: linear-gradient(to top, red, #ff7675);
-}
-
-/* Day Label */
-.day-label {
-    margin: 15px 2px 2px 2px;
+/* --- Dark Weekday Badge Bottom (e.g., Wed) --- */
+.day-label-badge {
+    background: #0f172a;
+    color: #ffffff;
     font-size: 12px;
-    color: #999;
     font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
-
-.bar-wrapper:hover .day-label {
-    color: #333;
-}
-
 
 /* Badge for Orders */
 .order-count {
@@ -1865,7 +1890,8 @@ main {
 .store-container{
     padding: 6px;
     flex: 1;
-    display: grid;
+    /*display: grid;*/
+    display: none;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     /* Let rows size to content */
     grid-auto-rows: max-content;

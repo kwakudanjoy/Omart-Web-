@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
     <link rel="stylesheet" href="index.css">
+    <link rel="icon" type="image/png" href="/image//04b96718-826a-4d2b-946f-57a10ed5a3df-thumbnail.webp">
     <title>Home</title>
 </head>
 
@@ -17,12 +18,11 @@
     </div>
     <header>
         <div class="page-signature">
-            <div><i class="fa-solid fa-bicycle"></i></div>
-            <p>Bicycon</p>
+            <div><img src="/image/04b96718-826a-4d2b-946f-57a10ed5a3df-thumbnail.webp" alt="my profile"></i></div>
+            <span>Bicycon</span>
         </div>
-        <div class="account-signature" id="auth">
-            <div class="user"><i class="fa-solid fa-user"></i></div>
-            <div class="profile"><img src="" alt="img"></div>
+        <div class="account-signature" id="auth" title="Sign In / Up">
+            <img src="" alt="img">
         </div>
     </header>
 
@@ -141,8 +141,10 @@
         <div class="cancel-product-view"><i class="fa-solid fa-x"></i></div>
         <div class="my-account">
             <div class="top">
-                <div class="account-user"><i class="fa-solid fa-user"></i></div>
-                <div class="account-pro-pic"><img src="" alt=""></div>
+                <div class="account-pro-pic">
+                    <img src="" alt="Retailer Image" class="cart-retailer__image"
+                        onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png';">
+                </div>
             </div>
             <div class="my-account-info">
                 <p class="my-account-name"></p>

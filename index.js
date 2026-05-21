@@ -1,5 +1,10 @@
+// ======== IMPORTINGING SERVER URL AND API,
+import { CONFIG } from "./config/config.js";
+import { fetchData} from "./fetch_algorithms/algorithms.js";
+
+
 const profile = document.querySelector(".profile");
-const ProfileImage = document.querySelector(".profile > img");
+const ProfileImage = document.querySelector("#auth > img");
 const UserIcon = document.querySelector(".user");
 const searchInput = document.querySelector(".search-input");
 const searchIcon = document.querySelector(".search-icon");
@@ -30,9 +35,9 @@ const toastText = document.querySelector(".toast-text");
 
 const input = document.querySelector(".customer-number-input");
 
-const ipAddress = "https://portable-deeply-kelly-parameters.trycloudflare.com";
-//const ipAddress = "http://10.109.111.228:8080";
-//const ipAddress = "http://localhost:8080";
+let ipAddress = CONFIG.SERVER_URL;
+
+
 // Initially hide elements
 const User = JSON.parse(localStorage.getItem("user") || "null");
 
@@ -43,7 +48,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     Loading.style.display = "none";
     const storedCategories = getLocalCategories();
     keySearch.firstChild.classList.add("selected");
+  
     await GetProducts(storedCategories[0]);
+   
 });
 
 function showToast(icon, header, text, iconColor) {
@@ -82,14 +89,11 @@ async function Load_Image(Url) {
 
 function CheckUser() {
     if (User && User.profilePic) {
-        UserIcon.style.display = "none";
-        profile.style.display = "block";
         ProfileImage.src = `${ipAddress}/profile/${User.profilePic}`;
 
     } else {
-        UserIcon.style.display = "flex";
-        profile.style.display = "none";  // use correct variable
-        ProfileImage.src = "https://via.placeholder.com/35"; // optional fallback
+        // use correct variable
+        ProfileImage.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // optional fallback
     }
 }
 
@@ -307,7 +311,6 @@ function getLocalCategories() {
 }
 
 async function GetProducts(KeyWord1) {
-
     const Payload = {
         INSTRUCTION: "GET-PRODUCT",
         KeySearch: KeyWord1
@@ -376,6 +379,41 @@ async function GetProducts(KeyWord1) {
         // EMPTY: It is an array, but nothing is in it
         NoFoundProduct.style.display = "flex";
     }
+}
+
+//algorithm to check purchase price
+function ValidatePrice(inputValue) {
+    const MAX_INT = "999999999999999999"; // 18 digits
+
+    inputValue = inputValue.trim();
+
+    // 2. Split integer and decimal
+    const parts = inputValue.split(".");
+    const intPart = parts[0];
+
+    // 3. Reject if input has MORE digits than MAX_INT
+    if (intPart.length > MAX_INT.length) {
+        showToast(
+            "fa-solid fa-money-bill",
+            "Total purchase",
+            "Your purchase ammount is too large , Try reducing your puchase quatity",
+            "#e53935"
+        );
+        return false;
+    }
+
+    // 4. If same length, compare lexicographically (alphabetical string check)
+    if (intPart.length === MAX_INT.length && intPart > MAX_INT) {
+        showToast(
+            "fa-solid fa-money-bill",
+            "Total purchase",
+            "Your purchase ammount is too large , Try reducing your puchase quatity",
+            "#e53935"
+        );
+        return false;
+    }
+
+    return true;
 }
 
 
@@ -453,7 +491,14 @@ Main.addEventListener("click", async e => {
 
 
                     Purchase_Btn.addEventListener("click", async () => {
+                        
+                        let totlaAmount = Car_Total_Amount.textContent.split(" ")[1];
+                        if (!ValidatePrice(totlaAmount));
+
+                        let Phone = iti.getNumber();
+                        
                         if (!iti.isValidNumber()) {
+
                             showToast(
                                 "fa-solid fa-phone",
                                 "Invalid Number",
@@ -461,8 +506,6 @@ Main.addEventListener("click", async e => {
                                 "red");
                             return;
                         }
-
-                        let Phone = iti.getNumber();
 
                         let Payload = {
                             INSTRUCTION: "PLACE-ORDER",
@@ -571,9 +614,6 @@ Main.addEventListener("click", async e => {
                     AccountOverlay.querySelector(".account-pro-pic>img").src =
                         `${ipAddress}/profile/${Account_Info.ProfilePic}`;
                     AccountOverlay.querySelector(".account-user").style.display = "none";
-                } else {
-                    AccountOverlay.querySelector(".account-pro-pic>img").style.display = "none";
-                    AccountOverlay.querySelector(".account-user").style.display = "flex";
                 }
 
                 AccountOverlay.querySelector(".my-account-name").textContent = Retailer_Name;
@@ -776,38 +816,22 @@ Cart_Order_Add.addEventListener("click", () => {
     Car_Total_Amount.textContent = `${counryCode} ${formatter.format(total)}`;
 });
 
-// ====== FETCH HELPERS ======
-async function fetchData(payload) {
-    try {
-        const response = await fetch(`${ipAddress}/api/process`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) throw new Error(`Network Error: ${response.status}`);
-        const data = await response.json();
-        if (!data) throw new Error("Server returned empty data");
-
-        return data;
-
-    } catch (err) {
-        console.error("Fetch error:", err);
-        Loading.style.display = "none";
-        throw err;
-    }
-}
 
 const iti = window.intlTelInput(input, {
     initialCountry: "auto",
-    geoIpLookup: function (callback) {
-        fetch("https://ipapi.co/json")
-            .then(res => res.json())
-            .then(data => callback(data.country_code))
-            .catch(() => callback("us"));
+    geoIpLookup: function (success, failure) {
+        // ipinfo.io is more reliable and supports a fallback natively
+        fetch("https://ipinfo.io")
+            .then(res => {
+                if (!res.ok) throw new Error("API error");
+                return res.json();
+            })
+            .then(data => success(data.country)) // ipinfo uses 'country' instead of 'country_code'
+            .catch(() => success("us")); // Fallback to 'us' if the request fails
     },
     separateDialCode: true,
     useFullscreenPopup: false,
     utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js"
 });
+
 

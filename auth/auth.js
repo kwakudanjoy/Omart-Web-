@@ -1,3 +1,8 @@
+// ======== IMPORTINGING SERVER URL AND API,
+import { CONFIG } from "../config/config.js";
+
+
+
 // ==================== SELECTORS ====================
 const Back = document.getElementById("back");
 
@@ -49,11 +54,7 @@ const toastHeader = document.querySelector(".toast-content > h4");
 const toastText = document.querySelector(".toast-text");
 
 
-
-const ipAddress = "https://portable-deeply-kelly-parameters.trycloudflare.com";
-//const ipAddress = "http://10.109.111.228:8080";
-//const ipAddress = "http://localhost:8080";
-// ==================== LOCAL STORAGE ====================
+let ipAddress = CONFIG.SERVER_URL;
 
 document.addEventListener("DOMContentLoaded", async () => {
     toast.classList.add("hide");
@@ -412,9 +413,8 @@ Next.addEventListener("click", async (event) => {
                         User.profilePic = uploadResult["Url"];
                         localStorage.setItem("user", JSON.stringify(User));
                         window.location.href = "/main/main.html";
-                        if (window.history.back()) {
-                            window.history.clear();
-                        }
+                        window.history.clear();
+                        
                     }
 
                 } catch (err) {
