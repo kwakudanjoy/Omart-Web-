@@ -2760,8 +2760,37 @@ main {
 }
 
 /* ══════════════ ORDERS ══════════════ */
+.orders-list{
+    height: 100%;
+    flex-direction: column;
+}
+
+.orders-date-range{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    height: max-content;
+    width: 100%;
+}
+
+.orders-date-range input{
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 5px;
+    height: max-content;
+    background: #333;
+    color: white;
+}
+
+.orders-date-range span{
+    font-family: sans-serif;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.541);
+}
+
 .order-section {
-    display: none;
+    display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 12px;
     padding: 16px;
@@ -2770,6 +2799,7 @@ main {
     scrollbar-gutter: stable;
     width: 100%;
     align-items: start;
+    
 }
 
 .order-section::-webkit-scrollbar {

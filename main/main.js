@@ -21,6 +21,7 @@ const Plus = document.querySelector(".plus");
 const Back = document.querySelector(".back");
 const MyProfile = document.querySelector(".my-profile");
 const PlacedOrdersList = document.querySelector(".order-section");
+const OrdersList = document.querySelector(".orders-list");
 const NoInternet = document.querySelector(".no-internet");
 const NoFoundOrders = document.querySelector(".no-found-products");
 const Loading = document.querySelector("#loading-overlay");
@@ -132,7 +133,7 @@ function showDash() {
     ProductSection.style.display = "none";
     ProductList.style.display = "none";
     MyProfile.style.display = "none";
-    PlacedOrdersList.style.display = "none";
+    OrdersList.style.display = "none";
     Store_Section.style.display = "none";
     NoFoundOrders.style.display = "none";
     NoInternet.style.display = "none";
@@ -150,7 +151,7 @@ function showProducts() {
     ProductList.style.display = "grid";
     Store_Section.style.display = "none";
     MyProfile.style.display = "none";
-    PlacedOrdersList.style.display = "none";
+    OrdersList.style.display = "none";
     NoFoundOrders.style.display = "none";
     NoInternet.style.display = "none";
     Plus.style.display = "flex";
@@ -166,7 +167,7 @@ function showNoProduct() {
     ProductList.style.display = "none";
     ProductSection.style.display = "flex";
     MyProfile.style.display = "none";
-    PlacedOrdersList.style.display = "none";
+    OrdersList.style.display = "none";
     NoFoundOrders.style.display = "none";
     NoInternet.style.display = "none";
     Plus.style.display = "flex";
@@ -186,7 +187,7 @@ function showMyProfile() {
     DashSection.style.display = "none";
     ProductSection.style.display = "none";
     MyProfile.style.display = "flex";
-    PlacedOrdersList.style.display = "none";
+    OrdersList.style.display = "none";
     NoFoundOrders.style.display = "none";
     NoInternet.style.display = "none";
     Plus.style.display = "none";
@@ -202,7 +203,7 @@ function showOrders() {
     DashSection.style.display = "none";
     ProductSection.style.display = "none";
     MyProfile.style.display = "none";
-    PlacedOrdersList.style.display = "grid";
+    OrdersList.style.display = "flex";
     Store_Section.style.display = "none";
     NoFoundOrders.style.display = "none";
     NoInternet.style.display = "none";
@@ -261,14 +262,13 @@ const formatter = new Intl.NumberFormat('en-US', {
 
 async function Dash() {
     const user = JSON.parse(localStorage.getItem("user")); // getting user data
-
     //Variables
     const PendingOrdersTab = DashSection.querySelector(".pending-tab"); //Pending tab Variable
     const PendingOrdersList = DashSection.querySelector(".pending-section");//Pending order List Variable
     const RejectedOrdersTabe = DashSection.querySelector(".rejected-tab");// Rejected tab variable
     const RejectedOrdersList = DashSection.querySelector(".rejected-section");//Rejected order List Variable
-    DashSection.querySelector(".dash-card .currency-code").textContent = `${user["currecyCode"]}`;
-    DashSection.querySelector(".actual-revenue .currency-code").textContent = `${user["currecyCode"]}`;
+    DashSection.querySelector(".dash-card .currency-code").textContent = `${user["currency"]}`;
+    DashSection.querySelector(".actual-revenue .currency-code").textContent = `${user["currency"]}`;
     const Graph = DashSection.querySelector(".graph-container");
 
     RejectedOrdersList.style.display = "none";
@@ -293,7 +293,6 @@ async function Dash() {
     const nowDate = () => new Date().toISOString().split('T')[0];
     const FromDateInput = DashSection.querySelector(".from-date");
     const ToDateInput = DashSection.querySelector(".to-date");
-
 
     FromDateInput.value = nowDate();
     ToDateInput.value = nowDate();
@@ -329,7 +328,7 @@ async function Dash() {
             INSTRUCTION: "GET-REVENUE-DATA",
             fromDate: getFromDate,
             toDate: getToDate,
-            userid: user["User-ID"]
+            userid: user["id"]
         }
 
         let EstimatedRevenue = 0;
@@ -435,7 +434,7 @@ async function Dash() {
                                 <div class="parent-bar">
                                     <div class="inner-bar ${typeClass}" style="height: ${percentage};"></div>
                                 </div>
-                            </div>`;        
+                            </div>`;
                     };
 
                     // Gather all bars available for this single day
@@ -470,7 +469,7 @@ async function Dash() {
         }
 
         // Logic DRY Optimization: Update the metric node text properties once down here
-        const currency = user["currecyCode"] || "$";
+        const currency = user["currency"] || "$";
 
         DashSection.querySelector(".estimated-revenue .amount").textContent = `${currency} ${formatter.format(EstimatedRevenue)}`;
         DashSection.querySelector(".actual-revenue .amount").textContent = `${currency} ${formatter.format(ActualRevenue)}`;
@@ -495,9 +494,9 @@ async function Dash() {
         if (placedOrders.length === 0) {
 
             try {
-                const orderList = await fetchData({ INSTRUCTION: "GET-MY-ORDERS", User_id: user["User-ID"] });
+                const orderList = await fetchData({ INSTRUCTION: "GET-MY-ORDERS", User_id: user["id"] });
 
-                insertOrdersCard(orderList, user["currecyCode"]);
+                insertOrdersCard(orderList, user["currency"]);
 
                 placedOrders = document.querySelectorAll(".order-section .order-cart");
                 placedOrders.forEach(orderCard => {
@@ -514,7 +513,10 @@ async function Dash() {
                 });
 
             } catch (err) {
-
+                showToast("fa-solid fa-exclamation",
+                    "Network error",
+                    "Sorry an error occured , Please check your internet connection",
+                    "red");
             }
 
         } else {
@@ -559,10 +561,10 @@ async function Dash() {
 // ── GET PRODUCTS ─────────────────────────
 async function getMyProducts() {
     const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user["User-ID"]) return showNoProduct();
+    if (!user || !user["id"]) return showNoProduct();
 
     Loading.style.display = "flex";
-    const list = await fetchData({ INSTRUCTION: "GET-MY-PRODUCTS", User_id: user["User-ID"] });
+    const list = await fetchData({ INSTRUCTION: "GET-MY-PRODUCTS", User_id: user["id"] });
     Loading.style.display = "none";
 
     if (!Array.isArray(list) || list.length === 0) return showNoProduct();
@@ -573,7 +575,7 @@ async function getMyProducts() {
     let count = 0;
 
 
-
+    //alert(JSON.stringify(list));
     list.forEach(prod => {
         const card = document.createElement("div");
         card.classList.add("list-card");
@@ -613,10 +615,10 @@ async function getMyProducts() {
 // ── GET ORDERS ───────────────────────────
 async function getPlacedOrders() {
     const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user["User-ID"]) return;
+    if (!user || !user["id"]) return;
 
     Loading.style.display = "flex";
-    const orderList = await fetchData({ INSTRUCTION: "GET-MY-ORDERS", User_id: user["User-ID"] });
+    const orderList = await fetchData({ INSTRUCTION: "GET-MY-ORDERS", User_id: user["id"] });
     Loading.style.display = "none";
 
     if (!Array.isArray(orderList)) {
@@ -647,7 +649,7 @@ async function getPlacedOrders() {
         return;
     }
 
-    insertOrdersCard(orderList, user["currecyCode"]);
+    insertOrdersCard(orderList, user["currency"]);
     showOrders();
 }
 
@@ -753,7 +755,7 @@ NavStore.addEventListener("click", () => {
 
     //GETTING USER INFO
     const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user["User-ID"]) return;
+    if (!user || !user["id"]) return;
 
     const Add_Store_Overlay = Store_Section.querySelector(".add-store-overlay");
     const Add_Store_Password_Overlay = Store_Section.querySelector(".add-store-password-overlay");
@@ -800,7 +802,7 @@ NavStore.addEventListener("click", () => {
         CardContainer.innerHTML = "";
         let Payload = {
             INSTRUCTION: "GET-MY-STORES",
-            owner: user["User-ID"]
+            owner: user["id"]
         }
 
         Loading.style.display = "flex";
@@ -1140,7 +1142,7 @@ AddNewProd.addEventListener("click", async () => {
 
     const payload = {
         INSTRUCTION: "UPLOAD-NEW-PROD",
-        owner: user["User-ID"],
+        owner: user["id"],
         name: ProdName.value.trim(),
         price: Price, // Using the already trimmed variable
         Category: value,
@@ -1378,24 +1380,23 @@ async function loadAccountInfo() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (!user) return;
 
-    Display_Account_Name.textContent = user.name || user["User-Name"] || "My Store";
-    Display_Account_Id.textContent = user["User-ID"] ? `ID: ${user["User-ID"]}` : "";
+    Display_Account_Name.textContent = user["business-name"] || user["business-name"] || "My Store";
+    Display_Account_Id.textContent = user["id"] ? `ID: ${user["id"]}` : "";
 
-    if (user.Email) Display_Old_Email.textContent = user.Email;
-    if (user.Phone) Display_Old_Phone.textContent = user.Phone;
+    if (user.email) Display_Old_Email.textContent = user.email;
+    if (user.phone) Display_Old_Phone.textContent = user.phone;
 
     const countryFlag = document.querySelector(".country-flag");
     const countryName = document.querySelector(".country-name");
-    document.querySelector(".country-currency").textContent = user["currecyCode"];
-    countryFlag.src = `https://flagcdn.com/w320/${user.CountryisoCode}.png`;
+    document.querySelector(".country-currency").textContent = user["currency"];
+    countryFlag.src = `https://flagcdn.com/w320/${user.iso2}.png`;
 
-    if (user.CountryName) countryName.textContent = user.CountryName;
-
+    if (user.country) countryName.textContent = user.country;
 
     const link = document.querySelector(".copy-link");
 
-    link.href = `${ipAddress}/retailer/${user["User-ID"]}`;
-    link.textContent = `${ipAddress}/retailer/${user["User-ID"]}`;
+    link.href = `${ipAddress}/retailer/${user["id"]}`;
+    link.textContent = `${ipAddress}/retailer/${user["id"]}`;
 
     if (user.profilePic) {
         Edit_User_Icon.style.display = "none";
@@ -1403,9 +1404,6 @@ async function loadAccountInfo() {
         Display_Profile_Image.src = `${ipAddress}/profile/${user.profilePic}`;
     }
 
-    //==== Making the upload new emel and cancel new email disaapear 
-    Upload_New_Email.style.display = "none";
-    Cancel_New_Email.style.display = "none";
 
     // ==== Making the upload , cancel and input of the phone update vanish
     Upload_New_Phone.style.display = "none";
@@ -1475,46 +1473,6 @@ Cancel_Profile_Update.addEventListener("click", () => {
 });
 
 
-// ── EMAIL ────────────────────────────────
-Edit_Old_Email.addEventListener("click", () => {
-    Display_Old_Email.style.display = "none";
-    New_Email_Input.style.display = "block";
-    New_Email_Input.focus();
-    Upload_New_Email.style.display = "inline-flex";
-    Cancel_New_Email.style.display = "inline-flex";
-    Edit_Old_Email.style.display = "none";
-});
-
-Upload_New_Email.addEventListener("click", async () => {
-    const email = New_Email_Input.value.trim();
-    if (!email) return showToast("fa-solid fa-keyboard", "Empty Field", "Please enter a new email address.", "#e53935");
-
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) return;
-
-    Loading.style.display = "flex";
-    const result = await fetchData({ INSTRUCTION: "UPDATE-EMAIL", UserID: user["User-ID"], NewEmail: email });
-    Loading.style.display = "none";
-
-    if (result && result.status === "OK") {
-        user.Email = result.Email;
-        localStorage.setItem("user", JSON.stringify(user));
-        Display_Old_Email.textContent = result.Email;
-        Cancel_New_Email.click();
-        showToast("fa-solid fa-check", "Email Updated", "Your email was changed successfully.", "#1a8a00");
-    }
-});
-
-Cancel_New_Email.addEventListener("click", () => {
-    Display_Old_Email.style.display = "block";
-    New_Email_Input.style.display = "none";
-    New_Email_Input.value = "";
-    Upload_New_Email.style.display = "none";
-    Cancel_New_Email.style.display = "none";
-    Edit_Old_Email.style.display = "inline-flex";
-});
-
-
 // ── PHONE ────────────────────────────────
 const iti = window.intlTelInput(NewImage_Input, {
     initialCountry: "auto",
@@ -1550,11 +1508,11 @@ Upload_New_Phone.addEventListener("click", async () => {
     if (!user || !phone) return;
 
     Loading.style.display = "flex";
-    const result = await fetchData({ INSTRUCTION: "UPDATE-MY-PHONE", UserID: user["User-ID"], new_Phone: phone });
+    const result = await fetchData({ INSTRUCTION: "UPDATE-MY-PHONE", UserID: user["id"], new_Phone: phone });
     Loading.style.display = "none";
 
     if (result && result.status === "OK") {
-        user.Phone = result.New_Phone;
+        user.phone = result.New_Phone;
         localStorage.setItem("user", JSON.stringify(user));
         Display_Old_Phone.textContent = result.New_Phone;
         Cancel_New_Phone.click();

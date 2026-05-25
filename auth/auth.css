@@ -171,7 +171,7 @@ header {
     margin: 4px;
     background: black;
     transition: 0.3s ease;
-    
+
 }
 
 .back-signature div i {
@@ -184,7 +184,7 @@ header {
 
 
 /*======= Toast =========*/
-.toast{
+.toast {
     position: fixed;
 
     top: 20px;
@@ -207,29 +207,29 @@ header {
 
     color: white;
 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 
     opacity: 0;
     transform: translateY(-20px);
 
-    transition: 
+    transition:
         opacity 0.3s ease,
         transform 0.3s ease;
 }
 
-.toast.show{
+.toast.show {
     opacity: 1;
     transform: translateY(0);
     z-index: 11000;
 }
 
-.toast.hide{
+.toast.hide {
     opacity: 0;
     transform: translateY(-20px);
     z-index: -20;
 }
 
-.toast-icon{
+.toast-icon {
     width: 42px;
     height: 42px;
 
@@ -244,12 +244,12 @@ header {
     flex-shrink: 0;
 }
 
-.toast-content h4{
+.toast-content h4 {
     margin: 0;
     font-size: 15px;
 }
 
-.toast-text{
+.toast-text {
     margin-top: 4px;
     color: #b7c4e0;
     font-size: 14px;
@@ -258,13 +258,17 @@ header {
 /*Top Card*/
 
 .top {
-   display: flex;          /* The "Magic" line you were missing */
-    align-items: center;    /* Vertical centering */
-    justify-content: center; /* Horizontal centering */
-    
+    display: flex;
+    /* The "Magic" line you were missing */
+    align-items: center;
+    /* Vertical centering */
+    justify-content: center;
+    /* Horizontal centering */
+
     flex-shrink: 0;
     height: 190px;
-    gap: 20px;              /* Adds space between your cards */
+    gap: 20px;
+    /* Adds space between your cards */
     overflow: hidden;
     position: relative;
     padding: 0 15px;
@@ -315,7 +319,7 @@ header {
     width: 390px;
     border-radius: 20px;
     padding: 15px 10px;
-    border:1px black solid;
+    border: 1px black solid;
     text-align: center;
     /* center text inside p/span */
     background: rgba(255, 255, 255, 0.041);
@@ -425,315 +429,332 @@ header {
 /* Main container: center content */
 main {
     flex: 1;
-    /* fill remaining space after header + top */
     display: flex;
-    justify-content: center;
-    /* center horizontally */
-    align-items: center;
-    /* center vertically */
-    padding: 0 10px;
+    flex-direction: column;
     position: relative;
     background-color: transparent;
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 
-/* Common card styling for sign-in and sign-up */
-.sign-in,
-.sign-up {
-    position: absolute;
-    /* stack them in the same place */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    /* perfect center */
-    padding: 30px 25px;
-    border-radius: 20px;
-    border: 1px black solid;
+
+
+.signIn-section {
     width: 100%;
-    max-width: 400px;
-    color: black;
-    text-align: center;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    /* smooth show/hide */
-    background: rgba(255, 255, 255, 0.041);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.315);
-}
-
-/* Hidden by default for sign-up */
-.sign-in,
-.sign-up,
-.Complete-account {
-    display: none;
-}
-
-/* Show class to toggle */
-.hidden {
-    display: none;
-}
-
-.show-card {
-    display: block;
-    /* or flex */
-}
-
-/* Sign-in / Sign-up inner styles */
-.sign-in p:first-child,
-.sign-up p:first-child {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    letter-spacing: 1px;
-}
-
-.sign-in form div,
-.sign-up form div {
-    margin-bottom: 5px;
+    height: 100%;
     align-content: center;
+    justify-items: center;
+    padding: 20px 0;
+    /*display: block;*/
+    display: block;
 }
 
-.sign-in input,
-.sign-up input {
+
+.signInCard {
+    width: max-content;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+}
+
+.signInCard header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+
+.signInCard header span:first-child {
+    color: rgb(0, 0, 0);
+    font-size: 20px;
+    font-weight: bold;
+    font-family: sans-serif;
+}
+
+.signInCard header span:nth-child(2) {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.685);
+    font-weight: bold;
+}
+
+
+
+.input-group-child {
     width: 100%;
-    padding: 10px 15px;
-    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* =========================
+   LABELS
+========================= */
+
+.input-group-child span {
+    font-size: 0.9rem;
+    font-family: sans-serif;
+    font-weight: 600;
+    color: #334155;
+}
+
+/* =========================
+   INPUT CONTAINER
+========================= */
+
+.input-box {
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #dbe2ea;
+    border-radius: 14px;
+    padding: 0 14px;
+    background: white;
+    transition: 0.3s ease;
+    gap: 10px;
+}
+
+.input-box:focus-within {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+}
+
+/* =========================
+   ICONS
+========================= */
+
+.input-box i {
+    font-size: 0.95rem;
+    color: #64748b;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+.input-box input {
+   
+    height: 100%;
     border: none;
     outline: none;
-    background: black;
-    color: white;
-    font-size: 14px;
-    font-weight: bolder;
-}
-
-.sign-in input::placeholder,
-.sign-up input::placeholder {
-    color: white;
-}
-
-.sign-in button,
-.sign-up button {
-    width: 60%;
-    padding: 12px 0;
-    border-radius: 20px;
-    border: none;
-    background: green;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s ease;
-    margin-top: 15px;
-}
-
-
-
-/* "Don't have an account / Already have an account" section */
-.sign-in>div:last-child,
-.sign-up>div:last-child {
-    margin-top: 15px;
-    display: flex;
-    align-items: center;
-}
-
-.sign-in>div:last-child p,
-.sign-up>div:last-child p {
-    font-size: 14px;
-    margin-top: 30px;
-    margin-right: 10px;
-}
-
-.sign-in>div:last-child button,
-.sign-up>div:last-child button {
-    width: auto;
-    padding: 8px 20px;
-    border-radius: 20px;
-    background: black;
-    border: 1px solid white;
-    color: white;
-    transition: transform 0.3s ease;
-}
-
-.sign-in>div:last-child button:hover,
-.sign-up>div:last-child button:hover {
-    transform: scale(1.056);
-}
-
-.password-mis-match {
-    border: 1px red solid;
-    box-shadow: 0 0 5px red;
-}
-
-.password-match {
-    border: 1px green solid;
-    box-shadow: 0 0 5px green;
-}
-
-
-/* ================= COMPLETE ACCOUNT ================= */
-.Complete-account {
-    padding: 30px 25px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.63);
-    width: 100%;
-    max-width: 400px;
-    color: black;
-    text-align: center;
-}
-
-.Complete-account p:first-child {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
-/* Profile area */
-.profile {
-    position: relative;
-    /* container for absolute icons */
-    width: 110px;
-    height: 110px;
-    margin: 20px auto;
-    /* center profile in parent */
-    display: block;
-}
-
-.profile:nth-child(2) {
-    border: none;
-}
-
-/* User icon */
-.user-2 {
-    display: none;
-    border: none;
-    width: 110px;
-    height: 110px;
-    background: #1f2937;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 60px;
-    z-index: 1;
-    position: relative;
-}
-
-/* Profile image */
-#profileImg {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: none;
-    /* hidden initially */
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2;
-    /* above .fa-user */
-}
-
-/* Pen icon (bottom-right) */
-.pen-icon {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: green;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 3;
-}
-
-/* Cancel icon (bottom-left) */
-.cancel-profile {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: red;
-    display: none;
-    /* hidden initially */
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 4;
-}
-
-#fileInput {
-    position: absolute;
-    /* remove from normal flow */
-    width: 0;
-    height: 0;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
-    border: none;
-}
-
-/* Inputs */
-
-.Complete-account input {
-    width: 100%;
-    padding: 12px 15px;
-    border-radius: 10px;
-    border: 1px solid #555;
-    background: black;
-    color: white;
-    font-size: 14px;
-    margin-bottom: 15px;
-    margin: 5px 0;
-}
-
-.countryName{
-    width: 40%;
-    padding: 12px 15px;
-    border-radius: 10px;
-    border: 1px solid #555;
-    background:black;
-    color: white;
-    font-size: 14px;
-    margin-bottom: 15px;
-    margin: 5px 0;
-    height: 40px;
-    justify-self: center;
-}
-
-/* Next button */
-.Complete-account button {
-    width: auto;
-    padding: 8px 20px;
-    border-radius: 20px;
-    border: none;
     background: transparent;
-    color: black;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s ease;
-    background: green;
-    margin-top: 15px;
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 500;
+
 }
 
 
-.Complete-account button:hover {
-    box-shadow: 0 0 10px green;
+/* =========================
+   PLACEHOLDERS
+========================= */
+.input-group-child div input::placeholder {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/*========= register styling ===========*/
+.register-buisiness-section {
+    flex-direction: column;
+    padding: 30px;
+    gap: 10px;
+}
+
+.register-buisiness-section .input-group-child {
+    width: max-content;
+}
+
+.name input, .phone input {
+    width: 300px;
+}
+
+.register-buisiness-section textarea {
+    border: none;
+    outline: none;
+    width: 300px;
+    height: 150px;
+}
+
+.phone-notice{
+    font-size:12px !important;
+    transition:0.2s ease;
+    width: 300px;
+}
+
+
+.register-buisiness-section button {
+    width: 300px;
+    height: 52px;
+    margin: 20px auto;
+
+    border: none;
+    border-radius: 14px;
+
+    background: linear-gradient(135deg,
+            #16a34a,
+            #15803d);
+
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.3s ease;
+
+    box-shadow:
+        0 10px 20px rgba(22, 163, 74, 0.18);
+}
+
+.register-buisiness-section button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 24px rgba(22, 163, 74, 0.25);
+
+    background: linear-gradient(135deg,
+            #22c55e,
+            #15803d);
+}
+
+.register-buisiness-section button:active {
+    transform: scale(0.98);
+}
+
+.register-buisiness-section button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/*======= google auth =======*/
+.google-auth-card{
+    width:350px;
+
+    background:white;
+
+    border-radius:24px;
+
+    padding:30px 25px;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:20px;
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.08);
+
+    border:1px solid #e2e8f0;
+}
+
+/* Title */
+.google-title{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    font-size:1.05rem;
+    font-weight:700;
+
+    color:#0f172a;
+
+    font-family:sans-serif;
+}
+
+/* Google logo */
+.google-title img{
+    width:22px;
+    height:22px;
+}
+
+/* Description */
+.google-auth-card p{
+    font-size:0.92rem;
+    line-height:1.6;
+
+    color:#64748b;
+
+    font-family:sans-serif;
+}
+
+.google-auth-card p strong{
+    color:#0f172a;
+}
+
+/* Button */
+.google-auth-card button{
+    width:100%;
+    height:52px;
+
+    border:none;
+    border-radius:14px;
+
+    background:white;
+
+    border:1px solid #dbe2ea;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:0.95rem;
+    font-weight:600;
+
+    color:#0f172a;
+
+    cursor:pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+/* Hover */
+.google-auth-card button:hover{
+    background:#f8fafc;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 10px 20px rgba(0,0,0,0.06);
+}
+
+/* Active */
+.google-auth-card button:active{
+    transform:scale(0.98);
 }
 
 /* Phone input adjustments */
 .iti {
+    flex: 1;
     width: 100%;
 }
 
-.iti__selected-flag {
-    max-width: 70px;
+.iti input {
+    width: 100%;
+    padding-left: 52px !important;
 }
 
+.iti__selected-flag {
+    border-radius: 10px;
+}
+
+.iti--separate-dial-code .iti__selected-flag {
+    background: none;
+}
 
 /* ---------- MOBILE RESPONSIVE ---------- */
 @media (max-width:770px) {
@@ -746,16 +767,8 @@ main {
         width: 350px;
     }
 
-
-    .sign-in,
-    .sign-up {
-        padding: 20px;
-        width: 90%;
-    }
-
-    .sign-in p:first-child,
-    .sign-up p:first-child {
-        font-size: 24px;
+    .input-group {
+        flex-direction: column;
     }
 
 }

@@ -39,7 +39,7 @@ let ipAddress = CONFIG.SERVER_URL;
 
 
 // Initially hide elements
-const User = JSON.parse(localStorage.getItem("user") || "null");
+const user = JSON.parse(localStorage.getItem("user") || "null");
 
 document.addEventListener("DOMContentLoaded", async () => {
     toast.classList.add("hide");
@@ -88,15 +88,14 @@ async function Load_Image(Url) {
 }
 
 function CheckUser() {
-    if (User && User.profilePic) {
+    if (user) Auth.querySelector("span").textContent = "Hi you are Welcome";
+    if (user && user.profilePic) {
         ProfileImage.src = `${ipAddress}/profile/${User.profilePic}`;
-
     } else {
         // use correct variable
         ProfileImage.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // optional fallback
     }
 }
-
 
 // 1. Define the formatter once
 const formatter = new Intl.NumberFormat('en-US', {
@@ -157,9 +156,8 @@ searchInput.addEventListener("keydown", (event) => {
 });
 
 Auth.addEventListener("click", () => {
-
-    if (User && User.account_completed === "YES") {
-
+    //const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
         window.location.href = "/main/main.html"
         window.history.clear();
     } else {

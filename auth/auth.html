@@ -61,51 +61,49 @@
         </div>
     </div>
     <main>
-        <div class="sign-in">
-            <p>sign-in</p>
-            <form action="">
-                <div><input type="text" name="" id="sign-in-id" placeholder="Enter Id" required></div>
-                <div><input type="password" name="" id="sign-in-password" placeholder="Enter Password" required></div>
-                <div><button class="sign-In">Sign in</button></div>
-            </form>
-            <div>
-                <p>Don't have an account</p>
-                <div><button>Sign Up</button></div>
-            </div>
-        </div>
+        <div class="signIn-section">
+            <div class="signInCard">
+                <header>
+                    <span>Get Started</span>
+                    <span>Create an account to start selling on Bicycon</span>
+                </header>
+                <div class="google-auth-card">
 
-        <div class="sign-up">
-            <p>sign-Up</p>
-            <form action="">
-                <div><input type="text" name="" id="sign-up-name" placeholder="Enter new Name" required></div>
-                <div><input type="password" name="" id="sign-up-password" placeholder="Enter new Password" required>
-                </div>
-                <div><input type="text" name="" id="sign-up-confirm-password" placeholder="Confirm Password" required>
-                </div>
-                <div><button class="sign-Up">Sign Up</button></div>
+                    <span class="google-title">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+                            alt="Google Logo">
+                        Continue with your Google account
+                    </span>
+                    <p>
+                        <strong>Note:</strong><br>
+                        This platform currently supports Google sign-in only.
+                    </p>
+                    <button>
+                        Continue with Google
+                    </button>
 
-            </form>
-            <div>
-                <p>Aready have an account</p>
-                <div><button>Sign In</button></div>
+                </div>
             </div>
-        </div>
-        <div class="Complete-account">
-            <p>Complete Account</p>
-            <div class="profile">
-                <div class="cancel-profile"><i class="fa-solid fa-x"></i></div>
-                <div class="user-2"><i class="fa-solid fa-user"></i></div>
-                <img id="profileImg" src="" alt="profile-pic">
-                <div class="pen-icon"><i class="fa-solid fa-pen"></i></div>
-                <input type="file" id="fileInput" accept="image/*">
+            <div class="register-buisiness-section">
+                <div class="input-group-child name">
+                    <span>Enter Business Name</span>
+                    <div class="input-box">
+                        <i class="fa-solid fa-store"></i>
+                        <input type="text" placeholder="Enter the name of your business">
+                    </div>
+                </div>
+                <div class="input-group-child phone">
+                    <span>Add Phone</span>
+                    <div class="input-box">
+                        <i class="fa-solid fa-phone"></i>
+                        <input type="phone" placeholder="Enter Phone">
+                    </div>
+                    <span class="phone-notice">Note the country you choose for your phone will be used for your
+                        currency</span>
+                </div>
+                
+                <button class="register-buisiness">Register our buisiness</button>
             </div>
-            <form>
-                <input id="phone" type="tel" placeholder="Enter Phone Number">
-                <input type="email" id="e-mail" placeholder="Enter Email">
-                <div class="countryName"></div>
-                <button class="next">Next</button>
-            </form>
-        </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/intlTelInput.min.js"></script>
