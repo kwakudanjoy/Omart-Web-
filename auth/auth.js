@@ -221,7 +221,7 @@ RegisterBusiness.querySelector(".register-buisiness").addEventListener("click", 
         if (Result) {
             Loading.style.display = "none";
             window.localStorage.setItem("user", Result);
-            window.location.href = "./main/main.html";
+            window.location.href = "/main/main.html";
             window.history.clear();
         }
     } catch (err) {
