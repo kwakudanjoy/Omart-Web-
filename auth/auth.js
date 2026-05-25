@@ -150,7 +150,6 @@ ContinueWithGoogle.addEventListener("click", async () => {
         }
 
         let Result = await fetchData(payload);
-        alert(JSON.stringify(Result));
         if (Result.status === "OK") {
             Loading.style.display = "none";
             delete Result.status;
