@@ -1,1578 +1,4070 @@
-// ═══════════════════════════════════════
-//  BICYCON — RETAILER APP  |  main.js
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// BICYCON / OMART — RETAILER APP | main.js
+// ═══════════════════════════════════════════════════════════════
 
-// ── CONFIG ──────────────────────────────
 
-// ======== IMPORTINGING SERVER URL AND API,
+// ═══════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════════════════════
+
 import { CONFIG } from "../config/config.js";
-import { fetchData, UploadFileWithData } from "../fetch_algorithms/algorithms.js";
+import {
+    fetchData,
+    UploadFileWithData
+} from "../fetch_algorithms/algorithms.js";
 
-let ipAddress = CONFIG.SERVER_URL;
+const SERVER_URL = CONFIG.SERVER_URL;
+
 const User = JSON.parse(localStorage.getItem("user") || "{}");
 
-// ── ELEMENT REFS ─────────────────────────
+
+// ═══════════════════════════════════════════════════════════════
+// GLOBAL HELPERS
+// ═══════════════════════════════════════════════════════════════
+
+const formatter = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+});
+
+const countFormatter = new Intl.NumberFormat();
+
+
+// ═══════════════════════════════════════════════════════════════
+// ELEMENT REFERENCES
+// ═══════════════════════════════════════════════════════════════
+
+// ── Navigation / Business ────────────────────────────────────
+
+const businessName = document.querySelector(".business-name");
+const businessLogo = document.querySelector(".business-logo");
+const visitStoreFront = document.querySelector(".visite-store-front");
+
+const NavDash = document.querySelector(".nav-tab.dash");
+const NavProducts = document.querySelector(".nav-tab.products");
+const NavOrders = document.querySelector(".nav-tab.orders");
+const NavStore = document.querySelector(".store");
+const Profile = document.querySelector(".nav-profile");
+const Back = document.querySelector(".back");
+
+
+// ── Main Sections ─────────────────────────────────────────────
+
 const DashSection = document.querySelector(".dash-section");
 const ProductSection = document.querySelector(".product-section");
 const ProductList = document.querySelector(".product-list");
 const NoProduct = document.querySelector(".no-product-section");
 const ProductCount = document.querySelector(".product-count > p");
-const Plus = document.querySelector(".plus");
-const Back = document.querySelector(".back");
+
 const MyProfile = document.querySelector(".my-profile");
-const PlacedOrdersList = document.querySelector(".order-section");
 const OrdersList = document.querySelector(".orders-list");
+const PlacedOrdersList = document.querySelector(".order-section");
+
+const StoreSection = document.querySelector(".my-store");
+
+
+// ── Empty / Error States ──────────────────────────────────────
+
 const NoInternet = document.querySelector(".no-internet");
 const NoFoundOrders = document.querySelector(".no-found-products");
+
+
+// ── Loading ───────────────────────────────────────────────────
+
 const Loading = document.querySelector("#loading-overlay");
-const Upgrade_Overlay = document.querySelector(".upgrade-overlay");
+
+
+// ── Floating Buttons ──────────────────────────────────────────
+
+const Plus = document.querySelector(".plus");
 const Upgrade = document.querySelector(".upgrade-btn");
-const LogOut = document.querySelector(".log-out > button");
-const copyIcon = document.querySelector(".copy-icon");
-const copyLink = document.querySelector(".copy-link");
-const Store_Section = document.querySelector(".my-store");
 
-// Nav tabs
-const NavDash = document.querySelector(".nav-tab.dash");
-const NavProducts = document.querySelector(".nav-tab.products");
-const NavOrders = document.querySelector(".nav-tab.orders");
-const Profile = document.querySelector(".nav-profile");
-const NavStore = document.querySelector(".store");
 
-// Profile nav display
+// ── Profile Navigation ────────────────────────────────────────
+
 const UserIcon = document.querySelector(".user-icon");
-const Pro_Pic = document.querySelector(".pro-pic");
+const ProPic = document.querySelector(".pro-pic");
 const ProfileImg = document.querySelector(".pro-pic > img");
 
-// Toast
-const toast = document.querySelector(".toast");
-const toastIconI = document.querySelector(".toast-icon-i");
-const toastHead = document.querySelector(".toast-header-text");
-const toastText = document.querySelector(".toast-text");
 
-// Add product form
+// ── Toast ─────────────────────────────────────────────────────
+
+const toast = document.querySelector(".toast");
+const toastIcon = document.querySelector(".toast-icon-i");
+const toastHeader = document.querySelector(".toast-header-text");
+const toastText = document.querySelector(".toast-text");
+const toastClose = document.querySelector(".toast-close");
+
+
+// ── Add Product ────────────────────────────────────────────────
+
 const AddProduct = document.querySelector(".add-prod-overlay");
+
 const prodProfile = AddProduct.querySelector(".prod-profile");
 const prodIcon = AddProduct.querySelector(".prod-icon");
 const prodImage = AddProduct.querySelector(".prod-pro-pic");
+
 const ProdName = AddProduct.querySelector(".prod-name");
 const ProdPrice = AddProduct.querySelector(".prod-price");
 const ProdDisc = AddProduct.querySelector(".prod-description");
+
 const cameraBtn = AddProduct.querySelector(".camera");
 const cancelImgBtn = AddProduct.querySelector(".cancel");
 const fileInput = AddProduct.querySelector(".file-input");
+
 const AddNewProd = AddProduct.querySelector(".add-btn");
 const CancelNewProd = AddProduct.querySelectorAll(".cancel-btn");
-const PordCart = AddProduct.querySelector(".custom-select");
 
-// Edit product
-const EdithProduct = document.querySelector(".edith-prod-overlay");
-const EditProdImg = EdithProduct.querySelector(".prod-image-update");
-const EditFileInput = EdithProduct.querySelector(".prod-image-edit-file-input");
-const SelectEditImg = EdithProduct.querySelector(".select-image");
-const CancelEditImg = EdithProduct.querySelector(".cancel-selected-image");
-const EditProdName = EdithProduct.querySelector(".edith-prod-name");
-const EditProdPrice = EdithProduct.querySelector(".edith-prod-price");
-const EditProdCat = EdithProduct.querySelector(".edith-prod-category > p");
-const EditProdDisc = EdithProduct.querySelector(".edith-prod-discription");
-const SaveEdit = EdithProduct.querySelector(".save-edith");
-const CancelEdits = EdithProduct.querySelectorAll(".cancel-edth");
-
-// Profile editing
-const Edit_User_Icon = document.querySelector(".edith-user-icon");
-const Display_Profile_Contanner = document.querySelector(".profile-pic");
-const Display_Profile_Image = document.querySelector(".profile-pic > img");
-const PickNew_Image = document.querySelector(".select-new-profile");
-const NewImage_Input = document.querySelector("#profile-file");
-const Upload_New_Image = document.querySelector(".upload-new-profile");
-const Edith_OldPro = document.querySelector(".edith-old-profile");
-const Cancel_Profile_Update = document.querySelector(".cance-profile-update");
-const Display_Account_Id = document.querySelector(".display-account-id");
-const Display_Account_Name = document.querySelector(".display-account-name");
-const Display_Old_Email = document.querySelector(".display-email");
-const New_Email_Input = document.querySelector(".new-email-input");
-const Upload_New_Email = document.querySelector(".upload-new-email");
-const Edit_Old_Email = document.querySelector(".edith-old-email");
-const Cancel_New_Email = document.querySelector(".cancel-email-update");
-const Display_Old_Phone = document.querySelector(".display-phone");
-const New_Phone_Input = document.querySelector(".new-phone-input");
-const Upload_New_Phone = document.querySelector(".upload-new-phone");
-const Edit_Old_Phone = document.querySelector(".edith-old-phone");
-const Cancel_New_Phone = document.querySelector(".cancel-phone-update");
+const ProductCategory = AddProduct.querySelector(".custom-select");
 
 
-// ── INIT ─────────────────────────────────
+// ── Edit Product ──────────────────────────────────────────────
+
+const EditProduct = document.querySelector(".edith-prod-overlay");
+
+const EditProdImg = EditProduct.querySelector(".prod-image-update");
+const EditFileInput = EditProduct.querySelector(
+    ".prod-image-edit-file-input"
+);
+
+const SelectEditImg = EditProduct.querySelector(".select-image");
+const CancelEditImg = EditProduct.querySelector(
+    ".cancel-selected-image"
+);
+
+const EditProdName = EditProduct.querySelector(".edith-prod-name");
+const EditProdPrice = EditProduct.querySelector(".edith-prod-price");
+const EditProdCat = EditProduct.querySelector(
+    ".edith-prod-category > p"
+);
+const EditProdDisc = EditProduct.querySelector(
+    ".edith-prod-discription"
+);
+
+const SaveEdit = EditProduct.querySelector(".save-edith");
+const CancelEdits = EditProduct.querySelectorAll(".cancel-edth");
+
+
+// ── Profile Editing ───────────────────────────────────────────
+
+const EditUserIcon = document.querySelector(".edith-user-icon");
+
+const DisplayProfileContainer =
+    document.querySelector(".profile-pic");
+
+const DisplayProfileImage =
+    document.querySelector(".profile-pic > img");
+
+const PickNewImage =
+    document.querySelector(".profile-actions");
+
+const NewImageInput =
+    document.querySelector("#profile-file");
+
+const UploadNewImage =
+    document.querySelector(".upload-new-profile");
+
+const EditOldProfile =
+    document.querySelector(".edith-old-profile");
+
+const CancelProfileUpdate =
+    document.querySelector(".cance-profile-update");
+
+
+// ── Account Information ───────────────────────────────────────
+
+const DisplayAccountId =
+    document.querySelector(".display-account-id");
+
+const DisplayAccountName =
+    document.querySelector(".display-account-name");
+
+const DisplayOldEmail =
+    document.querySelector(".display-email");
+
+const NewEmailInput =
+    document.querySelector(".new-email-input");
+
+const UploadNewEmail =
+    document.querySelector(".upload-new-email");
+
+const EditOldEmail =
+    document.querySelector(".edith-old-email");
+
+const CancelNewEmail =
+    document.querySelector(".cancel-email-update");
+
+const DisplayOldPhone =
+    document.querySelector(".display-phone");
+
+const NewPhoneInput =
+    document.querySelector(".new-phone-input");
+
+const UploadNewPhone =
+    document.querySelector(".upload-new-phone");
+
+const EditOldPhone =
+    document.querySelector(".edith-old-phone");
+
+const CancelNewPhone =
+    document.querySelector(".cancel-phone-update");
+
+
+// ── Account Actions ───────────────────────────────────────────
+
+const LogOut = document.querySelector(".log-out > button");
+
+const CopyIcon = document.querySelector(".copy-icon");
+const CopyLink = document.querySelector(".copy-link");
+
+
+// ── Upgrade ───────────────────────────────────────────────────
+
+const UpgradeOverlay =
+    document.querySelector(".upgrade-overlay");
+
+const CancelUpgrade =
+    document.querySelector(".cancel-upgrade");
+
+
+// ═══════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════════════════
+
 document.addEventListener("DOMContentLoaded", () => {
-    toast.classList.add("hide");
-    SetProfile();
-    // Hide quick-action buttons by default
-    Upload_New_Image.style.display = "none";
-    Cancel_Profile_Update.style.display = "none";
+    initializeApp();
 });
 
 window.addEventListener("load", () => {
-    setTimeout(() => NavDash.click(), 0);
+    setTimeout(() => {
+        if (NavDash) {
+            NavDash.click();
+        }
+    }, 0);
 });
 
 
-// ── PROFILE SETUP ────────────────────────
-function SetProfile() {
-    if (User && User.profilePic) {
-        UserIcon.style.display = "none";
-        Pro_Pic.style.display = "flex";
-        ProfileImg.src = `${ipAddress}/profile/${User.profilePic}`;
-    } else {
-        UserIcon.style.display = "flex";
-        Pro_Pic.style.display = "none";
+function initializeApp() {
+
+    if (toast) {
+        toast.classList.add("hide");
+    }
+
+    SetProfile();
+
+
+    // ═══════════════════════════════════════════════════════════
+    // PROFILE EDITING CONTROLS
+    // Initially ONLY Edit Profile is visible.
+    // ═══════════════════════════════════════════════════════════
+
+    if (EditOldProfile) {
+        EditOldProfile.style.display = "inline-flex";
+    }
+
+    if (UploadNewImage) {
+        UploadNewImage.style.display = "none";
+    }
+
+    if (CancelProfileUpdate) {
+        CancelProfileUpdate.style.display = "none";
+    }
+
+    if (PickNewImage) {
+        PickNewImage.style.display = "none";
+    }
+
+    if (NewImageInput) {
+        NewImageInput.value = "";
+    }
+
+
+    // ── Business information ──────────────────────────────────
+
+    if (businessName) {
+        businessName.textContent =
+            User["business-name"] || "My Store";
+    }
+
+    if (businessLogo && User.profilePic) {
+        businessLogo.src =
+            `${SERVER_URL}/profile/${User.profilePic}`;
+    }
+
+    if (visitStoreFront && User.id) {
+        visitStoreFront.href =
+            `${SERVER_URL}/retailer/${User.id}`;
     }
 }
 
-// ── DISPLAY HELPERS ──────────────────────
-function showDash() {
-    DashSection.style.display = "block"
-    ProductSection.style.display = "none";
-    ProductList.style.display = "none";
-    MyProfile.style.display = "none";
-    OrdersList.style.display = "none";
-    Store_Section.style.display = "none";
-    NoFoundOrders.style.display = "none";
-    NoInternet.style.display = "none";
-    Plus.style.display = "none";
-    Profile.classList.remove("active-profile");
-    NavDash.classList.add("active");
-    NavProducts.classList.remove("active");
-    NavOrders.classList.remove("active");
-    NavStore.classList.remove("active");
+
+// ═══════════════════════════════════════════════════════════════
+// LOADING HELPERS
+// ═══════════════════════════════════════════════════════════════
+
+function showLoading() {
+
+    if (Loading) {
+        Loading.style.display = "flex";
+    }
 }
+
+
+function hideLoading() {
+
+    if (Loading) {
+        Loading.style.display = "none";
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// PROFILE SETUP
+// ═══════════════════════════════════════════════════════════════
+
+function SetProfile() {
+
+    const user =
+        JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!user || !user.profilePic) {
+
+        if (UserIcon) {
+            UserIcon.style.display = "flex";
+        }
+
+        if (ProPic) {
+            ProPic.style.display = "none";
+        }
+
+        return;
+    }
+
+
+    if (UserIcon) {
+        UserIcon.style.display = "none";
+    }
+
+    if (ProPic) {
+        ProPic.style.display = "flex";
+    }
+
+    if (ProfileImg) {
+        ProfileImg.src =
+            `${SERVER_URL}/profile/${user.profilePic}`;
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// SECTION DISPLAY
+// ═══════════════════════════════════════════════════════════════
+
+function resetSections() {
+
+    if (DashSection) {
+        DashSection.style.display = "none";
+    }
+
+    if (ProductSection) {
+        ProductSection.style.display = "none";
+    }
+
+    if (MyProfile) {
+        MyProfile.style.display = "none";
+    }
+
+    if (OrdersList) {
+        OrdersList.style.display = "none";
+    }
+
+    if (NoFoundOrders) {
+        NoFoundOrders.style.display = "none";
+    }
+
+    if (NoInternet) {
+        NoInternet.style.display = "none";
+    }
+
+    if (Plus) {
+        Plus.style.display = "none";
+    }
+
+    if (Profile) {
+        Profile.classList.remove("active-profile");
+    }
+
+    NavDash?.classList.remove("active");
+    NavProducts?.classList.remove("active");
+    NavOrders?.classList.remove("active");
+    NavStore?.classList.remove("active");
+}
+
+
+function showDash() {
+
+    resetSections();
+
+    DashSection.style.display = "block";
+
+    NavDash?.classList.add("active");
+}
+
 
 function showProducts() {
-    DashSection.style.display = "none";
+
+    resetSections();
+
     ProductSection.style.display = "flex";
     ProductList.style.display = "grid";
-    Store_Section.style.display = "none";
-    MyProfile.style.display = "none";
-    OrdersList.style.display = "none";
-    NoFoundOrders.style.display = "none";
-    NoInternet.style.display = "none";
     Plus.style.display = "flex";
-    NavDash.classList.remove("active");
-    NavProducts.classList.add("active");
-    NavOrders.classList.remove("active");
-    NavStore.classList.remove("active");
+
+    NavProducts?.classList.add("active");
 }
+
 
 function showNoProduct() {
-    DashSection.style.display = "none";
+
+    resetSections();
+
+    ProductSection.style.display = "flex";
     NoProduct.style.display = "block";
     ProductList.style.display = "none";
-    ProductSection.style.display = "flex";
-    MyProfile.style.display = "none";
-    OrdersList.style.display = "none";
-    NoFoundOrders.style.display = "none";
-    NoInternet.style.display = "none";
     Plus.style.display = "flex";
+
+    NavProducts?.classList.add("active");
 }
+
 
 function showAddProduct() {
-    DashSection.style.display = "none";
+
     AddProduct.style.display = "flex";
+
+
+    // ── Reset image ────────────────────────────────────────────
+
     prodImage.src = "";
     prodImage.style.display = "none";
+
     prodIcon.style.display = "flex";
+
     cancelImgBtn.style.display = "none";
+
     fileInput.value = "";
+
+
+    // ── Reset category ─────────────────────────────────────────
+
+    ProductCategory.dataset.value = "";
+
+    const selected =
+        ProductCategory.querySelector(".selected");
+
+
+    if (selected) {
+
+        selected.innerHTML =
+            `Select Category
+             <i class="fa-solid fa-chevron-down sel-arrow"></i>`;
+    }
 }
+
 
 function showMyProfile() {
-    DashSection.style.display = "none";
-    ProductSection.style.display = "none";
+
+    resetSections();
+
     MyProfile.style.display = "flex";
-    OrdersList.style.display = "none";
-    NoFoundOrders.style.display = "none";
-    NoInternet.style.display = "none";
-    Plus.style.display = "none";
-    Store_Section.style.display = "none";
+
     Profile.classList.add("active-profile");
-    NavProducts.classList.remove("active");
-    NavOrders.classList.remove("active");
-    NavDash.classList.remove("active");
-    NavStore.classList.remove("active");
 }
+
 
 function showOrders() {
-    DashSection.style.display = "none";
-    ProductSection.style.display = "none";
-    MyProfile.style.display = "none";
+
+    resetSections();
+
     OrdersList.style.display = "flex";
-    Store_Section.style.display = "none";
-    NoFoundOrders.style.display = "none";
-    NoInternet.style.display = "none";
-    Plus.style.display = "none";
-    Profile.classList.remove("active-profile");
-    NavDash.classList.remove("active");
-    NavOrders.classList.add("active");
-    NavProducts.classList.remove("active");
-    NavStore.classList.remove("active");
-}
 
-function showStores() {
-    DashSection.style.display = "none";
-    ProductSection.style.display = "none";
-    MyProfile.style.display = "none";
-    PlacedOrdersList.style.display = "none";
-    Store_Section.style.display = "flex";
-    NoFoundOrders.style.display = "none";
-    NoInternet.style.display = "none";
-    Plus.style.display = "none";
-    Profile.classList.remove("active-profile");
-    NavDash.classList.remove("active");
-    NavOrders.classList.remove("active");
-    NavProducts.classList.remove("active");
-    NavStore.classList.add("active");
-
+    NavOrders?.classList.add("active");
 }
 
 
-// ── TOAST ────────────────────────────────
-function showToast(iconClasses, header, text, iconColor) {
-    toastIconI.className = "";
-    iconClasses.split(" ").forEach(c => toastIconI.classList.add(c));
-    toastIconI.style.color = iconColor;
-    toastHead.textContent = header;
-    toastText.textContent = text;
+// ═══════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════
+
+function showToast(
+    iconClasses,
+    header,
+    message,
+    iconColor
+) {
+
+    if (!toast) return;
+
+    toastIcon.className = "";
+
+    iconClasses
+        .split(" ")
+        .forEach(className => {
+
+            if (className) {
+                toastIcon.classList.add(className);
+            }
+        });
+
+
+    toastIcon.style.color = iconColor;
+
+    toastHeader.textContent = header;
+    toastText.textContent = message;
+
 
     toast.classList.remove("hide");
-    setTimeout(() => toast.classList.add("show"), 50);
+
+
     setTimeout(() => {
+        toast.classList.add("show");
+    }, 50);
+
+
+    setTimeout(() => {
+
         toast.classList.remove("show");
-        setTimeout(() => toast.classList.add("hide"), 300);
+
+        setTimeout(() => {
+            toast.classList.add("hide");
+        }, 300);
+
     }, 4500);
 }
 
-document.querySelector(".toast-close").addEventListener("click", () => {
+
+toastClose?.addEventListener("click", () => {
+
     toast.classList.remove("show");
-    setTimeout(() => toast.classList.add("hide"), 300);
+
+    setTimeout(() => {
+        toast.classList.add("hide");
+    }, 300);
 });
 
-// 1. Define the formatter once
-const formatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-});
+
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════
 
 async function Dash() {
-    const user = JSON.parse(localStorage.getItem("user")); // getting user data
-    //Variables
-    const PendingOrdersTab = DashSection.querySelector(".pending-tab"); //Pending tab Variable
-    const PendingOrdersList = DashSection.querySelector(".pending-section");//Pending order List Variable
-    const RejectedOrdersTabe = DashSection.querySelector(".rejected-tab");// Rejected tab variable
-    const RejectedOrdersList = DashSection.querySelector(".rejected-section");//Rejected order List Variable
-    DashSection.querySelector(".dash-card .currency-code").textContent = `${user["currency"]}`;
-    DashSection.querySelector(".actual-revenue .currency-code").textContent = `${user["currency"]}`;
-    const Graph = DashSection.querySelector(".graph-container");
 
+    const user =
+        JSON.parse(localStorage.getItem("user") || "{}");
+
+
+    const PendingOrdersTab =
+        DashSection.querySelector(".pending-tab");
+
+    const PendingOrdersList =
+        DashSection.querySelector(".pending-section");
+
+    const RejectedOrdersTab =
+        DashSection.querySelector(".rejected-tab");
+
+    const RejectedOrdersList =
+        DashSection.querySelector(".rejected-section");
+
+    const Graph =
+        DashSection.querySelector(".graph-container");
+
+    const refreshBtn =
+        DashSection.querySelector(".refresh");
+
+    const FromDateInput =
+        DashSection.querySelector(".from-date");
+
+    const ToDateInput =
+        DashSection.querySelector(".to-date");
+
+
+    // ── Currency ──────────────────────────────────────────────
+
+    const currency =
+        user["currency"] || "$";
+
+
+    DashSection.querySelector(
+        ".dash-card .currency-code"
+    ).textContent = currency;
+
+
+    DashSection.querySelector(
+        ".actual-revenue .currency-code"
+    ).textContent = currency;
+
+
+    // ── Order tabs ────────────────────────────────────────────
+
+    PendingOrdersList.style.display = "flex";
     RejectedOrdersList.style.display = "none";
 
+
     PendingOrdersTab.onclick = () => {
+
         PendingOrdersTab.classList.add("active");
+        RejectedOrdersTab.classList.remove("active");
+
         PendingOrdersList.style.display = "flex";
-        RejectedOrdersTabe.classList.remove("active");
         RejectedOrdersList.style.display = "none";
-    }
+    };
 
-    RejectedOrdersTabe.onclick = () => {
+
+    RejectedOrdersTab.onclick = () => {
+
         PendingOrdersTab.classList.remove("active");
+        RejectedOrdersTab.classList.add("active");
+
         PendingOrdersList.style.display = "none";
-        RejectedOrdersTabe.classList.add("active");
         RejectedOrdersList.style.display = "flex";
-    }
-
-    PendingOrdersTab.click();
-
-    //assigining Current Date 
-    const nowDate = () => new Date().toISOString().split('T')[0];
-    const FromDateInput = DashSection.querySelector(".from-date");
-    const ToDateInput = DashSection.querySelector(".to-date");
-
-    FromDateInput.value = nowDate();
-    ToDateInput.value = nowDate();
+    };
 
 
-    let getFromDate = null;
-    let getToDate = null;
+    // ── Date setup ────────────────────────────────────────────
 
-    const refreshBtn = DashSection.querySelector(".refresh");
+    const today = () =>
+        new Date().toISOString().split("T")[0];
 
-    refreshBtn.onclick = async () => {
-        // Get fresh values INSIDE the handler
-        getFromDate = FromDateInput.value;
-        getToDate = ToDateInput.value;
 
-        if (new Date(getFromDate).getTime() > new Date(getToDate).getTime()) {
-            showToast("fa-solid fa-exclamation", "Date Range", "The date range you selected is incorrect", "#e53935");
+    FromDateInput.value = today();
+    ToDateInput.value = today();
+
+
+    // ── Load dashboard data ───────────────────────────────────
+
+    async function GetDashData() {
+
+        const fromDate =
+            FromDateInput.value;
+
+        const toDate =
+            ToDateInput.value;
+
+
+        if (
+            new Date(fromDate).getTime() >
+            new Date(toDate).getTime()
+        ) {
+
+            showToast(
+                "fa-solid fa-exclamation",
+                "Date Range",
+                "The date range you selected is incorrect.",
+                "#e53935"
+            );
+
             return;
         }
 
-        Get_Dash_Data();
 
-    }
+        const payload = {
 
-    // creating two fragments that will be used to append the children in the pending order list and Rejected order list
-    const orderPendingFragment = document.createDocumentFragment();
-    const orderRejectedFragment = document.createDocumentFragment();
-
-    async function Get_Dash_Data() {
-
-        //payload which caries the instruction which will be performed by the server
-        let Payload = {
             INSTRUCTION: "GET-REVENUE-DATA",
-            fromDate: getFromDate,
-            toDate: getToDate,
-            userid: user["id"]
-        }
+
+            fromDate,
+
+            toDate,
+
+            userid: user.id
+        };
 
         let EstimatedRevenue = 0;
         let ActualRevenue = 0;
         let PendingRevenue = 0;
-        let AprovedRevenue = 0;
         let RejectedRevenue = 0;
 
-        let ApprovedOrdersCount = 0;
         let PendingOrdersCount = 0;
         let RejectedOrdersCount = 0;
 
 
-        refreshBtn.classList.add("refresh-spinning");
-        let Result = await fetchData(Payload);
+        refreshBtn.classList.add(
+            "refresh-spinning"
+        );
 
-        if (Result) {
 
-            refreshBtn.classList.remove("refresh-spinning");
-            // Clear all lists exactly once before structural layout changes
+        try {
+
+            const Result =
+                await fetchData(payload);
+
+
+            if (!Result) {
+
+                showToast(
+                    "fa-solid fa-exclamation",
+                    "Error",
+                    "An error occurred while fetching dashboard data. Please check your internet connection.",
+                    "#e53935"
+                );
+
+                return;
+            }
+
+
             PendingOrdersList.innerHTML = "";
             RejectedOrdersList.innerHTML = "";
             Graph.innerHTML = "";
 
-            // Safely extract currency code once to avoid object lookup thrashing
-            const currency = user["currencyCode"] || "$";
 
-            for (let key in Result) {
-                let rows = Result[key];
-                if (!Array.isArray(rows) || rows.length === 0) continue;
+            for (const key in Result) {
 
-                const dateObj = new Date(key);
-                const dayLabel = dateObj.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
+                const rows = Result[key];
+
+
+                if (
+                    !Array.isArray(rows) ||
+                    rows.length === 0
+                ) {
+                    continue;
+                }
+
+
+                const dateObj =
+                    new Date(key);
+
+
+                const dayLabel =
+                    dateObj.toLocaleDateString(
+                        "en-US",
+                        {
+                            weekday: "short",
+                            timeZone: "UTC"
+                        }
+                    );
+
+
+                const formattedDate =
+                    dateObj.toLocaleDateString(
+                        "en-US",
+                        {
+                            month: "short",
+                            day: "numeric",
+                            timeZone: "UTC"
+                        }
+                    );
+
 
                 let localEstimatedRevenue = 0;
                 let localApproved = 0;
                 let localPending = 0;
                 let localRejected = 0;
 
+
                 rows.forEach(row => {
-                    let orderAmount = Number(row["orderTotal"]) || 0;
-                    let orderStatus = row["orderStatus"];
 
-                    localEstimatedRevenue += orderAmount;
+                    const orderAmount =
+                        Number(row["orderTotal"]) || 0;
 
-                    if (orderStatus === "accepted") {
-                        localApproved += orderAmount;
-                        ApprovedOrdersCount++;
-                    } else if (orderStatus === "Pending") {
-                        localPending += orderAmount;
+                    const orderStatus =
+                        row["orderStatus"];
+
+
+                    localEstimatedRevenue +=
+                        orderAmount;
+
+
+                    // ── Approved ────────────────────────────
+
+                    if (
+                        orderStatus === "accepted"
+                    ) {
+
+                        localApproved +=
+                            orderAmount;
+                    }
+
+
+                    // ── Pending ────────────────────────────
+
+                    else if (
+                        orderStatus === "Pending"
+                    ) {
+
+                        localPending +=
+                            orderAmount;
+
                         PendingOrdersCount++;
 
-                        const orderPending = document.createElement("div");
-                        orderPending.classList.add("list-card");
-                        orderPending.innerHTML = `
+
+                        const orderCard =
+                            document.createElement("div");
+
+
+                        orderCard.classList.add(
+                            "list-card"
+                        );
+
+
+                        orderCard.innerHTML = `
+
                             <div class="left-info">
-                                <span class="list-number">${PendingOrdersCount}</span>
-                                <span class="list-order-id">#${row.orderID}</span>
+
+                                <span class="list-number">
+                                    ${PendingOrdersCount}
+                                </span>
+
+                                <span class="list-order-id">
+                                    #${row.orderID}
+                                </span>
+
                             </div>
+
+
                             <div class="right-info">
-                                <span class="status-badge status-pending">Pending</span>
-                                <button class="list-action">View order</button>
-                            </div>`;
-                        orderPendingFragment.appendChild(orderPending);
-                    } else {
-                        localRejected += orderAmount;
+
+                                <span class="status-badge status-pending">
+                                    Pending
+                                </span>
+
+                                <button
+                                    class="list-action"
+                                    type="button">
+                                    View order
+                                </button>
+
+                            </div>
+                        `;
+
+
+                        PendingOrdersList.appendChild(
+                            orderCard
+                        );
+                    }
+
+
+                    // ── Rejected ────────────────────────────
+
+                    else {
+
+                        localRejected +=
+                            orderAmount;
+
                         RejectedOrdersCount++;
 
-                        const rejectedOrder = document.createElement("div");
-                        rejectedOrder.classList.add("list-card");
-                        rejectedOrder.innerHTML = `
-                    <div class="left-info">
-                        <span class="list-number">${RejectedOrdersCount}</span>
-                        <span class="list-order-id">#${row.orderID}</span>
-                    </div>
-                    <div class="right-info">
-                        <span class="status-badge status-rejected">Rejected</span>
-                        <button class="list-action">View order</button>
-                    </div>`;
-                        orderRejectedFragment.appendChild(rejectedOrder);
+
+                        const orderCard =
+                            document.createElement("div");
+
+
+                        orderCard.classList.add(
+                            "list-card"
+                        );
+
+
+                        orderCard.innerHTML = `
+
+                            <div class="left-info">
+
+                                <span class="list-number">
+                                    ${RejectedOrdersCount}
+                                </span>
+
+                                <span class="list-order-id">
+                                    #${row.orderID}
+                                </span>
+
+                            </div>
+
+
+                            <div class="right-info">
+
+                                <span class="status-badge status-rejected">
+                                    Rejected
+                                </span>
+
+                                <button
+                                    class="list-action"
+                                    type="button">
+                                    View order
+                                </button>
+
+                            </div>
+                        `;
+
+
+                        RejectedOrdersList.appendChild(
+                            orderCard
+                        );
                     }
                 });
 
-                // Flush out localized fragments to the UI tree structure safely
-                PendingOrdersList.appendChild(orderPendingFragment);
-                RejectedOrdersList.appendChild(orderRejectedFragment);
 
-                // Calculate metrics aggregates
-                EstimatedRevenue += localEstimatedRevenue;
-                ActualRevenue += localApproved;
-                PendingRevenue += localPending;
-                RejectedRevenue += localRejected;
+                // ── Global totals ─────────────────────────
+
+                EstimatedRevenue +=
+                    localEstimatedRevenue;
+
+                ActualRevenue +=
+                    localApproved;
+
+                PendingRevenue +=
+                    localPending;
+
+                RejectedRevenue +=
+                    localRejected;
 
 
-                // --- UPDATED CHARTS LOGIC LAYER ---
-                if (localEstimatedRevenue > 0) {
-                    // Helper to build an individual bar column with its amount label
-                    const createBarMarkup = (amt, typeClass) => {
-                        let percentage = (amt / localEstimatedRevenue) * 100 + "%";
+                // ── Graph ─────────────────────────────────
+
+                if (
+                    localEstimatedRevenue <= 0
+                ) {
+                    continue;
+                }
+
+
+                const createBarMarkup =
+                    (amount, typeClass) => {
+
+                        const percentage =
+                            (amount /
+                                localEstimatedRevenue) *
+                            100;
+
+
                         return `
+
                             <div class="bar-column">
-                                <div class="amount-tooltip">${currency}${amt.toLocaleString()}</div>
-                                <div class="parent-bar">
-                                    <div class="inner-bar ${typeClass}" style="height: ${percentage};"></div>
+
+                                <div class="amount-tooltip">
+                                    ${currency}${amount.toLocaleString()}
                                 </div>
-                            </div>`;
+
+                                <div class="parent-bar">
+
+                                    <div
+                                        class="inner-bar ${typeClass}"
+                                        style="height: ${percentage}%;">
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        `;
                     };
 
-                    // Gather all bars available for this single day
-                    let daysBarsHTML = "";
-                    if (localApproved > 0) daysBarsHTML += createBarMarkup(localApproved, "approved-bg");
-                    if (localPending > 0) daysBarsHTML += createBarMarkup(localPending, "pending-bg");
-                    if (localRejected > 0) daysBarsHTML += createBarMarkup(localRejected, "rejected-bg");
 
-                    // Format a nice header date (e.g., "May 20") from your key
-                    const formattedDateHeader = new Date(key).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        timeZone: 'UTC'
-                    });
+                let barsHTML = "";
 
-                    // Wrap them inside a single shared day container with a Date Header and Weekday Badge
-                    const dayContainerHTML = `
-                        <div class="day-group" data-date="${key}">
-                            <div class="date-header">${formattedDateHeader}</div>
-                            <div class="bars-container">
-                                ${daysBarsHTML}
-                            </div>
-                            <div class="day-label-badge">${dayLabel}</div>
-                        </div>`;
 
-                    Graph.insertAdjacentHTML('beforeend', dayContainerHTML);
+                if (localApproved > 0) {
+
+                    barsHTML +=
+                        createBarMarkup(
+                            localApproved,
+                            "approved-bg"
+                        );
                 }
-            }
-        } else {
-            refreshBtn.classList.remove("refresh-spinning");
-            showToast("fa-solid fa-exclamation", "Error", "An error occured while fetching dash dada, Please check your internet connection", "#e53935");
-        }
-
-        // Logic DRY Optimization: Update the metric node text properties once down here
-        const currency = user["currency"] || "$";
-
-        DashSection.querySelector(".estimated-revenue .amount").textContent = `${currency} ${formatter.format(EstimatedRevenue)}`;
-        DashSection.querySelector(".actual-revenue .amount").textContent = `${currency} ${formatter.format(ActualRevenue)}`;
-        DashSection.querySelector(".pending-orders .amount").textContent = `${currency} ${formatter.format(PendingRevenue)}`;
-        DashSection.querySelector(".rejected-orders .amount").textContent = `${currency} ${formatter.format(RejectedRevenue)}`;
-
-        // Corrected format logic engine for string representations of counts
-        const countFormatter = new Intl.NumberFormat();
-        DashSection.querySelector(".pending-orders .order-count").textContent = `${countFormatter.format(PendingOrdersCount)} Orders`;
-        DashSection.querySelector(".rejected-orders .order-count").textContent = `${countFormatter.format(RejectedOrdersCount)} Orders`;
-    }
-
-    if (refreshBtn) {
-        refreshBtn.click();
-    }
 
 
-    //Method for mapping the card order to the order card
-    async function findOrder(selectedOrderid) {
+                if (localPending > 0) {
 
-        let placedOrders = document.querySelectorAll(".order-section .order-cart");
-        if (placedOrders.length === 0) {
+                    barsHTML +=
+                        createBarMarkup(
+                            localPending,
+                            "pending-bg"
+                        );
+                }
 
-            try {
-                const orderList = await fetchData({ INSTRUCTION: "GET-MY-ORDERS", User_id: user["id"] });
 
-                insertOrdersCard(orderList, user["currency"]);
+                if (localRejected > 0) {
 
-                placedOrders = document.querySelectorAll(".order-section .order-cart");
-                placedOrders.forEach(orderCard => {
-                    let targetedOrderId = orderCard.querySelector(".order-id").textContent.split("Order ")[1].trim();
-                    if (targetedOrderId === selectedOrderid) {
+                    barsHTML +=
+                        createBarMarkup(
+                            localRejected,
+                            "rejected-bg"
+                        );
+                }
 
-                        orderCard.classList.add("active");
-                        setTimeout(() => orderCard.classList.remove("active"), 3000);
-                        showOrders();
-                        orderCard.scrollIntoView({
-                            behavior: "smooth", block: "center"
-                        });
-                    }
-                });
 
-            } catch (err) {
-                showToast("fa-solid fa-exclamation",
-                    "Network error",
-                    "Sorry an error occured , Please check your internet connection",
-                    "red");
+                Graph.insertAdjacentHTML(
+                    "beforeend",
+                    `
+
+                    <div
+                        class="day-group"
+                        data-date="${key}">
+
+                        <div class="date-header">
+                            ${formattedDate}
+                        </div>
+
+                        <div class="bars-container">
+                            ${barsHTML}
+                        </div>
+
+                        <div class="day-label-badge">
+                            ${dayLabel}
+                        </div>
+
+                    </div>
+                    `
+                );
             }
 
-        } else {
-            placedOrders.forEach(orderCard => {
-                let targetedOrderId = orderCard.querySelector(".order-id").textContent.split("Order ")[1].trim();
-                if (targetedOrderId === selectedOrderid) {
 
-                    orderCard.classList.add("active");
-                    setTimeout(() => orderCard.classList.remove("active"), 3000);
-                    showOrders();
-                    orderCard.scrollIntoView({
-                        behavior: "smooth", block: "center"
-                    });
-                }
-            });
+            // ── Update dashboard metrics ──────────────────
+
+            DashSection.querySelector(
+                ".estimated-revenue .amount"
+            ).textContent =
+                `${currency} ${formatter.format(
+                    EstimatedRevenue
+                )}`;
+
+
+            DashSection.querySelector(
+                ".actual-revenue .amount"
+            ).textContent =
+                `${currency} ${formatter.format(
+                    ActualRevenue
+                )}`;
+
+
+            DashSection.querySelector(
+                ".pending-orders .amount"
+            ).textContent =
+                `${currency} ${formatter.format(
+                    PendingRevenue
+                )}`;
+
+
+            DashSection.querySelector(
+                ".rejected-orders .amount"
+            ).textContent =
+                `${currency} ${formatter.format(
+                    RejectedRevenue
+                )}`;
+
+
+            DashSection.querySelector(
+                ".pending-orders .order-count"
+            ).textContent =
+                `${countFormatter.format(
+                    PendingOrdersCount
+                )} Orders`;
+
+
+            DashSection.querySelector(
+                ".rejected-orders .order-count"
+            ).textContent =
+                `${countFormatter.format(
+                    RejectedOrdersCount
+                )} Orders`;
+
+        } catch (error) {
+
+            console.error(
+                "Dashboard error:",
+                error
+            );
+
+
+            showToast(
+                "fa-solid fa-exclamation",
+                "Network Error",
+                "Unable to load dashboard data. Please check your internet connection.",
+                "#e53935"
+            );
+
+        } finally {
+
+            refreshBtn.classList.remove(
+                "refresh-spinning"
+            );
         }
-
     }
 
-    PendingOrdersList.onclick = async (e) => {
-        if (e.target.closest(".list-action")) {
-            const PendingOrder = e.target.closest(".list-card");
-            let selectedOrderid = PendingOrder.querySelector(".list-order-id").textContent.trim();
 
-            findOrder(selectedOrderid); // maps the user to the order card
-        }
-    }
+    refreshBtn.onclick =
+        GetDashData;
 
-    RejectedOrdersList.onclick = async (e) => {
-        if (e.target.closest(".list-action")) {
 
-            const RejectedOrder = e.target.closest(".list-card");
-            let selectedOrderid = RejectedOrder.querySelector(".list-order-id").textContent.trim();
-
-            findOrder(selectedOrderid); // maps the user to the order card
-        }
-    }
+    await GetDashData();
 
     showDash();
 }
 
-// ── GET PRODUCTS ─────────────────────────
+
+// ═══════════════════════════════════════════════════════════════
+// FIND ORDER
+// ═══════════════════════════════════════════════════════════════
+
+async function findOrder(selectedOrderId) {
+
+    let orderCards =
+        document.querySelectorAll(
+            ".order-section .order-cart"
+        );
+
+
+    if (orderCards.length === 0) {
+
+        try {
+
+            const orderList =
+                await fetchData({
+                    INSTRUCTION: "GET-MY-ORDERS",
+                    User_id: User.id
+                });
+
+
+            insertOrdersCard(
+                orderList,
+                User.currency
+            );
+
+
+            orderCards =
+                document.querySelectorAll(
+                    ".order-section .order-cart"
+                );
+
+        } catch (error) {
+
+            console.error(
+                "Order lookup error:",
+                error
+            );
+
+
+            showToast(
+                "fa-solid fa-exclamation",
+                "Network Error",
+                "Sorry, an error occurred. Please check your internet connection.",
+                "red"
+            );
+
+            return;
+        }
+    }
+
+
+    for (const orderCard of orderCards) {
+
+        const orderIdElement =
+            orderCard.querySelector(".order-id");
+
+
+        if (!orderIdElement) {
+            continue;
+        }
+
+
+        const targetedOrderId =
+            orderIdElement.textContent
+                .replace("Order #", "")
+                .trim();
+
+
+        const cleanSelectedId =
+            selectedOrderId
+                .replace("#", "")
+                .trim();
+
+
+        if (
+            targetedOrderId ===
+            cleanSelectedId
+        ) {
+
+            orderCard.classList.add("active");
+
+            showOrders();
+
+
+            orderCard.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+
+            setTimeout(() => {
+
+                orderCard.classList.remove(
+                    "active"
+                );
+
+            }, 3000);
+
+
+            break;
+        }
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD ORDER LIST EVENTS
+// ═══════════════════════════════════════════════════════════════
+
+function setupDashboardOrderEvents() {
+
+    const handleOrderClick =
+        event => {
+
+            const button =
+                event.target.closest(
+                    ".list-action"
+                );
+
+
+            if (!button) return;
+
+
+            const orderCard =
+                button.closest(
+                    ".list-card"
+                );
+
+
+            if (!orderCard) return;
+
+
+            const orderId =
+                orderCard
+                    .querySelector(
+                        ".list-order-id"
+                    )
+                    ?.textContent
+                    .trim();
+
+
+            if (orderId) {
+                findOrder(orderId);
+            }
+        };
+
+
+    const pendingSection =
+        DashSection.querySelector(
+            ".pending-section"
+        );
+
+
+    const rejectedSection =
+        DashSection.querySelector(
+            ".rejected-section"
+        );
+
+
+    pendingSection?.addEventListener(
+        "click",
+        handleOrderClick
+    );
+
+
+    rejectedSection?.addEventListener(
+        "click",
+        handleOrderClick
+    );
+}
+
+
+setupDashboardOrderEvents();
+
+
+// ═══════════════════════════════════════════════════════════════
+// PRODUCTS
+// ═══════════════════════════════════════════════════════════════
+
 async function getMyProducts() {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user["id"]) return showNoProduct();
 
-    Loading.style.display = "flex";
-    const list = await fetchData({ INSTRUCTION: "GET-MY-PRODUCTS", User_id: user["id"] });
-    Loading.style.display = "none";
-
-    if (!Array.isArray(list) || list.length === 0) return showNoProduct();
-
-    ProductList.innerHTML = "";
-    NoProduct.style.display = "none";
-    const frag = document.createDocumentFragment();
-    let count = 0;
+    const user =
+        JSON.parse(
+            localStorage.getItem("user") || "{}"
+        );
 
 
-    //alert(JSON.stringify(list));
-    list.forEach(prod => {
-        const card = document.createElement("div");
-        card.classList.add("list-card");
-        card.innerHTML = `
-      <img src="${ipAddress}/products/${prod.Url}" alt="${prod.name}" class="prod-img" loading="lazy"/>
-      <div class="card-body">
-        <p class="pord-name">${prod.name}</p>
-        <p class="prod-price">${prod.currencyCode} ${formatter.format(prod.price)}</p>
-        <p class="prod-id">${prod.Id}</p>
-        <p class="final-prod-description">${prod.description}</p>
-      </div>
-      <div class="edith-delete-prod">
-        <div class="edith-prod" data-id="${prod.Id}"><i class="fa-solid fa-pen"></i> Edit</div>
-        <div class="delete-prod" data-id="${prod.Id}"><i class="fa-solid fa-trash"></i> Delete</div>
-      </div>
-      <p class="posted-at">Posted ${prod.postedAt}</p>
-    `;
-        frag.appendChild(card);
-        count++;
-    });
+    if (!user?.id) {
 
-    ProductList.appendChild(frag);
-    ProductCount.textContent = count;
-    showProducts();
+        showNoProduct();
 
-    // Wire up edit/delete buttons
-    ProductList.querySelectorAll(".edith-prod").forEach(btn => {
-        btn.addEventListener("click", () => openEditProduct(btn.dataset.id, list));
-    });
-
-    ProductList.querySelectorAll(".delete-prod").forEach(btn => {
-        btn.addEventListener("click", () => deleteProduct(btn.dataset.id));
-    });
-}
-
-
-// ── GET ORDERS ───────────────────────────
-async function getPlacedOrders() {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user["id"]) return;
-
-    Loading.style.display = "flex";
-    const orderList = await fetchData({ INSTRUCTION: "GET-MY-ORDERS", User_id: user["id"] });
-    Loading.style.display = "none";
-
-    if (!Array.isArray(orderList)) {
-        ProductSection.style.display = "none";
-        MyProfile.style.display = "none";
-        PlacedOrdersList.style.display = "none";
-        NoInternet.style.display = "flex";
-        Profile.classList.remove("active-profile");
-        NavDash.classList.remove("active");
-        NavOrders.classList.add("active");
-        NavProducts.classList.remove("active");
-        NavStore.classList.remove("active");
         return;
     }
 
-    if (orderList.length === 0) {
-        DashSection.style.display = "none";
-        ProductSection.style.display = "none";
-        MyProfile.style.display = "none";
-        PlacedOrdersList.style.display = "none";
-        Store_Section.style.display = "none";
-        NoFoundOrders.style.display = "flex";
-        Profile.classList.remove("active-profile");
-        NavDash.classList.remove("active");
-        NavOrders.classList.add("active");
-        NavProducts.classList.remove("active");
-        NavStore.classList.remove("active");
-        return;
-    }
 
-    insertOrdersCard(orderList, user["currency"]);
-    showOrders();
-}
+    showLoading();
 
-//This method is used to insert all orders into the orders tab
-function insertOrdersCard(orderList, currencyCode) {
 
-    PlacedOrdersList.innerHTML = "";
-    const frag = document.createDocumentFragment();
+    try {
 
-    orderList.forEach(ord => {
-        const status = (ord.status || "").toLowerCase().trim();
-        const card = document.createElement("div");
-        card.classList.add("order-cart");
-        card.innerHTML = `
-            <div class="order-header">
-                <span class="order-index">#${ord.index}</span>
-                <span class="order-id">Order #${ord.orderId}</span>
-                <span class="order-date">${ord.date}</span>
-                <span class="order-time">${ord.time}</span>
-            </div>
-            <div class="product-info">
-                <h4 class="product-name">${ord.productName}</h4>
-                <span class="product-id">Product ID: #${ord.productId}</span>
-            </div>
-            <div class="customer-phone">
-                <span class="phone">${ord.customerPhone}</span>
-                <div class="phone-icon"><i class="fa-solid fa-phone"></i></div>
-            </div>
-            <div class="order-details">
-                <div class="detail"><span>Quantity</span><strong>${formatter.format(ord.quantity)}</strong></div>
-                <div class="detail"><span>Price</span><strong>${currencyCode} ${formatter.format(ord.amountPerProduct)}</strong></div>
-                <div class="detail total"><span>Total</span><strong>${currencyCode} ${formatter.format(ord.totalAmount)}</strong></div>
-            </div>
-            <div class="order-cart-actions">
-                <button class="accept-btn" type="button"><i class="fa-solid fa-check"></i> Accept</button>
-                <button class="reject-btn" type="button"><i class="fa-solid fa-x"></i> Reject</button>
-            </div>
-            <div class="order-cart-status">
-                <span class="status accepted">Accepted ✓</span>
-                <span class="status rejected">Rejected ✗</span>
-            </div>
+        const list =
+            await fetchData({
+                INSTRUCTION: "GET-MY-PRODUCTS",
+                User_id: user.id
+            });
+
+
+        if (
+            !Array.isArray(list) ||
+            list.length === 0
+        ) {
+
+            showNoProduct();
+
+            return;
+        }
+
+
+        ProductList.innerHTML = "";
+
+        NoProduct.style.display = "none";
+
+
+        const fragment =
+            document.createDocumentFragment();
+
+
+        list.forEach(product => {
+
+            const card =
+                document.createElement("div");
+
+
+            card.classList.add(
+                "list-card"
+            );
+
+
+            card.innerHTML = `
+
+                <img
+                    src="${SERVER_URL}/products/${product.Url}"
+                    alt="${product.name}"
+                    class="prod-img"
+                    loading="lazy"
+                />
+
+
+                <div class="card-body">
+
+                    <p class="pord-name">
+                        ${product.name}
+                    </p>
+
+                    <p class="prod-price">
+                        ${product.currencyCode}
+                        ${formatter.format(
+                product.price
+            )}
+                    </p>
+
+                    <p class="prod-id">
+                        ${product.Id}
+                    </p>
+
+                    <p class="final-prod-description">
+                        ${product.description}
+                    </p>
+
+                </div>
+
+
+                <div class="edith-delete-prod">
+
+                    <div
+                        class="edith-prod"
+                        data-id="${product.Id}">
+
+                        <i class="fa-solid fa-pen"></i>
+                        Edit
+
+                    </div>
+
+
+                    <div
+                        class="delete-prod"
+                        data-id="${product.Id}">
+
+                        <i class="fa-solid fa-trash"></i>
+                        Delete
+
+                    </div>
+
+                </div>
+
+
+                <p class="posted-at">
+                    Posted ${product.postedAt}
+                </p>
             `;
 
-        const actions = card.querySelector(".order-cart-actions");
-        const statusBox = card.querySelector(".order-cart-status");
-        const accepted = card.querySelector(".status.accepted");
-        const rejected = card.querySelector(".status.rejected");
+
+            fragment.appendChild(card);
+        });
+
+
+        ProductList.appendChild(fragment);
+
+
+        ProductCount.textContent =
+            list.length;
+
+
+        showProducts();
+
+
+        // ── Edit ──────────────────────────────────────────────
+
+        ProductList
+            .querySelectorAll(".edith-prod")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () =>
+                        openEditProduct(
+                            button.dataset.id,
+                            list
+                        )
+                );
+            });
+
+
+        // ── Delete ────────────────────────────────────────────
+
+        ProductList
+            .querySelectorAll(".delete-prod")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () =>
+                        deleteProduct(
+                            button.dataset.id
+                        )
+                );
+            });
+
+    } catch (error) {
+
+        console.error(
+            "Product loading error:",
+            error
+        );
+
+
+        showToast(
+            "fa-solid fa-exclamation",
+            "Loading Failed",
+            "Unable to load your products.",
+            "#e53935"
+        );
+
+    } finally {
+
+        hideLoading();
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// ORDERS
+// ═══════════════════════════════════════════════════════════════
+
+async function getPlacedOrders() {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem("user") || "{}"
+        );
+
+
+    if (!user?.id) return;
+
+
+    showLoading();
+
+
+    try {
+
+        const orderList =
+            await fetchData({
+                INSTRUCTION: "GET-MY-ORDERS",
+                User_id: user.id
+            });
+
+
+        if (!Array.isArray(orderList)) {
+
+            resetSections();
+
+            NoInternet.style.display =
+                "flex";
+
+            NavOrders?.classList.add(
+                "active"
+            );
+
+            return;
+        }
+
+
+        if (orderList.length === 0) {
+
+            resetSections();
+
+            NoFoundOrders.style.display =
+                "flex";
+
+            NavOrders?.classList.add(
+                "active"
+            );
+
+            return;
+        }
+
+
+        insertOrdersCard(
+            orderList,
+            user.currency
+        );
+
+
+        showOrders();
+
+    } catch (error) {
+
+        console.error(
+            "Orders loading error:",
+            error
+        );
+
+
+        resetSections();
+
+        NoInternet.style.display =
+            "flex";
+
+        NavOrders?.classList.add(
+            "active"
+        );
+
+    } finally {
+
+        hideLoading();
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// INSERT ORDER CARDS
+// ═══════════════════════════════════════════════════════════════
+
+function insertOrdersCard(
+    orderList,
+    currencyCode
+) {
+
+    PlacedOrdersList.innerHTML = "";
+
+    const fragment =
+        document.createDocumentFragment();
+
+
+    orderList.forEach(order => {
+
+        const status =
+            (order.status || "")
+                .toLowerCase()
+                .trim();
+
+
+        const card =
+            document.createElement("div");
+
+
+        card.classList.add(
+            "order-cart"
+        );
+
+
+        card.innerHTML = `
+
+            <div class="order-header">
+
+                <span class="order-index">
+                    #${order.index}
+                </span>
+
+                <span class="order-id">
+                    Order #${order.orderId}
+                </span>
+
+                <span class="order-date">
+                    ${order.date}
+                </span>
+
+                <span class="order-time">
+                    ${order.time}
+                </span>
+
+            </div>
+
+
+            <div class="product-info">
+
+                <h4 class="product-name">
+                    ${order.productName}
+                </h4>
+
+                <span class="product-id">
+                    Product ID: #${order.productId}
+                </span>
+
+            </div>
+
+
+            <div class="customer-phone">
+
+                <span class="phone">
+                    ${order.customerPhone}
+                </span>
+
+                <div class="phone-icon">
+                    <i class="fa-solid fa-phone"></i>
+                </div>
+
+            </div>
+
+
+            <div class="order-details">
+
+                <div class="detail">
+
+                    <span>
+                        Quantity
+                    </span>
+
+                    <strong>
+                        ${formatter.format(
+            order.quantity
+        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>
+                        Price
+                    </span>
+
+                    <strong>
+                        ${currencyCode}
+                        ${formatter.format(
+            order.amountPerProduct
+        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <strong>
+                        ${currencyCode}
+                        ${formatter.format(
+            order.totalAmount
+        )}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="order-cart-actions">
+
+                <button
+                    class="accept-btn"
+                    type="button">
+
+                    <i class="fa-solid fa-check"></i>
+                    Accept
+
+                </button>
+
+
+                <button
+                    class="reject-btn"
+                    type="button">
+
+                    <i class="fa-solid fa-x"></i>
+                    Reject
+
+                </button>
+
+            </div>
+
+
+            <div class="order-cart-status">
+
+                <span class="status accepted">
+                    Accepted ✓
+                </span>
+
+                <span class="status rejected">
+                    Rejected ✗
+                </span>
+
+            </div>
+        `;
+
+
+        const actions =
+            card.querySelector(
+                ".order-cart-actions"
+            );
+
+
+        const statusBox =
+            card.querySelector(
+                ".order-cart-status"
+            );
+
+
+        const accepted =
+            card.querySelector(
+                ".status.accepted"
+            );
+
+
+        const rejected =
+            card.querySelector(
+                ".status.rejected"
+            );
+
 
         actions.style.display = "none";
         statusBox.style.display = "none";
         accepted.style.display = "none";
         rejected.style.display = "none";
 
+
         if (status === "pending") {
-            actions.style.display = "flex";
-        } else if (status === "accepted") {
-            statusBox.style.display = "block";
-            accepted.style.display = "inline-block";
-        } else if (status === "rejected") {
-            statusBox.style.display = "block";
-            rejected.style.display = "inline-block";
+
+            actions.style.display =
+                "flex";
+
+        } else if (
+            status === "accepted"
+        ) {
+
+            statusBox.style.display =
+                "block";
+
+            accepted.style.display =
+                "inline-block";
+
+        } else if (
+            status === "rejected"
+        ) {
+
+            statusBox.style.display =
+                "block";
+
+            rejected.style.display =
+                "inline-block";
         }
 
-        frag.appendChild(card);
+
+        fragment.appendChild(card);
     });
 
-    PlacedOrdersList.appendChild(frag);
 
+    PlacedOrdersList.appendChild(
+        fragment
+    );
 }
 
-// Order actions (accept / reject / call)
-PlacedOrdersList.addEventListener("click", async e => {
-    const item = e.target.closest(".order-cart");
-    if (!item) return;
 
-    if (e.target.closest(".phone-icon")) {
-        const phone = item.querySelector(".phone").textContent.trim();
-        window.location.href = `tel:${phone}`;
-        return;
+// ═══════════════════════════════════════════════════════════════
+// ORDER ACTIONS
+// ═══════════════════════════════════════════════════════════════
+
+PlacedOrdersList.addEventListener(
+    "click",
+    async event => {
+
+        const orderCard =
+            event.target.closest(
+                ".order-cart"
+            );
+
+
+        if (!orderCard) return;
+
+
+        // ── Call customer ─────────────────────────────────────
+
+        if (
+            event.target.closest(
+                ".phone-icon"
+            )
+        ) {
+
+            const phone =
+                orderCard
+                    .querySelector(
+                        ".phone"
+                    )
+                    ?.textContent
+                    .trim();
+
+
+            if (phone) {
+                window.location.href =
+                    `tel:${phone}`;
+            }
+
+
+            return;
+        }
+
+
+        // ── Accept / Reject ───────────────────────────────────
+
+        let newStatus = null;
+
+
+        if (
+            event.target.closest(
+                ".accept-btn"
+            )
+        ) {
+
+            newStatus =
+                "accepted";
+        }
+
+
+        if (
+            event.target.closest(
+                ".reject-btn"
+            )
+        ) {
+
+            newStatus =
+                "rejected";
+        }
+
+
+        if (!newStatus) return;
+
+
+        const rawId =
+            orderCard
+                .querySelector(
+                    ".order-id"
+                )
+                .textContent;
+
+
+        const orderId =
+            rawId
+                .replace("Order #", "")
+                .trim();
+
+
+        showLoading();
+
+
+        try {
+
+            const result =
+                await fetchData({
+                    INSTRUCTION:
+                        "SET-ORDER-STATUS",
+
+                    OrderID:
+                        orderId,
+
+                    status:
+                        newStatus
+                });
+
+
+            if (
+                result?.status === "OK"
+            ) {
+
+                showToast(
+                    "fa-solid fa-check",
+                    "Order Updated",
+                    `Order has been ${newStatus}.`,
+                    newStatus === "accepted"
+                        ? "#1a8a00"
+                        : "#e53935"
+                );
+
+
+                await getPlacedOrders();
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Order update error:",
+                error
+            );
+
+
+            showToast(
+                "fa-solid fa-exclamation",
+                "Update Failed",
+                "Unable to update the order.",
+                "#e53935"
+            );
+
+        } finally {
+
+            hideLoading();
+        }
     }
+);
 
-    const rawId = item.querySelector(".order-id").textContent;
-    const orderId = rawId.replace("Order #", "").trim();
 
-    let newStatus = null;
-    if (e.target.closest(".accept-btn")) newStatus = "accepted";
-    if (e.target.closest(".reject-btn")) newStatus = "rejected";
-    if (!newStatus) return;
+// ═══════════════════════════════════════════════════════════════
+// ADD PRODUCT
+// ═══════════════════════════════════════════════════════════════
 
-    Loading.style.display = "flex";
-    const result = await fetchData({ INSTRUCTION: "SET-ORDER-STATUS", OrderID: orderId, status: newStatus });
-    Loading.style.display = "none";
+Plus.addEventListener(
+    "click",
+    () => {
 
-    if (result && result.status === "OK") {
-        showToast("fa-solid fa-check", "Order Updated", `Order has been ${newStatus}.`, newStatus === "accepted" ? "#1a8a00" : "#e53935");
-        getPlacedOrders();
+        showAddProduct();
+
+        InsertCategories();
     }
+);
+
+
+// ── Cancel add product ────────────────────────────────────────
+
+CancelNewProd.forEach(button => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            AddProduct.style.display =
+                "none";
+        }
+    );
 });
 
 
-// ============== code for stores activities ==========
-NavStore.addEventListener("click", () => {
+// ── Select product image ──────────────────────────────────────
 
-    //GETTING USER INFO
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user["id"]) return;
+cameraBtn.addEventListener(
+    "click",
+    () => {
 
-    const Add_Store_Overlay = Store_Section.querySelector(".add-store-overlay");
-    const Add_Store_Password_Overlay = Store_Section.querySelector(".add-store-password-overlay");
-    const Stores = Store_Section.querySelector(".stores");
-    const CardContainer = Store_Section.querySelector(".store-container");
-    const Edith_Store_Overlay = Store_Section.querySelector(".edith-store-overlay");
-    Edith_Store_Overlay.classList.add("active");
-
-    //Inputs Variable
-    const StoreName = Store_Section.querySelector(".store-name");
-    const StoreEmail = Store_Section.querySelector(".store-email");
-    const StorePhone = Store_Section.querySelector(".store-phone");
-    const StoreLocation = Store_Section.querySelector(".store-location");
-    const StorePassword = Store_Section.querySelector(".store-password");
-    const StoreConfrimPassword = Store_Section.querySelector(".store-confirm-password");
-    const PickLocation = Store_Section.querySelector(".pick-location-btn");
-    const NoStores = Store_Section.querySelector(".no-store");
-    const NoInternet = Store_Section.querySelector(".no-internet");
-    const StoreCountView = Store_Section.querySelector(".store-count > p");
-    const count = Store_Section.querySelector(".store-count");
-
-    //Store Count;
-    let StoreCount = 0;
-
-    //setting both the noInternet and Stores to display none
-    NoStores.style.display = "none";
-    NoInternet.style.disabled = "none";
-
-    //fragment for inserting card to view
-    const fragment = document.createDocumentFragment();
-
-    //setting country icon selector on the phone input 
-    const iti = window.intlTelInput(StorePhone, {
-        initialCountry: "auto",
-        geoIpLookup: cb => fetch("https://ipapi.co/json/").then(r => r.json()).then(d => cb(d.country_code)).catch(() => cb("gh")),
-        separateDialCode: true,
-        useFullscreenPopup: false,
-        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js"
-    });
-
-
-    //getting All stores
-    async function getAllStores() {
-        CardContainer.innerHTML = "";
-        let Payload = {
-            INSTRUCTION: "GET-MY-STORES",
-            owner: user["id"]
-        }
-
-        Loading.style.display = "flex";
-        let Result = await fetchData(Payload);
-
-
-        if (!Array.isArray(Result)) {
-            Loading.style.display = "none";
-            Stores.style.display = "none";
-            NoInternet.style.display = "block";
-
-            return;
-        }
-
-        if (Result.length === 0) {
-            Loading.style.display = "none";
-            Stores.style.display = "flex";
-            CardContainer.style.display = "none";
-            NoStores.style.display = "block";
-            return;
-        }
-
-        Loading.style.display = "none";
-        StoreCount = 0
-        Result.forEach(store => {
-
-            StoreCount++;
-            StoreCountView.textContent = StoreCount;
-
-            const storeCard = document.createElement("div");
-            storeCard.classList.add("store-card");
-            storeCard.innerHTML =
-                `
-                <button class="delete-btn">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-                <div class="store-data-top">
-                    <div class="store-data-info">
-                        <h2>${store.name}</h2>
-                        <span class="storeid">
-                            StoreId : ${store.id}
-                        </span>
-                        <span>
-                            <i class="fa-solid fa-user"></i>
-                            ${store.name}
-                        </span>
-                        <span>
-                            <i class="fa-solid fa-envelope"></i>
-                            ${store.email}
-                        </span>
-                        <span>
-                            <i class="fa-solid fa-phone"></i>
-                            ${store.phone}
-                        </span>
-                        <span>
-                            <i class="fa-solid fa-location-dot"></i>
-                            ${store.location}
-                        </span>
-                    </div>
-                </div>
-                <div class="card-actions">
-                    <button class="view-btn">
-                        <i class="fa-solid fa-store"></i>
-                        View Store
-                    </button>
-                    <button class="edit-btn">
-                        <i class="fa-solid fa-pen"></i>
-                        Edit Data
-                    </button>
-                </div>
-            `
-
-            fragment.append(storeCard);
-
-        });
-
-        CardContainer.append(fragment);
-
+        fileInput.click();
     }
-
-    //Next and upload buttons 
-    Store_Section.querySelector(".add-store").onclick = () => {
-        Add_Store_Overlay.classList.add("active");
-        StoreName.value = "";
-        StoreEmail.value = "";
-        StorePhone.value = "";
-        StoreLocation.value = "";
+);
 
 
-        //Onclick funct for the next button in the create store overlay 
-        Add_Store_Overlay.querySelector(".next>button").onclick = () => {
-            if (StoreName.value.trim() === "" || StoreEmail.value.trim() === "" || StorePhone.value.trim() === "" || StoreLocation.value.trim() === "") {
-                showToast(
-                    "fa-solid fa-keyboard",
-                    "Required Inputs",
-                    "All inputs are required to proceed",
-                    "red");
-                return;
-            }
+fileInput.addEventListener(
+    "change",
+    event => {
 
-            if (!iti.isValidNumber()) {
-                showToast(
-                    "fa-solid fa-phone",
-                    "Invalid Number",
-                    "The number you entered is invalid",
-                    "red");
-
-                return;
-            }
-
-            Add_Store_Overlay.classList.remove("active");
-            Add_Store_Password_Overlay.classList.add("active");
-
-            StorePassword.value = "";
-            StoreConfrimPassword.value = "";
+        const file =
+            event.target.files[0];
 
 
-            //inclick fuction on the upload button in the create password overlay when creating a new store
-            Add_Store_Password_Overlay.querySelector(".upload").onclick = async () => {
-                if (StorePassword.value.trim() === "" || StoreConfrimPassword.value.trim() === "") {
-                    showToast(
-                        "fa-solid fa-keyboard",
-                        "Required Inputs",
-                        "All inputs are required to proceed",
-                        "red");
-                    return;
-                }
-
-                if (StorePassword.value.trim() !== StoreConfrimPassword.value.trim()) {
-                    StoreConfrimPassword.style.boxShadow = "0 0 10px red";
-                    StorePassword.style.boxShadow = "0 0 10px red";
-                    return;
-                }
+        if (!file) return;
 
 
-                let Payload = {
-                    INSTRUCTION: "INSERT-NEW-STORE",
-                    owner: user["User-ID"],
-                    name: StoreName.value.trim(),
-                    email: StoreEmail.value.trim(),
-                    phone: iti.getNumber(),
-                    location: StoreLocation.value.trim(),
-                    password: StorePassword.value.trim()
-                }
+        const reader =
+            new FileReader();
 
 
+        reader.onload = event => {
 
-                Loading.style.display = "flex";
-                let Responce = await fetchData(Payload);
-                Loading.style.display = "none";
+            prodImage.src =
+                event.target.result;
 
+            prodImage.style.display =
+                "block";
 
-                if (Responce && Responce.status === "OK") {
-                    Add_Store_Password_Overlay.style.display = "none";
-                    NoStores.style.display = "none";
-                    CardContainer.style.display = "grid";
-                    showToast(
-                        "fa-solid fa-check",
-                        "Added Store",
-                        "Your new store has been added successfully",
-                        "green");
+            prodIcon.style.display =
+                "none";
 
-                    getAllStores();
-                }
-
-            }
-
-            //onclick on the close button to close the create store password overlay
-            Add_Store_Password_Overlay.querySelector(".close-btn-add-password").onclick = () => {
-                Add_Store_Overlay.classList.add("active");
-                Add_Store_Password_Overlay.classList.remove("active");
-            }
+            cancelImgBtn.style.display =
+                "flex";
         };
 
 
-        //onclick on cancel buttons to close the add store overlay
-        Add_Store_Overlay.querySelector(".close-btn-add-store").onclick = () => {
-            Add_Store_Overlay.classList.remove("active");
-        }
-    };
+        reader.readAsDataURL(file);
+    }
+);
 
-    //onclikc for editing store data
-    CardContainer.onclick = (e) => {
-        const store_Card = e.target.closest(".store-card");
-        let StoreID = null;
-        if (e.target.closest(".delete-btn")) {
-            StoreID = store_Card.querySelector(".storeid").textContent.split("StoreId : ")[1];
-            alert(StoreID);
 
-        } else if (e.target.closest(".view-btn")) {
+// ── Remove product image ──────────────────────────────────────
 
-        } else if (e.target.closest(".edit-btn")) {
+cancelImgBtn.addEventListener(
+    "click",
+    () => {
 
-        }
+        prodImage.src = "";
+
+        prodImage.style.display =
+            "none";
+
+        prodIcon.style.display =
+            "flex";
+
+        cancelImgBtn.style.display =
+            "none";
+
+        fileInput.value = "";
+    }
+);
+
+
+// ═══════════════════════════════════════════════════════════════
+// PRODUCT PRICE VALIDATION
+// ═══════════════════════════════════════════════════════════════
+
+function validatePrice(value) {
+
+    const MAX_INTEGER =
+        "9999999999999999";
+
+
+    value =
+        value.trim();
+
+
+    if (
+        !/^\d+(\.\d{1,2})?$/.test(value)
+    ) {
+
+        showToast(
+            "fa-solid fa-money-bill",
+            "Product Pricing",
+            "Max 2 decimal places allowed.",
+            "#e53935"
+        );
+
+        return false;
     }
 
 
-    //PickLocation Algorithem
-    PickLocation.onclick = () => {
+    const integerPart =
+        value.split(".")[0];
 
-        PickLocation.disabled = true;
-        PickLocation.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
+    if (
+        integerPart.length >
+        MAX_INTEGER.length
+    ) {
 
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
+        showToast(
+            "fa-solid fa-money-bill",
+            "Product Pricing",
+            "The product price is too large.",
+            "#e53935"
+        );
 
-                StoreLocation.value = `${lat}, ${lng}`;
+        return false;
+    }
 
-                PickLocation.disabled = false;
-                PickLocation.innerHTML = `<i class="fa-solid fa-crosshairs"></i>`;
 
-            },
-            () => {
+    if (
+        integerPart.length ===
+        MAX_INTEGER.length &&
+        integerPart >
+        MAX_INTEGER
+    ) {
 
-                PickLocation.disabled = false;
-                PickLocation.innerHTML = `<i class="fa-solid fa-crosshairs"></i>`;
+        showToast(
+            "fa-solid fa-money-bill",
+            "Product Pricing",
+            "The product price is too large.",
+            "#e53935"
+        );
+
+        return false;
+    }
+
+
+    return true;
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// SUBMIT NEW PRODUCT
+// ═══════════════════════════════════════════════════════════════
+
+AddNewProd.addEventListener(
+    "click",
+    async () => {
+
+        const user =
+            JSON.parse(
+                localStorage.getItem(
+                    "user"
+                ) || "{}"
+            );
+
+
+        if (!user?.id) {
+
+            showToast(
+                "fa-solid fa-exclamation",
+                "Not Logged In",
+                "Please log in before adding a product.",
+                "#e53935"
+            );
+
+            return;
+        }
+
+
+        const file =
+            fileInput.files[0];
+
+
+        const category =
+            ProductCategory.dataset.value;
+
+
+        if (
+            !file ||
+            !ProdName.value.trim() ||
+            !ProdPrice.value.trim() ||
+            !category ||
+            !ProdDisc.value.trim()
+        ) {
+
+            showToast(
+                "fa-solid fa-keyboard",
+                "Missing Fields",
+                "Please fill all fields and select a category.",
+                "#e53935"
+            );
+
+            return;
+        }
+
+
+        const price =
+            ProdPrice.value.trim();
+
+
+        if (!validatePrice(price)) {
+            return;
+        }
+
+
+        const payload = {
+
+            INSTRUCTION:
+                "UPLOAD-NEW-PROD",
+
+            owner:
+                user.id,
+
+            name:
+                ProdName.value.trim(),
+
+            price,
+
+            Category:
+                category,
+
+            Description:
+                ProdDisc.value.trim()
+        };
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "file",
+            file
+        );
+
+
+        formData.append(
+            "Data",
+            JSON.stringify(payload)
+        );
+
+
+        showLoading();
+
+
+        try {
+
+            const result =
+                await UploadFileWithData(
+                    formData
+                );
+
+
+            if (
+                result?.status === "OK"
+            ) {
+
+                AddProduct.style.display =
+                    "none";
+
+
+                ProdName.value = "";
+                ProdPrice.value = "";
+                ProdDisc.value = "";
+
+
+                fileInput.value = "";
+
+
+                showToast(
+                    "fa-solid fa-check",
+                    "Product Added",
+                    "Your product was uploaded successfully.",
+                    "#1a8a00"
+                );
+
+
+                await getMyProducts();
+
+            } else if (
+                result?.status ===
+                "LIMIT_REACHED"
+            ) {
 
                 showToast(
                     "fa-solid fa-exclamation",
-                    "Pick Location Error",
-                    "Unable to pick current location",
-                    "red"
+                    "Upload Limit Reached",
+                    "You've reached the maximum number of products for this plan. Upgrade to add more.",
+                    "#e53935"
+                );
+
+            } else {
+
+                showToast(
+                    "fa-solid fa-exclamation",
+                    "Upload Failed",
+                    result?.message ||
+                    "Could not upload the product.",
+                    "#e53935"
                 );
             }
-        );
-    };
 
-    if (CardContainer.children.length === 0) {
-        getAllStores();
-    } else {
-        CardContainer.style.display = "grid";
-    }
+        } catch (error) {
 
-    showStores();
-});
+            console.error(
+                "Product upload error:",
+                error
+            );
 
 
-// ── ADD PRODUCT ──────────────────────────
-Plus.addEventListener("click", () => {
-    showAddProduct();
-    Insert_Categories();
-});
-
-// Cancel buttons on add form
-CancelNewProd.forEach(btn => btn.addEventListener("click", () => {
-    AddProduct.style.display = "none";
-}));
-
-// Image pick
-cameraBtn.addEventListener("click", () => fileInput.click());
-
-fileInput.addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = evt => {
-        prodImage.src = evt.target.result;
-        prodImage.style.display = "block";
-        prodIcon.style.display = "none";
-        cancelImgBtn.style.display = "flex";
-    };
-    reader.readAsDataURL(file);
-});
-
-cancelImgBtn.addEventListener("click", () => {
-    prodImage.src = "";
-    prodImage.style.display = "none";
-    prodIcon.style.display = "flex";
-    cancelImgBtn.style.display = "none";
-    fileInput.value = "";
-});
-
-AddNewProd.addEventListener("click", async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) return alert("Not logged in!");
-
-    const file = fileInput.files[0];
-    const value = PordCart.dataset.value;
-
-    if (!file || !ProdName.value.trim() || !ProdPrice.value.trim() || !value || !ProdDisc.value.trim()) {
-        showToast("fa-solid fa-keyboard", "Missing Fields", "Please fill all fields and select a category.", "#e53935");
-        return;
-    }
-
-    let Price = ProdPrice.value.trim();
-
-    function ValidatePrice(inputValue) {
-        const MAX_INT = "9999999999999999"; // 16 digits
-
-        inputValue = inputValue.trim();
-
-        // 1. Validate format (max 2 decimals)
-        if (!/^\d+(\.\d{1,2})?$/.test(inputValue)) {
             showToast(
-                "fa-solid fa-money-bill",
-                "Product Pricing",
-                "Max 2 decimal places allowed",
+                "fa-solid fa-exclamation",
+                "Upload Failed",
+                "Something went wrong. Please try again.",
                 "#e53935"
             );
-            return false;
+
+        } finally {
+
+            hideLoading();
         }
-
-        // 2. Split integer and decimal
-        const parts = inputValue.split(".");
-        const intPart = parts[0];
-
-        // 3. Reject if input has MORE digits than MAX_INT
-        if (intPart.length > MAX_INT.length) {
-            showToast(
-                "fa-solid fa-money-bill",
-                "Product Pricing",
-                "The product price is too large",
-                "#e53935"
-            );
-            return false;
-        }
-
-        // 4. If same length, compare lexicographically (alphabetical string check)
-        if (intPart.length === MAX_INT.length && intPart > MAX_INT) {
-            showToast(
-                "fa-solid fa-money-bill",
-                "Product Pricing",
-                "The product price is too large",
-                "#e53935"
-            );
-            return false;
-        }
-
-        return true;
     }
-
-    // FIX: Stop the execution if validation fails
-    if (!ValidatePrice(Price)) return;
-
-    const payload = {
-        INSTRUCTION: "UPLOAD-NEW-PROD",
-        owner: user["id"],
-        name: ProdName.value.trim(),
-        price: Price, // Using the already trimmed variable
-        Category: value,
-        Description: ProdDisc.value.trim()
-    };
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("Data", JSON.stringify(payload));
-
-    try {
-        Loading.style.display = "flex";
-        const result = await UploadFileWithData(formData);
-        Loading.style.display = "none";
-
-        if (result && result.status === "OK") {
-            AddProduct.style.display = "none";
-            ProdName.value = "";
-            ProdPrice.value = "";
-            ProdDisc.value = "";
-            fileInput.value = "";
-            showToast("fa-solid fa-check", "Product Added", "Your product was uploaded successfully.", "#1a8a00");
-            getMyProducts();
-        } else if (result && result.status === "LIMIT_REACHED") {
-            showToast("fa-solid fa-exclamation", "Upload Limit reached", "You’ve reached the maximum number of products for this plan. Upgrade to add more.", "#e53935");
-        }
-    } catch {
-        Loading.style.display = "none";
-        showToast("fa-solid fa-exclamation", "Upload Failed", "Something went wrong. Please try again.", "#e53935");
-    }
-});
+);
 
 
-// ── EDIT PRODUCT ─────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// EDIT PRODUCT
+// ═══════════════════════════════════════════════════════════════
+
 let currentEditId = null;
 
-function openEditProduct(prodId, list) {
-    const prod = list.find(p => p.Id === prodId);
-    if (!prod) return;
-    currentEditId = prodId;
-    EditProdImg.src = `${ipAddress}/products/${prod.Url}`;
-    EditProdName.value = prod.name;
-    EditProdPrice.value = prod.price;
-    EditProdCat.textContent = prod.Category || "—";
-    EditProdDisc.value = prod.description;
-    EdithProduct.style.display = "flex";
-}
 
-CancelEdits.forEach(btn => btn.addEventListener("click", () => {
-    EdithProduct.style.display = "none";
-}));
+function openEditProduct(
+    productId,
+    productList
+) {
 
-SelectEditImg.addEventListener("click", () => EditFileInput.click());
+    const product =
+        productList.find(
+            item =>
+                item.Id === productId
+        );
 
-EditFileInput.addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = evt => {
-        EditProdImg.src = evt.target.result;
-        //CancelEditImg.style.display = "flex";
-        //SelectEditImg.style.display = "flex";
-    };
-    reader.readAsDataURL(file);
-});
+    if (!product) return;
 
-CancelEditImg.addEventListener("click", () => {
-    EditProdImg.src = "";
+
+    currentEditId =
+        productId;
+
+
+    EditProdImg.src =
+        `${SERVER_URL}/products/${product.Url}`;
+
+
+    EditProdName.value =
+        product.name || "";
+
+
+    EditProdPrice.value =
+        product.price || "";
+
+
+    EditProdCat.textContent =
+        product.Category || "—";
+
+
+    EditProdDisc.value =
+        product.description || "";
+
+
     EditFileInput.value = "";
-    // SelectEditImg.style.display = "flex";
-});
-
-SaveEdit.addEventListener("click", async () => {
-    if (!currentEditId) return;
-
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) return;
-
-    const payload = {
-        INSTRUCTION: "UPDATE-PROD-DATA",
-        ProdID: currentEditId,
-        name: EditProdName.value.trim(),
-        price: EditProdPrice.value.trim(),
-        description: EditProdDisc.value.trim()
-    };
-
-    const file = EditFileInput.files[0];
-    Loading.style.display = "flex";
-
-    let result;
-
-    if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("Data", JSON.stringify(payload));
-        result = await UploadFileWithData(formData);
-    } else {
-        result = await fetchData(payload);
-    }
-
-    Loading.style.display = "none";
-
-    if (result && result.status === "OK") {
-        EdithProduct.style.display = "none";
-        showToast("fa-solid fa-check", "Product Updated", "Changes saved successfully.", "#1a8a00");
-        getMyProducts();
-    } else {
-        showToast("fa-solid fa-exclamation", "Update Failed", "Could not save changes. Try again.", "#e53935");
-    }
-});
 
 
-// ── DELETE PRODUCT ───────────────────────
-async function deleteProduct(prodId) {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) return;
-
-    Loading.style.display = "flex";
-    const result = await fetchData({ INSTRUCTION: "DELETE-MY-PRODUCT", UserID: user["User-ID"], ProdID: prodId });
-    Loading.style.display = "none";
-
-
-    if (result && result.status === "OK") {
-        showToast("fa-solid fa-trash", "Deleted", "Product removed from your store.", "#e53935");
-        getMyProducts();
-    }
+    EditProduct.style.display =
+        "flex";
 }
 
 
-// ── CATEGORIES ───────────────────────────
-function saveLocalCategories(cats) {
-    try { localStorage.setItem("Product-Categories", JSON.stringify(cats)); } catch { }
-}
-function getLocalCategories() {
+// ── Cancel edit ───────────────────────────────────────────────
+
+CancelEdits.forEach(button => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            EditProduct.style.display =
+                "none";
+
+            currentEditId =
+                null;
+        }
+    );
+});
+
+
+// ── Select new product image ──────────────────────────────────
+
+SelectEditImg.addEventListener(
+    "click",
+    () => {
+
+        EditFileInput.click();
+    }
+);
+
+
+EditFileInput.addEventListener(
+    "change",
+    event => {
+
+        const file =
+            event.target.files[0];
+
+
+        if (!file) return;
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload = event => {
+
+            EditProdImg.src =
+                event.target.result;
+        };
+
+
+        reader.readAsDataURL(file);
+    }
+);
+
+
+// ── Cancel selected image ────────────────────────────────────
+
+CancelEditImg.addEventListener(
+    "click",
+    () => {
+
+        EditProdImg.src = "";
+
+        EditFileInput.value = "";
+    }
+);
+
+
+// ── Save product changes ──────────────────────────────────────
+
+SaveEdit.addEventListener(
+    "click",
+    async () => {
+
+        if (!currentEditId) return;
+
+
+        const user =
+            JSON.parse(
+                localStorage.getItem(
+                    "user"
+                ) || "{}"
+            );
+
+
+        if (!user?.id) return;
+
+
+        const payload = {
+
+            INSTRUCTION:
+                "UPDATE-PROD-DATA",
+
+            ProdID:
+                currentEditId,
+
+            name:
+                EditProdName.value.trim(),
+
+            price:
+                EditProdPrice.value.trim(),
+
+            description:
+                EditProdDisc.value.trim()
+        };
+
+
+        const file =
+            EditFileInput.files[0];
+
+
+        showLoading();
+
+
+        try {
+
+            let result;
+
+
+            if (file) {
+
+                const formData =
+                    new FormData();
+
+
+                formData.append(
+                    "file",
+                    file
+                );
+
+
+                formData.append(
+                    "Data",
+                    JSON.stringify(payload)
+                );
+
+
+                result =
+                    await UploadFileWithData(
+                        formData
+                    );
+
+            } else {
+
+                result =
+                    await fetchData(
+                        payload
+                    );
+            }
+
+
+            if (
+                result?.status === "OK"
+            ) {
+
+                EditProduct.style.display =
+                    "none";
+
+                currentEditId =
+                    null;
+
+
+                showToast(
+                    "fa-solid fa-check",
+                    "Product Updated",
+                    "Changes saved successfully.",
+                    "#1a8a00"
+                );
+
+
+                await getMyProducts();
+
+            } else {
+
+                showToast(
+                    "fa-solid fa-exclamation",
+                    "Update Failed",
+                    result?.message ||
+                    "Could not save changes. Try again.",
+                    "#e53935"
+                );
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Product update error:",
+                error
+            );
+
+
+            showToast(
+                "fa-solid fa-exclamation",
+                "Update Failed",
+                "Could not save changes. Try again.",
+                "#e53935"
+            );
+
+        } finally {
+
+            hideLoading();
+        }
+    }
+);
+
+
+// ═══════════════════════════════════════════════════════════════
+// DELETE PRODUCT
+// ═══════════════════════════════════════════════════════════════
+
+async function deleteProduct(productId) {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem(
+                "user"
+            ) || "{}"
+        );
+
+
+    if (!user?.id) return;
+
+
+    showLoading();
+
+
     try {
-        const s = localStorage.getItem("Product-Categories");
-        return s ? JSON.parse(s) : null;
-    } catch { return null; }
+
+        const result =
+            await fetchData({
+
+                INSTRUCTION:
+                    "DELETE-MY-PRODUCT",
+
+                UserID:
+                    user["User-ID"] ||
+                    user.id,
+
+                ProdID:
+                    productId
+            });
+
+
+        if (
+            result?.status === "OK"
+        ) {
+
+            showToast(
+                "fa-solid fa-trash",
+                "Deleted",
+                "Product removed from your store.",
+                "#e53935"
+            );
+
+
+            await getMyProducts();
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Delete product error:",
+            error
+        );
+
+
+        showToast(
+            "fa-solid fa-exclamation",
+            "Delete Failed",
+            "Could not delete the product.",
+            "#e53935"
+        );
+
+    } finally {
+
+        hideLoading();
+    }
 }
 
-async function Insert_Categories() {
-    const selectWrapper = PordCart;
-    const selectedDiv = selectWrapper.querySelector(".selected");
-    const optionsContainer = selectWrapper.querySelector(".options");
 
-    const stored = getLocalCategories();
+// ═══════════════════════════════════════════════════════════════
+// CATEGORIES
+// ═══════════════════════════════════════════════════════════════
+
+function saveLocalCategories(
+    categories
+) {
+
+    try {
+
+        localStorage.setItem(
+            "Product-Categories",
+            JSON.stringify(categories)
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Could not save categories locally:",
+            error
+        );
+    }
+}
+
+
+function getLocalCategories() {
+
+    try {
+
+        const stored =
+            localStorage.getItem(
+                "Product-Categories"
+            );
+
+
+        return stored
+            ? JSON.parse(stored)
+            : null;
+
+    } catch {
+
+        return null;
+    }
+}
+
+
+async function InsertCategories() {
+
+    const selectWrapper =
+        ProductCategory;
+
+
+    const selectedDiv =
+        selectWrapper.querySelector(
+            ".selected"
+        );
+
+
+    const optionsContainer =
+        selectWrapper.querySelector(
+            ".options"
+        );
+
+
+    const stored =
+        getLocalCategories();
+
+
     let categories = [];
 
+
     try {
-        const data = await fetchData({ INSTRUCTION: "GET-CATEGORIES" });
-        if (data && data.Product_Categories) {
-            categories = data.Product_Categories;
-            saveLocalCategories(categories);
+
+        const data =
+            await fetchData({
+                INSTRUCTION:
+                    "GET-CATEGORIES"
+            });
+
+
+        if (
+            data &&
+            Array.isArray(
+                data.Product_Categories
+            )
+        ) {
+
+            categories =
+                data.Product_Categories;
+
+            saveLocalCategories(
+                categories
+            );
+
         } else if (stored) {
-            categories = stored;
+
+            categories =
+                stored;
         }
+
     } catch {
-        if (stored) categories = stored;
+
+        if (stored) {
+            categories =
+                stored;
+        }
     }
 
+
+    categories =
+        categories.filter(
+            category =>
+                category &&
+                category !== "All"
+        );
+
+
     if (!categories.length) {
-        optionsContainer.innerHTML = `<div class="option">No categories available</div>`;
+
+        optionsContainer.innerHTML =
+            `<div class="option">
+                No categories available
+            </div>`;
+
         return;
     }
 
-    categories = categories.filter(c => c && c !== "All");
-    optionsContainer.innerHTML = "";
 
-    categories.forEach(cat => {
-        const opt = document.createElement("div");
-        opt.classList.add("option");
-        opt.textContent = cat;
-        optionsContainer.appendChild(opt);
+    optionsContainer.innerHTML =
+        "";
 
-        opt.addEventListener("click", () => {
-            selectedDiv.innerHTML = `${cat} <i class="fa-solid fa-chevron-down sel-arrow"></i>`;
-            selectWrapper.dataset.value = cat;
-            optionsContainer.style.display = "none";
-        });
-    });
 
-    selectedDiv.addEventListener("click", e => {
-        e.stopPropagation();
-        optionsContainer.style.display = optionsContainer.style.display === "block" ? "none" : "block";
-    });
+    categories.forEach(
+        category => {
 
-    document.addEventListener("click", e => {
-        if (!selectWrapper.contains(e.target)) optionsContainer.style.display = "none";
-    });
+            const option =
+                document.createElement(
+                    "div"
+                );
+
+
+            option.classList.add(
+                "option"
+            );
+
+
+            option.textContent =
+                category;
+
+
+            option.addEventListener(
+                "click",
+                () => {
+
+                    selectedDiv.innerHTML = `
+                        ${category}
+                        <i class="fa-solid fa-chevron-down sel-arrow"></i>
+                    `;
+
+
+                    selectWrapper.dataset.value =
+                        category;
+
+
+                    optionsContainer.style.display =
+                        "none";
+                }
+            );
+
+
+            optionsContainer.appendChild(
+                option
+            );
+        }
+    );
+
+
+    selectedDiv.onclick =
+        event => {
+
+            event.stopPropagation();
+
+
+            optionsContainer.style.display =
+                optionsContainer.style.display ===
+                    "block"
+                    ? "none"
+                    : "block";
+        };
 }
 
 
-// ── NAVIGATION ───────────────────────────
-Back.addEventListener("click", () => {
-    window.history.back() || (location.href = "/index.html");
-});
+// ── Close category menu ───────────────────────────────────────
 
-NavDash.addEventListener("click", () => {
-    Dash();
-});
+document.addEventListener(
+    "click",
+    event => {
 
-NavProducts.addEventListener("click", async () => {
-    Profile.classList.remove("active-profile");
-    const isEmpty = ProductList.children.length === 0 || ProductList.querySelector(".no-product-section");
-    if (isEmpty) await getMyProducts();
-    showProducts();
-});
+        if (
+            ProductCategory &&
+            !ProductCategory.contains(
+                event.target
+            )
+        ) {
 
-NavOrders.addEventListener("click", () => {
-    Profile.classList.remove("active-profile");
-    if (PlacedOrdersList.children.length === 0) {
-        getPlacedOrders();
-    } else {
-        showOrders();
+            const options =
+                ProductCategory.querySelector(
+                    ".options"
+                );
 
+
+            if (options) {
+                options.style.display =
+                    "none";
+            }
+        }
     }
-});
+);
 
-Profile.addEventListener("click", () => {
-    if (MyProfile.style.display === "flex") {
-        // Already on profile — toggle back to products
-        Profile.classList.remove("active-profile");
 
-        NavProducts.click();
-    } else {
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+
+Back?.addEventListener(
+    "click",
+    () => {
+
+        window.history.back();
+    }
+);
+
+
+// ── Dashboard ─────────────────────────────────────────────────
+
+NavDash?.addEventListener(
+    "click",
+    () => {
+
+        Dash();
+    }
+);
+
+
+// ── Products ──────────────────────────────────────────────────
+
+NavProducts?.addEventListener(
+    "click",
+    async () => {
+
+        Profile.classList.remove(
+            "active-profile"
+        );
+
+
+        if (
+            ProductList.children.length === 0
+        ) {
+
+            await getMyProducts();
+
+        } else {
+
+            showProducts();
+        }
+    }
+);
+
+
+// ── Orders ────────────────────────────────────────────────────
+
+NavOrders?.addEventListener(
+    "click",
+    async () => {
+
+        Profile.classList.remove(
+            "active-profile"
+        );
+
+
+        if (
+            PlacedOrdersList.children.length ===
+            0
+        ) {
+
+            await getPlacedOrders();
+
+        } else {
+
+            showOrders();
+        }
+    }
+);
+
+
+// ── Profile ───────────────────────────────────────────────────
+
+Profile?.addEventListener(
+    "click",
+    () => {
+
+        if (
+            MyProfile.style.display ===
+            "flex"
+        ) {
+
+            Profile.classList.remove(
+                "active-profile"
+            );
+
+
+            NavProducts.click();
+
+            return;
+        }
+
+
         showMyProfile();
+
         loadAccountInfo();
     }
-});
+);
 
 
-// ── ACCOUNT INFO ─────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// ACCOUNT INFORMATION
+// ═══════════════════════════════════════════════════════════════
+
 async function loadAccountInfo() {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    const user =
+        JSON.parse(
+            localStorage.getItem(
+                "user"
+            ) || "{}"
+        );
+
+
     if (!user) return;
 
-    Display_Account_Name.textContent = user["business-name"] || user["business-name"] || "My Store";
-    Display_Account_Id.textContent = user["id"] ? `ID: ${user["id"]}` : "";
 
-    if (user.email) Display_Old_Email.textContent = user.email;
-    if (user.phone) Display_Old_Phone.textContent = user.phone;
+    DisplayAccountName.textContent =
+        user["business-name"] ||
+        "My Store";
 
-    const countryFlag = document.querySelector(".country-flag");
-    const countryName = document.querySelector(".country-name");
-    document.querySelector(".country-currency").textContent = user["currency"];
-    countryFlag.src = `https://flagcdn.com/w320/${user.iso2}.png`;
 
-    if (user.country) countryName.textContent = user.country;
+    DisplayAccountId.textContent =
+        user.id
+            ? `ID: ${user.id}`
+            : "";
 
-    const link = document.querySelector(".copy-link");
 
-    link.href = `${ipAddress}/retailer/${user["id"]}`;
-    link.textContent = `${ipAddress}/retailer/${user["id"]}`;
+    if (user.email) {
+
+        DisplayOldEmail.textContent =
+            user.email;
+    }
+
+
+    if (user.phone) {
+
+        DisplayOldPhone.textContent =
+            user.phone;
+    }
+
+
+    const countryFlag =
+        document.querySelector(
+            ".country-flag"
+        );
+
+
+    const countryName =
+        document.querySelector(
+            ".country-name"
+        );
+
+
+    const countryCurrency =
+        document.querySelector(
+            ".country-currency"
+        );
+
+
+    if (countryCurrency) {
+
+        countryCurrency.textContent =
+            user.currency || "";
+    }
+
+
+    if (
+        countryFlag &&
+        user.iso2
+    ) {
+
+        countryFlag.src =
+            `https://flagcdn.com/w320/${user.iso2}.png`;
+    }
+
+
+    if (
+        countryName &&
+        user.country
+    ) {
+
+        countryName.textContent =
+            user.country;
+    }
+
+
+    // ── Storefront link ───────────────────────────────────────
+
+    if (
+        CopyLink &&
+        user.id
+    ) {
+
+        const storefrontURL =
+            `${SERVER_URL}/retailer/${user.id}`;
+
+
+        CopyLink.href =
+            storefrontURL;
+
+
+        CopyLink.textContent =
+            storefrontURL;
+    }
+
+
+    // ═══════════════════════════════════════════════════════════
+    // PROFILE IMAGE
+    // ═══════════════════════════════════════════════════════════
 
     if (user.profilePic) {
-        Edit_User_Icon.style.display = "none";
-        Display_Profile_Contanner.style.display = "flex";
-        Display_Profile_Image.src = `${ipAddress}/profile/${user.profilePic}`;
+
+        EditUserIcon.style.display =
+            "none";
+
+
+        DisplayProfileContainer.style.display =
+            "flex";
+
+
+        DisplayProfileImage.style.display =
+            "block";
+
+
+        DisplayProfileImage.src =
+            `${SERVER_URL}/profile/${user.profilePic}`;
+
+    } else {
+
+        EditUserIcon.style.display =
+            "flex";
+
+
+        DisplayProfileContainer.style.display =
+            "flex";
+
+
+        DisplayProfileImage.style.display =
+            "none";
     }
 
 
-    // ==== Making the upload , cancel and input of the phone update vanish
-    Upload_New_Phone.style.display = "none";
-    Cancel_New_Phone.style.display = "none";
-    New_Phone_Input.closest(".iti").style.display = "none";
+    // ── Always reset profile editing controls ─────────────────
 
+    resetProfileEditing();
+
+
+    // ── Hide phone editing controls ───────────────────────────
+
+    UploadNewPhone.style.display =
+        "none";
+
+
+    CancelNewPhone.style.display =
+        "none";
+
+
+    const phoneContainer =
+        NewPhoneInput?.closest(
+            ".iti"
+        );
+
+
+    if (phoneContainer) {
+        phoneContainer.style.display =
+            "none";
+    }
 }
 
 
-// ── PROFILE PHOTO ────────────────────────
-PickNew_Image.addEventListener("click", () => NewImage_Input.click());
+// ═══════════════════════════════════════════════════════════════
+// PROFILE PHOTO EDITING
+// ═══════════════════════════════════════════════════════════════
 
-NewImage_Input.addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = evt => {
-        Display_Profile_Image.src = evt.target.result;
-        Display_Profile_Image.style.display = "block";
-        Edit_User_Icon.style.display = "none";
-        Display_Profile_Contanner.style.display = "flex";
-        Upload_New_Image.style.display = "inline-flex";
-        Cancel_Profile_Update.style.display = "flex";
-    };
 
-    reader.readAsDataURL(file);
-});
+// ── Reset profile controls ────────────────────────────────────
+//
+// This puts the profile back into its normal state.
+//
+// NORMAL:
+//     Edit Profile
+//
+// EDIT MODE:
+//     Cancel | Upload | Camera
+//
+// ═══════════════════════════════════════════════════════════════
 
-Upload_New_Image.addEventListener("click", async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !NewImage_Input.files[0]) return;
+function resetProfileEditing() {
 
-    const formData = new FormData();
-    formData.append("file", NewImage_Input.files[0]);
-    formData.append("Data", JSON.stringify({ INSTRUCTION: "UPDATE-PROFILE-PIC", UserID: user["User-ID"] }));
+    if (EditOldProfile) {
+        EditOldProfile.style.display =
+            "inline-flex";
+    }
 
-    try {
-        Loading.style.display = "flex";
-        const result = await UploadFileWithData(formData);
-        Loading.style.display = "none";
-        if (result && result.status === "OK") {
-            user.profilePic = result.url;
-            localStorage.setItem("user", JSON.stringify(user));
-            ProfileImg.src = `${ipAddress}/profile/${result.profilePic}`;
-            SetProfile();
-            Upload_New_Image.style.display = "none";
-            showToast("fa-solid fa-check", "Photo Updated", "Your profile photo was updated.", "#1a8a00");
+    if (UploadNewImage) {
+        UploadNewImage.style.display =
+            "none";
+    }
+
+    if (CancelProfileUpdate) {
+        CancelProfileUpdate.style.display =
+            "none";
+    }
+
+    if (PickNewImage) {
+        PickNewImage.style.display =
+            "none";
+    }
+
+    if (NewImageInput) {
+        NewImageInput.value = "";
+    }
+}
+
+
+// ── Restore saved profile image ───────────────────────────────
+
+function restoreSavedProfileImage() {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem(
+                "user"
+            ) || "{}"
+        );
+
+
+    if (user?.profilePic) {
+
+        const imageURL =
+            `${SERVER_URL}/profile/${user.profilePic}`;
+
+
+        if (DisplayProfileImage) {
+
+            DisplayProfileImage.src =
+                imageURL;
+
+            DisplayProfileImage.style.display =
+                "block";
         }
-    } catch {
-        Loading.style.display = "none";
-        showToast("fa-solid fa-exclamation", "Upload Failed", "Could not update photo.", "#e53935");
-    }
-});
-
-Edith_OldPro.addEventListener("click", () => {
-    Cancel_Profile_Update.style.display = "flex";
-    Upload_New_Image.style.display = "flex";
-    Edith_OldPro.style.display = "none";
-});
 
 
-Cancel_Profile_Update.addEventListener("click", () => {
-    Upload_New_Image.style.display = "none";
-    Cancel_Profile_Update.style.display = "none";
-    NewImage_Input.value = "";
-    Edith_OldPro.style.display = "flex";
-});
+        if (EditUserIcon) {
+
+            EditUserIcon.style.display =
+                "none";
+        }
 
 
-// ── PHONE ────────────────────────────────
-const iti = window.intlTelInput(NewImage_Input, {
-    initialCountry: "auto",
-    geoIpLookup: function (success, failure) {
-        // ipinfo.io is more reliable and supports a fallback natively
-        fetch("https://ipinfo.io")
-            .then(res => {
-                if (!res.ok) throw new Error("API error");
-                return res.json();
-            })
-            .then(data => success(data.country)) // ipinfo uses 'country' instead of 'country_code'
-            .catch(() => success("us")); // Fallback to 'us' if the request fails
-    },
-    separateDialCode: true,
-    useFullscreenPopup: false,
-    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js"
-});
+        if (DisplayProfileContainer) {
+
+            DisplayProfileContainer.style.display =
+                "flex";
+        }
 
 
-Edit_Old_Phone.addEventListener("click", () => {
-    Display_Old_Phone.style.display = "none";
-    document.querySelector(".iti").style.display = "block";
-    New_Phone_Input.style.display = "block";
-    Upload_New_Phone.style.display = "inline-flex";
-    Cancel_New_Phone.style.display = "inline-flex";
-    Edit_Old_Phone.style.display = "none";
-    New_Phone_Input.focus();
-});
+        if (ProfileImg) {
 
-Upload_New_Phone.addEventListener("click", async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const phone = iti.getNumber();
-    if (!user || !phone) return;
-
-    Loading.style.display = "flex";
-    const result = await fetchData({ INSTRUCTION: "UPDATE-MY-PHONE", UserID: user["id"], new_Phone: phone });
-    Loading.style.display = "none";
-
-    if (result && result.status === "OK") {
-        user.phone = result.New_Phone;
-        localStorage.setItem("user", JSON.stringify(user));
-        Display_Old_Phone.textContent = result.New_Phone;
-        Cancel_New_Phone.click();
-        showToast("fa-solid fa-check", "Phone Updated", "Your phone number was changed.", "#1a8a00");
-    }
-});
-
-Cancel_New_Phone.addEventListener("click", () => {
-    Display_Old_Phone.style.display = "block";
-    New_Phone_Input.style.display = "none";
-    document.querySelector(".iti").style.display = "none";
-    Upload_New_Phone.style.display = "none";
-    Cancel_New_Phone.style.display = "none";
-    Edit_Old_Phone.style.display = "inline-flex";
-});
+            ProfileImg.src =
+                imageURL;
+        }
 
 
-// ── COPY LINK ────────────────────────────
-copyIcon.addEventListener("click", () => {
-    const url = copyLink.href;
-    if (!url || url === window.location.href + "#") return;
+        if (businessLogo) {
 
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(url).then(showCopySuccess).catch(() => fallbackCopy(url));
+            businessLogo.src =
+                imageURL;
+        }
+
     } else {
-        fallbackCopy(url);
+
+        if (DisplayProfileImage) {
+
+            DisplayProfileImage.src =
+                "";
+
+            DisplayProfileImage.style.display =
+                "none";
+        }
+
+
+        if (EditUserIcon) {
+
+            EditUserIcon.style.display =
+                "flex";
+        }
+
+
+        if (DisplayProfileContainer) {
+
+            DisplayProfileContainer.style.display =
+                "flex";
+        }
     }
-});
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// ENTER PROFILE EDIT MODE
+// ═══════════════════════════════════════════════════════════════
+
+EditOldProfile?.addEventListener(
+    "click",
+    () => {
+
+        // Hide Edit Profile
+        EditOldProfile.style.display =
+            "none";
+
+
+        // Show Cancel
+        CancelProfileUpdate.style.display =
+            "inline-flex";
+
+
+        // Show Upload
+        UploadNewImage.style.display =
+            "inline-flex";
+
+
+        // Show Camera
+        PickNewImage.style.display =
+            "inline-flex";
+    }
+);
+
+
+// ═══════════════════════════════════════════════════════════════
+// CAMERA / IMAGE PICKER
+// ═══════════════════════════════════════════════════════════════
+
+PickNewImage?.addEventListener(
+    "click",
+    () => {
+
+        if (!NewImageInput) return;
+
+        NewImageInput.click();
+    }
+);
+
+
+// ═══════════════════════════════════════════════════════════════
+// IMAGE SELECTED
+// ═══════════════════════════════════════════════════════════════
+
+NewImageInput?.addEventListener(
+    "change",
+    event => {
+
+        const file =
+            event.target.files?.[0];
+
+
+        if (!file) return;
+
+
+        // ── Validate file type ─────────────────────────────────
+
+        if (
+            !file.type.startsWith(
+                "image/"
+            )
+        ) {
+
+            showToast(
+                "fa-solid fa-image",
+                "Invalid Image",
+                "Please select a valid image file.",
+                "#e53935"
+            );
+
+
+            NewImageInput.value =
+                "";
+
+
+            return;
+        }
+
+
+        // ── Preview selected image ─────────────────────────────
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            readerEvent => {
+
+                DisplayProfileImage.src =
+                    readerEvent.target.result;
+
+
+                DisplayProfileImage.style.display =
+                    "block";
+
+
+                EditUserIcon.style.display =
+                    "none";
+
+
+                DisplayProfileContainer.style.display =
+                    "flex";
+            };
+
+
+        reader.readAsDataURL(file);
+    }
+);
+
+
+// ═══════════════════════════════════════════════════════════════
+// UPLOAD PROFILE IMAGE
+// ═══════════════════════════════════════════════════════════════
+
+UploadNewImage?.addEventListener(
+    "click",
+    async () => {
+
+        const user =
+            JSON.parse(
+                localStorage.getItem(
+                    "user"
+                ) || "{}"
+            );
+
+
+        const file =
+            NewImageInput?.files?.[0];
+
+
+        // ── Validate user ──────────────────────────────────────
+
+        if (!user?.id) {
+
+            showToast(
+                "fa-solid fa-exclamation",
+                "Not Logged In",
+                "Your account information could not be found.",
+                "#e53935"
+            );
+
+
+            return;
+        }
+
+
+        // ── Validate image ─────────────────────────────────────
+
+        if (!file) {
+
+            showToast(
+                "fa-solid fa-image",
+                "No Image Selected",
+                "Please select an image before uploading.",
+                "#e53935"
+            );
+
+
+            return;
+        }
+
+
+        // ── Create multipart request ───────────────────────────
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "file",
+            file
+        );
+
+
+        formData.append(
+            "Data",
+            JSON.stringify({
+
+                INSTRUCTION:
+                    "UPDATE-PROFILE-PIC",
+
+                UserID:
+                    user.id
+            })
+        );
+
+
+        showLoading();
+
+
+        try {
+
+            const result =
+                await UploadFileWithData(
+                    formData
+                );
+
+
+            // ── Server rejected upload ─────────────────────────
+
+            if (
+                result?.status !== "OK"
+            ) {
+
+                showToast(
+                    "fa-solid fa-exclamation",
+                    "Upload Failed",
+                    result?.message ||
+                    "Could not update your profile photo.",
+                    "#e53935"
+                );
+
+
+                return;
+            }
+
+
+            // ── Get returned filename ───────────────────────────
+
+            const profilePic =
+                result.profilePic ||
+                result.url;
+
+
+            if (!profilePic) {
+
+                showToast(
+                    "fa-solid fa-exclamation",
+                    "Upload Error",
+                    "The server uploaded the image but did not return its filename.",
+                    "#e53935"
+                );
+
+
+                return;
+            }
+
+
+            // ═══════════════════════════════════════════════════
+            // SAVE NEW PROFILE IMAGE
+            // ═══════════════════════════════════════════════════
+
+            user.profilePic =
+                profilePic;
+
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify(user)
+            );
+
+
+            const imageURL =
+                `${SERVER_URL}/profile/${profilePic}`;
+
+
+            // ── Update account profile image ────────────────────
+
+            if (DisplayProfileImage) {
+
+                DisplayProfileImage.src =
+                    imageURL;
+
+                DisplayProfileImage.style.display =
+                    "block";
+            }
+
+
+            if (ProfileImg) {
+
+                ProfileImg.src =
+                    imageURL;
+            }
+
+
+            if (businessLogo) {
+
+                businessLogo.src =
+                    imageURL;
+            }
+
+
+            // ═══════════════════════════════════════════════════
+            // RETURN TO NORMAL PROFILE STATE
+            // ═══════════════════════════════════════════════════
+
+            if (EditOldProfile) {
+
+                EditOldProfile.style.display =
+                    "inline-flex";
+            }
+
+
+            if (UploadNewImage) {
+
+                UploadNewImage.style.display =
+                    "none";
+            }
+
+
+            if (CancelProfileUpdate) {
+
+                CancelProfileUpdate.style.display =
+                    "none";
+            }
+
+
+            if (PickNewImage) {
+
+                PickNewImage.style.display =
+                    "none";
+            }
+
+
+            if (NewImageInput) {
+
+                NewImageInput.value =
+                    "";
+            }
+
+
+            SetProfile();
+
+
+            showToast(
+                "fa-solid fa-check",
+                "Photo Updated",
+                "Your profile photo was updated.",
+                "#1a8a00"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Profile image upload error:",
+                error
+            );
+
+
+            showToast(
+                "fa-solid fa-exclamation",
+                "Upload Failed",
+                "Could not update your photo.",
+                "#e53935"
+            );
+
+        } finally {
+
+            hideLoading();
+        }
+    }
+);
+
+
+// ═══════════════════════════════════════════════════════════════
+// CANCEL PROFILE IMAGE EDIT
+// ═══════════════════════════════════════════════════════════════
+
+CancelProfileUpdate?.addEventListener(
+    "click",
+    () => {
+
+        // ── Remove selected file ───────────────────────────────
+
+        if (NewImageInput) {
+
+            NewImageInput.value =
+                "";
+        }
+
+
+        // ── Restore the actual saved image ─────────────────────
+
+        restoreSavedProfileImage();
+
+
+        // ── Return to normal state ─────────────────────────────
+
+        resetProfileEditing();
+    }
+);
+
+
+// ═══════════════════════════════════════════════════════════════
+// PHONE NUMBER
+// ═══════════════════════════════════════════════════════════════
+
+const iti =
+    window.intlTelInput(
+        NewPhoneInput,
+        {
+
+            initialCountry: "auto",
+
+
+            geoIpLookup(success) {
+
+                fetch(
+                    "https://ipinfo.io"
+                )
+
+                    .then(
+                        response => {
+
+                            if (!response.ok) {
+
+                                throw new Error(
+                                    "IP lookup failed"
+                                );
+                            }
+
+
+                            return response.json();
+                        }
+                    )
+
+                    .then(
+                        data => {
+
+                            success(
+                                data.country
+                                    ?.toLowerCase() ||
+                                "gh"
+                            );
+                        }
+                    )
+
+                    .catch(
+                        () => {
+
+                            success(
+                                "gh"
+                            );
+                        }
+                    );
+            },
+
+
+            separateDialCode:
+                true,
+
+
+            useFullscreenPopup:
+                false,
+
+
+            utilsScript:
+                "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js"
+        }
+    );
+
+
+// ── Edit phone ────────────────────────────────────────────────
+
+EditOldPhone?.addEventListener(
+    "click",
+    () => {
+
+        DisplayOldPhone.style.display =
+            "none";
+
+
+        const itiContainer =
+            NewPhoneInput.closest(
+                ".iti"
+            );
+
+
+        if (itiContainer) {
+
+            itiContainer.style.display =
+                "block";
+        }
+
+
+        NewPhoneInput.style.display =
+            "block";
+
+
+        UploadNewPhone.style.display =
+            "inline-flex";
+
+
+        CancelNewPhone.style.display =
+            "inline-flex";
+
+
+        EditOldPhone.style.display =
+            "none";
+
+
+        NewPhoneInput.focus();
+    }
+);
+
+
+// ── Upload phone ──────────────────────────────────────────────
+
+UploadNewPhone?.addEventListener(
+    "click",
+    async () => {
+
+        const user =
+            JSON.parse(
+                localStorage.getItem(
+                    "user"
+                ) || "{}"
+            );
+
+
+        const phone =
+            iti.getNumber();
+
+
+        if (
+            !user?.id ||
+            !phone
+        ) {
+            return;
+        }
+
+
+        showLoading();
+
+
+        try {
+
+            const result =
+                await fetchData({
+
+                    INSTRUCTION:
+                        "UPDATE-MY-PHONE",
+
+                    UserID:
+                        user.id,
+
+                    new_Phone:
+                        phone
+                });
+
+
+            if (
+                result?.status ===
+                "OK"
+            ) {
+
+                user.phone =
+                    result.New_Phone;
+
+
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify(user)
+                );
+
+
+                DisplayOldPhone.textContent =
+                    result.New_Phone;
+
+
+                CancelNewPhone.click();
+
+
+                showToast(
+                    "fa-solid fa-check",
+                    "Phone Updated",
+                    "Your phone number was changed.",
+                    "#1a8a00"
+                );
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Phone update error:",
+                error
+            );
+
+
+            showToast(
+                "fa-solid fa-exclamation",
+                "Update Failed",
+                "Could not update your phone number.",
+                "#e53935"
+            );
+
+        } finally {
+
+            hideLoading();
+        }
+    }
+);
+
+
+// ── Cancel phone update ───────────────────────────────────────
+
+CancelNewPhone?.addEventListener(
+    "click",
+    () => {
+
+        DisplayOldPhone.style.display =
+            "block";
+
+
+        NewPhoneInput.style.display =
+            "none";
+
+
+        const itiContainer =
+            NewPhoneInput.closest(
+                ".iti"
+            );
+
+
+        if (itiContainer) {
+
+            itiContainer.style.display =
+                "none";
+        }
+
+
+        UploadNewPhone.style.display =
+            "none";
+
+
+        CancelNewPhone.style.display =
+            "none";
+
+
+        EditOldPhone.style.display =
+            "inline-flex";
+    }
+);
+
+
+// ═══════════════════════════════════════════════════════════════
+// COPY STOREFRONT LINK
+// ═══════════════════════════════════════════════════════════════
+
+CopyIcon?.addEventListener(
+    "click",
+    () => {
+
+        const url =
+            CopyLink?.href;
+
+
+        if (
+            !url ||
+            url ===
+            window.location.href + "#"
+        ) {
+            return;
+        }
+
+
+        if (
+            navigator.clipboard &&
+            window.isSecureContext
+        ) {
+
+            navigator.clipboard
+                .writeText(url)
+                .then(
+                    showCopySuccess
+                )
+                .catch(
+                    () =>
+                        fallbackCopy(
+                            url
+                        )
+                );
+
+        } else {
+
+            fallbackCopy(url);
+        }
+    }
+);
+
 
 function fallbackCopy(text) {
-    const ta = Object.assign(document.createElement("textarea"), {
-        value: text,
-        style: "position:fixed;opacity:0"
-    });
-    document.body.appendChild(ta);
-    ta.focus(); ta.select();
-    try { if (document.execCommand("copy")) showCopySuccess(); } catch { }
-    document.body.removeChild(ta);
+
+    const textarea =
+        document.createElement(
+            "textarea"
+        );
+
+
+    textarea.value =
+        text;
+
+
+    textarea.style.position =
+        "fixed";
+
+
+    textarea.style.opacity =
+        "0";
+
+
+    document.body.appendChild(
+        textarea
+    );
+
+
+    textarea.focus();
+    textarea.select();
+
+
+    try {
+
+        if (
+            document.execCommand(
+                "copy"
+            )
+        ) {
+
+            showCopySuccess();
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Copy failed:",
+            error
+        );
+    }
+
+
+    document.body.removeChild(
+        textarea
+    );
 }
+
 
 function showCopySuccess() {
-    copyIcon.classList.replace("fa-copy", "fa-check");
-    copyIcon.style.color = "#1a8a00";
-    setTimeout(() => {
-        copyIcon.classList.replace("fa-check", "fa-copy");
-        copyIcon.style.color = "";
-    }, 2000);
+
+    CopyIcon.classList.replace(
+        "fa-copy",
+        "fa-check"
+    );
+
+
+    CopyIcon.style.color =
+        "#1a8a00";
+
+
+    setTimeout(
+        () => {
+
+            CopyIcon.classList.replace(
+                "fa-check",
+                "fa-copy"
+            );
+
+
+            CopyIcon.style.color =
+                "";
+
+        },
+        2000
+    );
 }
 
-// ── LOG OUT ──────────────────────────────
-LogOut.addEventListener("click", () => {
-    localStorage.clear();
-    window.location.href = "/auth/auth.html";
-});
 
-// ── UPGRADE OVERLAY ──────────────────────
-Upgrade.addEventListener("click", () => {
-    Upgrade_Overlay.style.display = "flex";
-});
+// ═══════════════════════════════════════════════════════════════
+// LOG OUT
+// ═══════════════════════════════════════════════════════════════
 
-document.querySelector(".cancel-upgrade").addEventListener("click", () => {
-    Upgrade_Overlay.style.display = "none";
-});
+LogOut?.addEventListener(
+    "click",
+    () => {
+
+        localStorage.clear();
+
+
+        window.location.href =
+            "/auth/auth.html";
+    }
+);
+
+
+// ═══════════════════════════════════════════════════════════════
+// UPGRADE
+// ═══════════════════════════════════════════════════════════════
+
+Upgrade?.addEventListener(
+    "click",
+    () => {
+
+        UpgradeOverlay.style.display =
+            "flex";
+    }
+);
+
+
+CancelUpgrade?.addEventListener(
+    "click",
+    () => {
+
+        UpgradeOverlay.style.display =
+            "none";
+    }
+);
+
+
+// ═══════════════════════════════════════════════════════════════
+// END OF MAIN.JS
+// ═══════════════════════════════════════════════════════════════

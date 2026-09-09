@@ -1,3 +1,7 @@
+/* =========================================================
+   RESET
+   ========================================================= */
+
 * {
     margin: 0;
     padding: 0;
@@ -6,86 +10,102 @@
 
 html,
 body {
+    width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
 }
 
-/* ================= BODY LAYOUT ================= */
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 
-    min-height: 100vh;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 
     background-attachment: fixed;
     background-repeat: no-repeat;
 }
 
 
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
 .bg {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
+
     width: 100%;
     height: 100%;
 
-    background: white;
+    background: #ffffff;
 
     filter: blur(10px);
+
     z-index: -1;
 }
 
-/* 🔥 Overlay */
 .bg::after {
     content: "";
+
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
+
     width: 100%;
     height: 100%;
 }
 
 
-/*========= loading Overlay ========*/
-#loading-overlay {
+/* =========================================================
+   LOADING OVERLAY
+   ========================================================= */
 
+#loading-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
+
     width: 100%;
     height: 100%;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
 
     background: rgba(0, 0, 0, 0.356);
 
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-    /* for Safari */
-
-    display: none;
-    justify-content: center;
-    align-items: center;
 
     z-index: 9999;
 }
 
-/* Hide class */
 .hidden {
     display: none;
 }
 
-/* White pulsing circle */
+
+/* Loading Circle */
+
 .loader-circle {
     width: 50px;
     height: 50px;
-    background: white;
+
+    background: #ffffff;
+
     border-radius: 50%;
 
     animation: pulse 1s ease-in-out infinite;
 }
 
-/* Animation */
+
+/* Loading Animation */
+
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -104,86 +124,102 @@ body {
 }
 
 
-/*========= header ==========*/
+/* =========================================================
+   HEADER
+   ========================================================= */
+
 header {
+    position: relative;
+
+    width: 100%;
+    height: 70px;
+
     flex-shrink: 0;
-    height: 60px;
+
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0 10px;
-    color: black;
+
+    padding: 0 12px;
+
+    color: #000000;
 }
 
-/* Page signature container */
-.page-signature {
-    display: flex;
-    /* enable flex layout */
-    align-items: center;
-    /* vertically center icon and text */
-    justify-content: center;
-    /* horizontally center the whole block (optional) */
-    gap: 10px;
-    margin: auto;
-    /* space between icon and text */
-}
 
-/* Icon styling */
-.page-signature div {
-    display: flex;
-    /* make the inner div a flex container */
-    align-items: center;
-    /* vertically center icon inside the div */
-    justify-content: center;
-    /* horizontally center icon */
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    /* perfectly circular */
-    margin: 4px;
-}
-
-.page-signature div i {
-    font-size: 30px;
-    /* icon size */
-    color: green;
-}
-
-.page-signature p {
-    font-weight: bolder;
-    font-size: 25px;
-    font-family: cursive;
-}
-
-/*account signature*/
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
 
 .back-signature {
+    width: 42px;
+    height: 42px;
+
     display: flex;
-    /* make the inner div a flex container */
     align-items: center;
-    /* vertically center icon inside the div */
     justify-content: center;
-    /* horizontally center icon */
-    width: 35px;
-    height: 35px;
+
     border-radius: 50%;
-    /* perfectly circular */
-    margin: 4px;
-    background: black;
-    transition: 0.3s ease;
 
+    background: #000000;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
 }
 
-.back-signature div i {
-    font-size: 20px;
-    /* icon size */
-    color: white;
+.back-signature:hover {
+    transform: scale(1.05);
+    background: #222222;
+}
+
+.back-signature:active {
+    transform: scale(0.95);
+}
+
+.back-signature .user {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-signature i {
+    font-size: 18px;
+    color: #ffffff;
 }
 
 
+/* =========================================================
+   OMART LOGO
+   ========================================================= */
+
+.page-signature {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform: translate(-50%, -50%);
+}
+
+.page-signature img {
+    display: block;
+
+    width: 110px;
+    height: 65px;
+
+    object-fit: contain;
+}
 
 
-/*======= Toast =========*/
+/* =========================================================
+   TOAST
+   ========================================================= */
+
 .toast {
     position: fixed;
 
@@ -192,24 +228,25 @@ header {
 
     width: 320px;
 
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 14px;
+
+    color: #ffffff;
+
     background: #0d1424;
 
     border: 1px solid #1b2a44;
     border-left: 4px solid #3b82f6;
-
     border-radius: 14px;
-
-    padding: 14px;
-
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-
-    color: white;
 
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 
     opacity: 0;
+
     transform: translateY(-20px);
 
     transition:
@@ -220,184 +257,263 @@ header {
 .toast.show {
     opacity: 1;
     transform: translateY(0);
+
     z-index: 11000;
 }
 
 .toast.hide {
     opacity: 0;
     transform: translateY(-20px);
+
     z-index: -20;
 }
+
+
+/* Toast Icon */
 
 .toast-icon {
     width: 42px;
     height: 42px;
 
-    border-radius: 10px;
+    flex-shrink: 0;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    color: #3b82f6;
+    border-radius: 10px;
 
-    flex-shrink: 0;
+    color: #3b82f6;
 }
+
+
+/* Toast Content */
 
 .toast-content h4 {
     margin: 0;
+
     font-size: 15px;
 }
 
 .toast-text {
     margin-top: 4px;
+
     color: #b7c4e0;
+
     font-size: 14px;
 }
 
-/*Top Card*/
+
+/* =========================================================
+   TOP INTRODUCTION / CARDS
+   ========================================================= */
 
 .top {
-    display: flex;
-    /* The "Magic" line you were missing */
-    align-items: center;
-    /* Vertical centering */
-    justify-content: center;
-    /* Horizontal centering */
+    position: relative;
+
+    width: 100%;
+    height: 190px;
 
     flex-shrink: 0;
-    height: 190px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     gap: 20px;
-    /* Adds space between your cards */
-    overflow: hidden;
-    position: relative;
+
     padding: 0 15px;
+
+    overflow: hidden;
 }
 
-.top>div {
+.top > div {
     position: absolute;
+
     width: 100%;
+
     opacity: 0;
 }
 
-/*Cards*/
+
+/* =========================================================
+   WELCOME CARD
+   ========================================================= */
+
 #card-1 {
     width: 400px;
+
     justify-self: center;
     justify-items: center;
-    text-align: center;
-    border: 1px black solid;
+
     padding: 10px;
+
+    text-align: center;
+
+    border: 1px solid #000000;
     border-radius: 20px;
+
     background: rgba(255, 255, 255, 0.041);
+
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.315);
 }
 
 #card-1 h4 {
-    color: black;
+    color: #000000;
+
     font-size: 20px;
 }
 
 #card-1 p {
-    color: black;
-    font-size: 13px;
     margin-top: 15px;
+
+    color: #000000;
+
+    font-size: 13px;
 }
+
+
+/* =========================================================
+   BUY / SELL / MANAGE CARDS
+   ========================================================= */
 
 #card-2,
 #card-4,
 #card-5 {
+    width: 390px;
+
     display: flex;
-    /* make it a flex container */
     flex-direction: column;
-    /* stack children vertically */
+
     align-items: center;
-    /* horizontally center all children */
     justify-content: center;
-    /* vertically center if needed */
+
     justify-self: center;
-    width: 390px;
-    border-radius: 20px;
+
     padding: 15px 10px;
-    border: 1px black solid;
+
     text-align: center;
-    /* center text inside p/span */
-    background: rgba(255, 255, 255, 0.041);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.315);
-    font-weight: bolder;
-}
 
-#card-3 {
-    justify-items: center;
-    width: 390px;
-    justify-self: center;
+    border: 1px solid #000000;
     border-radius: 20px;
-    align-items: center;
-    padding: 15px 10px;
-    margin: auto;
-    color: black;
-    font-weight: bolder;
+
+    background: rgba(255, 255, 255, 0.041);
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.315);
+
+    font-weight: 700;
 }
 
+
+/* Buy / Sell / Manage Icons */
 
 #card-2 div,
 #card-4 div,
 #card-5 div {
-    display: flex;
-    flex-direction: column;
-    background: black;
     width: 60px;
     height: 60px;
-    font-size: 25px;
-    align-items: center;
-    /* horizontal center */
-    justify-content: center;
-    /* vertical center */
-    border-radius: 50%;
-    color: white;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    border-radius: 50%;
+
+    background: #000000;
+
+    color: #ffffff;
+
+    font-size: 25px;
 }
+
+
+/* Card Titles */
 
 #card-2 p,
 #card-3 p,
 #card-4 p {
-    color: black;
-    margin: 5px 15px;
-    font-size: 25px;
     width: 300px;
-    text-align: center;
 
+    margin: 5px 15px;
+
+    color: #000000;
+
+    font-size: 25px;
+
+    text-align: center;
 }
+
+
+/* Card Descriptions */
 
 #card-2 span,
 #card-4 span,
 #card-5 span {
     display: block;
-    /* ensure it’s treated like a block */
+
     margin-top: 8px;
-    /* small spacing under icon */
+
+    color: #000000;
+
     text-align: center;
-    color: black;
-    /* center the text */
 }
 
+
+/* Manage Card Description */
+
 #card-5 p {
-    color: black;
-    margin-top: 12px;
-    font-size: 16px;
     width: 300px;
+
+    margin-top: 12px;
+
+    color: #000000;
+
+    font-size: 16px;
+
     text-align: center;
-    font-weight: bolder;
+
+    font-weight: 700;
 }
+
+
+/* =========================================================
+   OR CARD
+   ========================================================= */
+
+#card-3 {
+    width: 390px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    justify-self: center;
+
+    margin: auto;
+    padding: 15px 10px;
+
+    color: #000000;
+
+    border-radius: 20px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   TOP CARD ANIMATIONS
+   ========================================================= */
 
 .show {
     opacity: 1;
+
     animation: fadeIn 0.8s ease forwards;
-    /* forwards keeps final state */
 }
 
 .out {
     opacity: 0;
+
     animation: fadeOut 0.8s ease forwards;
 }
 
@@ -425,205 +541,290 @@ header {
     }
 }
 
-/*Main*/
-/* Main container: center content */
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
 main {
+    position: relative;
+
     flex: 1;
+
     display: flex;
     flex-direction: column;
-    position: relative;
-    background-color: transparent;
+
     overflow-y: auto;
+
+    background-color: transparent;
 }
 
 
+/* =========================================================
+   SIGN-IN SECTION
+   ========================================================= */
 
 .signIn-section {
     width: 100%;
     height: 100%;
+
+    display: block;
+
     align-content: center;
     justify-items: center;
+
     padding: 20px 0;
-    /*display: block;*/
-    display: block;
 }
 
 
+/* =========================================================
+   SIGN-IN CARD
+   ========================================================= */
+
 .signInCard {
     width: max-content;
+
     display: flex;
     flex-direction: column;
-    gap: 7px;
 
+    gap: 7px;
 }
 
 .signInCard header {
     display: flex;
     flex-direction: column;
+
     margin-bottom: 12px;
 }
 
 
+/* Sign-In Heading */
+
 .signInCard header span:first-child {
-    color: rgb(0, 0, 0);
-    font-size: 20px;
-    font-weight: bold;
+    color: #000000;
+
     font-family: sans-serif;
+
+    font-size: 20px;
+
+    font-weight: 700;
 }
+
+
+/* Sign-In Subtitle */
 
 .signInCard header span:nth-child(2) {
-    font-size: 14px;
     color: rgba(0, 0, 0, 0.685);
-    font-weight: bold;
+
+    font-size: 14px;
+
+    font-weight: 700;
 }
 
 
+/* =========================================================
+   INPUT GROUP
+   ========================================================= */
 
 .input-group-child {
     width: 100%;
+
     display: flex;
     flex-direction: column;
+
     gap: 8px;
 }
 
-/* =========================
-   LABELS
-========================= */
 
-.input-group-child span {
-    font-size: 0.9rem;
-    font-family: sans-serif;
-    font-weight: 600;
+/* Labels */
+
+.input-group-child > span {
     color: #334155;
+
+    font-family: sans-serif;
+
+    font-size: 0.9rem;
+
+    font-weight: 600;
 }
 
-/* =========================
-   INPUT CONTAINER
-========================= */
+
+/* =========================================================
+   INPUT BOX
+   ========================================================= */
 
 .input-box {
     width: 100%;
     min-height: 50px;
+
     display: flex;
     align-items: center;
+
+    gap: 10px;
+
+    padding: 0 14px;
+
+    background: #ffffff;
+
     border: 1px solid #dbe2ea;
     border-radius: 14px;
-    padding: 0 14px;
-    background: white;
-    transition: 0.3s ease;
-    gap: 10px;
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .input-box:focus-within {
     border-color: #16a34a;
-    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+
+    box-shadow:
+        0 0 0 4px rgba(22, 163, 74, 0.1);
 }
 
-/* =========================
-   ICONS
-========================= */
+
+/* =========================================================
+   INPUT ICONS
+   ========================================================= */
 
 .input-box i {
-    font-size: 0.95rem;
     color: #64748b;
+
+    font-size: 0.95rem;
 }
 
-/* =========================
+
+/* =========================================================
    INPUTS
-========================= */
+   ========================================================= */
 
 .input-box input {
-   
+    width: 100%;
     height: 100%;
+
     border: none;
     outline: none;
+
     background: transparent;
+
     color: #0f172a;
+
     font-size: 0.95rem;
-    font-weight: 500;
 
+    font-weight: 500;
 }
 
-
-/* =========================
-   PLACEHOLDERS
-========================= */
-.input-group-child div input::placeholder {
+.input-box input::placeholder {
     color: #94a3b8;
+
     font-size: 0.9rem;
+
     font-weight: 500;
 }
 
-/*========= register styling ===========*/
+
+/* =========================================================
+   BUSINESS REGISTRATION
+   ========================================================= */
+
 .register-buisiness-section {
+    display: flex;
     flex-direction: column;
-    padding: 30px;
+
     gap: 10px;
+
+    padding: 30px;
 }
 
 .register-buisiness-section .input-group-child {
     width: max-content;
 }
 
-.name input, .phone input {
+
+/* Business / Phone Input Width */
+
+.name input,
+.phone input {
     width: 300px;
 }
+
+
+/* Existing Textarea Support */
 
 .register-buisiness-section textarea {
-    border: none;
-    outline: none;
     width: 300px;
     height: 150px;
+
+    border: none;
+    outline: none;
 }
 
-.phone-notice{
-    font-size:12px !important;
-    transition:0.2s ease;
+
+/* =========================================================
+   PHONE NOTICE
+   ========================================================= */
+
+.phone-notice {
     width: 300px;
+
+    font-size: 12px !important;
+
+    transition: 0.2s ease;
 }
 
+
+/* =========================================================
+   REGISTER BUTTON
+   ========================================================= */
 
 .register-buisiness-section button {
     width: 300px;
     height: 52px;
-    margin: 20px auto;
-
-    border: none;
-    border-radius: 14px;
-
-    background: linear-gradient(135deg,
-            #16a34a,
-            #15803d);
-
-    color: white;
-    font-size: 0.95rem;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-
-    cursor: pointer;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
+    margin: 20px auto;
+
+    border: none;
+    border-radius: 14px;
+
+    background: linear-gradient(
+        135deg,
+        #16a34a,
+        #15803d
+    );
+
+    color: #ffffff;
+
+    font-size: 0.95rem;
+
+    font-weight: 600;
+
+    letter-spacing: 0.3px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 20px rgba(22, 163, 74, 0.18);
+
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease,
         background 0.3s ease;
-
-    box-shadow:
-        0 10px 20px rgba(22, 163, 74, 0.18);
 }
 
 .register-buisiness-section button:hover {
     transform: translateY(-2px);
 
+    background: linear-gradient(
+        135deg,
+        #22c55e,
+        #15803d
+    );
+
     box-shadow:
         0 14px 24px rgba(22, 163, 74, 0.25);
-
-    background: linear-gradient(135deg,
-            #22c55e,
-            #15803d);
 }
 
 .register-buisiness-section button:active {
@@ -632,89 +833,106 @@ main {
 
 .register-buisiness-section button:disabled {
     opacity: 0.6;
+
     cursor: not-allowed;
+
     transform: none;
+
     box-shadow: none;
 }
 
 
-/*======= google auth =======*/
-.google-auth-card{
-    width:350px;
+/* =========================================================
+   GOOGLE AUTH CARD
+   ========================================================= */
 
-    background:white;
+.google-auth-card {
+    width: 350px;
 
-    border-radius:24px;
+    display: flex;
+    flex-direction: column;
 
-    padding:30px 25px;
+    gap: 20px;
 
-    display:flex;
-    flex-direction:column;
+    padding: 30px 25px;
 
-    gap:20px;
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
 
     box-shadow:
-        0 20px 40px rgba(0,0,0,0.08);
-
-    border:1px solid #e2e8f0;
+        0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* Title */
-.google-title{
-    display:flex;
-    align-items:center;
-    gap:12px;
 
-    font-size:1.05rem;
-    font-weight:700;
+/* Google Title */
 
-    color:#0f172a;
+.google-title {
+    display: flex;
+    align-items: center;
 
-    font-family:sans-serif;
+    gap: 12px;
+
+    color: #0f172a;
+
+    font-family: sans-serif;
+
+    font-size: 1.05rem;
+
+    font-weight: 700;
 }
 
-/* Google logo */
-.google-title img{
-    width:22px;
-    height:22px;
+
+/* Google Logo */
+
+.google-title img {
+    width: 22px;
+    height: 22px;
+
+    flex-shrink: 0;
 }
 
-/* Description */
-.google-auth-card p{
-    font-size:0.92rem;
-    line-height:1.6;
 
-    color:#64748b;
+/* Google Description */
 
-    font-family:sans-serif;
+.google-auth-card p {
+    color: #64748b;
+
+    font-family: sans-serif;
+
+    font-size: 0.92rem;
+
+    line-height: 1.6;
 }
 
-.google-auth-card p strong{
-    color:#0f172a;
+.google-auth-card p strong {
+    color: #0f172a;
 }
 
-/* Button */
-.google-auth-card button{
-    width:100%;
-    height:52px;
 
-    border:none;
-    border-radius:14px;
+/* Google Button */
 
-    background:white;
+.google-auth-card button {
+    width: 100%;
+    height: 52px;
 
-    border:1px solid #dbe2ea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    border: 1px solid #dbe2ea;
+    border-radius: 14px;
 
-    font-size:0.95rem;
-    font-weight:600;
+    background: #ffffff;
 
-    color:#0f172a;
+    color: #0f172a;
 
-    cursor:pointer;
+    font-size: 0.95rem;
+
+    font-weight: 600;
+
+    cursor: pointer;
 
     transition:
         transform 0.2s ease,
@@ -722,29 +940,32 @@ main {
         background 0.2s ease;
 }
 
-/* Hover */
-.google-auth-card button:hover{
-    background:#f8fafc;
+.google-auth-card button:hover {
+    background: #f8fafc;
 
-    transform:translateY(-2px);
+    transform: translateY(-2px);
 
     box-shadow:
-        0 10px 20px rgba(0,0,0,0.06);
+        0 10px 20px rgba(0, 0, 0, 0.06);
 }
 
-/* Active */
-.google-auth-card button:active{
-    transform:scale(0.98);
+.google-auth-card button:active {
+    transform: scale(0.98);
 }
 
-/* Phone input adjustments */
+
+/* =========================================================
+   INTERNATIONAL TELEPHONE INPUT
+   ========================================================= */
+
 .iti {
-    flex: 1;
     width: 100%;
+    flex: 1;
 }
 
 .iti input {
     width: 100%;
+
     padding-left: 52px !important;
 }
 
@@ -756,8 +977,14 @@ main {
     background: none;
 }
 
-/* ---------- MOBILE RESPONSIVE ---------- */
-@media (max-width:770px) {
+
+/* =========================================================
+   MOBILE RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 770px) {
+
+    /* Top Cards */
 
     #card-1,
     #card-2,
@@ -767,8 +994,89 @@ main {
         width: 350px;
     }
 
+    /* Input Groups */
+
     .input-group {
         flex-direction: column;
     }
+}
 
+
+/* =========================================================
+   SMALL MOBILE DEVICES
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    /* Header */
+
+    header {
+        height: 60px;
+    }
+
+    /* Logo */
+
+    .page-signature img {
+        width: 100px;
+        height: 58px;
+    }
+
+    /* Top Section */
+
+    .top {
+        height: 175px;
+        padding: 0 10px;
+    }
+
+    #card-1,
+    #card-2,
+    #card-3,
+    #card-4,
+    #card-5 {
+        width: calc(100% - 20px);
+        max-width: 350px;
+    }
+
+    /* Authentication */
+
+    .signInCard {
+        width: 100%;
+        padding: 0 15px;
+    }
+
+    .google-auth-card {
+        width: min(350px, calc(100vw - 30px));
+
+        padding: 25px 20px;
+    }
+
+    /* Registration */
+
+    .register-buisiness-section {
+        width: 100%;
+
+        padding: 25px 15px;
+    }
+
+    .register-buisiness-section .input-group-child {
+        width: 100%;
+    }
+
+    .name input,
+    .phone input,
+    .phone-notice,
+    .register-buisiness-section button {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    /* Toast */
+
+    .toast {
+        top: 15px;
+        right: 15px;
+        left: 15px;
+
+        width: auto;
+    }
 }

@@ -4,110 +4,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css">
+
+    <!-- Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
+
+    <!-- International telephone input -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css"
+    >
+
+    <!-- Application styles -->
     <link rel="stylesheet" href="auth.css">
-    <title>My Accound</title>
+
+    <!-- Favicon -->
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="/image/omartSymbol.svg"
+    >
+
+    <title>OMart — Authentication</title>
 </head>
 
-
 <body>
+
+    <!-- Background -->
     <div class="bg"></div>
+
+    <!-- Loading Overlay -->
     <div id="loading-overlay" class="hidden">
         <div class="loader-circle"></div>
     </div>
+
+    <!-- Header -->
     <header>
         <div class="back-signature" id="back">
-            <div class="user"><i class="fa-solid fa-arrow-left"></i></div>
+            <div class="user">
+                <i class="fa-solid fa-arrow-left"></i>
+            </div>
         </div>
+
         <div class="page-signature">
-            <div><i class="fa-solid fa-bicycle"></i></div>
-            <p>Bicycon</p>
+            <img
+                src="/image/omartLogo.svg"
+                alt="OMart"
+            >
         </div>
     </header>
+
+    <!-- Toast Notification -->
     <div class="toast show">
         <div class="toast-icon">
-            <i class=""></i>
+            <i></i>
         </div>
+
         <div class="toast-content">
             <h4>Connection Restored</h4>
+
             <p class="toast-text">
                 Your internet connection is now stable.
             </p>
         </div>
     </div>
-    <div class="top">
+
+    <!-- Introduction / Features -->
+    <section class="top">
+
+        <!-- Welcome -->
         <div id="card-1">
-            <h4>Welcome to Bicycon</h4> <!-- Fixed typo -->
-            <p>A platform where you could sell or buy and manage all your products.</p>
+            <h4>Welcome to OMART</h4>
+
+            <p>
+                A platform where you can buy, sell,
+                and manage all your products.
+            </p>
         </div>
+
+        <!-- Buy -->
         <div id="card-2">
             <p>Buy</p>
-            <div><i class="fa-solid fa-bag-shopping"></i></div>
-            <span>Buy with some simple taps</span>
+
+            <div>
+                <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+
+            <span>
+                Buy with just a few simple taps.
+            </span>
         </div>
+
+        <!-- Separator -->
         <div id="card-3">
             <p>OR</p>
         </div>
+
+        <!-- Sell -->
         <div id="card-4">
             <p>Sell</p>
-            <div><i class="fa-solid fa-shopping-cart"></i></div>
-            <span>Sell with some simple taps</span>
+
+            <div>
+                <i class="fa-solid fa-shopping-cart"></i>
+            </div>
+
+            <span>
+                Sell with just a few simple taps.
+            </span>
         </div>
+
+        <!-- Manage -->
         <div id="card-5">
             <p>Manage</p>
-            <div><i class="fa-solid fa-gear"></i></div>
-            <p>And Manage your products right here on bicycon without any stress</p>
+
+            <div>
+                <i class="fa-solid fa-gear"></i>
+            </div>
+
+            <p>
+                Manage your products right here on OMART
+                without any stress.
+            </p>
         </div>
-    </div>
+
+    </section>
+
+    <!-- Main Authentication Area -->
     <main>
-        <div class="signIn-section">
+
+        <!-- Sign In -->
+        <section class="signIn-section">
+
             <div class="signInCard">
+
                 <header>
                     <span>Get Started</span>
-                    <span>Create an account to start selling on Bicycon</span>
+
+                    <span>
+                        Create an account to start selling on OMART.
+                    </span>
                 </header>
+
+                <!-- Google Authentication -->
                 <div class="google-auth-card">
 
                     <span class="google-title">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-                            alt="Google Logo">
+                        <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+                            alt="Google Logo"
+                        >
+
                         Continue with your Google account
                     </span>
+
                     <p>
                         <strong>Note:</strong><br>
                         This platform currently supports Google sign-in only.
                     </p>
-                    <button>
+
+                    <button type="button">
                         Continue with Google
                     </button>
 
                 </div>
+
             </div>
-            <div class="register-buisiness-section">
-                <div class="input-group-child name">
-                    <span>Enter Business Name</span>
-                    <div class="input-box">
-                        <i class="fa-solid fa-store"></i>
-                        <input type="text" placeholder="Enter the name of your business">
-                    </div>
+
+        </section>
+
+        <!-- Business Registration -->
+        <section class="register-buisiness-section">
+
+            <!-- Business Name -->
+            <div class="input-group-child name">
+
+                <span>Enter Business Name</span>
+
+                <div class="input-box">
+                    <i class="fa-solid fa-store"></i>
+
+                    <input
+                        type="text"
+                        placeholder="Enter the name of your business"
+                        autocomplete="organization"
+                    >
                 </div>
-                <div class="input-group-child phone">
-                    <span>Add Phone</span>
-                    <div class="input-box">
-                        <i class="fa-solid fa-phone"></i>
-                        <input type="phone" placeholder="Enter Phone">
-                    </div>
-                    <span class="phone-notice">Note the country you choose for your phone will be used for your
-                        currency</span>
-                </div>
-                
-                <button class="register-buisiness">Register our buisiness</button>
+
             </div>
+
+            <!-- Phone -->
+            <div class="input-group-child phone">
+
+                <span>Add Phone</span>
+
+                <div class="input-box">
+                    <i class="fa-solid fa-phone"></i>
+
+                    <input
+                        type="tel"
+                        placeholder="Enter phone number"
+                        autocomplete="tel"
+                    >
+                </div>
+
+                <span class="phone-notice">
+                    The country you choose for your phone number
+                    will be used to determine your currency.
+                </span>
+
+            </div>
+
+            <!-- Register -->
+            <button
+                type="button"
+                class="register-buisiness"
+            >
+                Register Your Business
+            </button>
+
+        </section>
+
     </main>
 
+    <!-- International Telephone Input -->
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/intlTelInput.min.js"></script>
+
+    <!-- Application Script -->
     <script type="module" src="auth.js"></script>
+
 </body>
 
 </html>

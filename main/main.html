@@ -2,627 +2,1334 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
+
+    <!-- International Telephone Input -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/css/intlTelInput.css"
+    >
+
+    <!-- Google Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
-        rel="stylesheet" />
-    <link rel="stylesheet" href="main.css" />
-    <link rel="icon" type="image/png" href="/image//04b96718-826a-4d2b-946f-57a10ed5a3df-thumbnail.webp">
-    <title>Bicycon — My Store</title>
+        rel="stylesheet"
+    >
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="main.css">
+
+    <!-- Favicon -->
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="/image/omartSymbol.svg"
+    >
+
+    <title>OMart — My Store</title>
 </head>
+
 
 <body>
 
-    <!-- Loading Overlay -->
+    <!-- =====================================================
+         LOADING OVERLAY
+         ===================================================== -->
+
     <div id="loading-overlay">
         <div class="loader-ring"></div>
     </div>
 
-    <!-- Toast Notification -->
+
+    <!-- =====================================================
+         TOAST NOTIFICATION
+         ===================================================== -->
+
     <div class="toast hide">
-        <div class="toast-icon-wrap"><i class="toast-icon-i"></i></div>
-        <div class="toast-body">
-            <h4 class="toast-header-text">Notification</h4>
-            <p class="toast-text">Message here.</p>
+
+        <div class="toast-icon-wrap">
+            <i class="toast-icon-i"></i>
         </div>
-        <button class="toast-close"><i class="fa-solid fa-x"></i></button>
+
+        <div class="toast-body">
+
+            <h4 class="toast-header-text">
+                Notification
+            </h4>
+
+            <p class="toast-text">
+                Message here.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="toast-close"
+            aria-label="Close notification"
+        >
+            <i class="fa-solid fa-x"></i>
+        </button>
+
     </div>
 
-    <!-- ══════════ NAV ══════════ -->
+
+    <!-- =====================================================
+         NAVIGATION
+         ===================================================== -->
+
     <nav>
+
+        <!-- Store Identity -->
         <div class="nav-logo">
-            <img src="/image/04b96718-826a-4d2b-946f-57a10ed5a3df-thumbnail.webp" alt="">
-            <span class="nav-brand">Bicycon</span>
+
+            <img
+                src=""
+                alt="Retailer Image"
+                class="business-logo"
+                onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png';"
+            >
+
+            <span class="business-name"></span>
+
+            <a
+                href="#"
+                class="visite-store-front"
+            >
+                <i class="fa-solid fa-store"></i>
+                <span>Visit Your Store</span>
+            </a>
+
         </div>
 
-        <div class="nav-back back" title="Go back">
+
+        <!-- Back Button -->
+        <div
+            class="nav-back back"
+            title="Go back"
+        >
             <i class="fa-solid fa-arrow-left"></i>
         </div>
 
+
+        <!-- Navigation Tabs -->
         <div class="nav-tabs">
+
             <div class="nav-tab dash active">
                 <i class="fas fa-th-large"></i>
                 <span>DashBoard</span>
             </div>
+
             <div class="nav-tab products">
                 <i class="fa-solid fa-list"></i>
                 <span>Products</span>
             </div>
+
             <div class="nav-tab orders">
                 <i class="fa-solid fa-shopping-cart"></i>
                 <span>Orders</span>
             </div>
-            <div class="nav-tab store" style="display: none;">
+
+            <div
+                class="nav-tab store"
+                style="display: none;"
+            >
                 <i class="fa-solid fa-store"></i>
                 <span>Stores</span>
             </div>
 
         </div>
 
-        <div class="nav-profile profile" tabindex="0">
-            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-            <div class="pro-pic"><img src="" alt="" /></div>
-            <span class="name">My Store</span>
+
+        <!-- Profile -->
+        <div
+            class="nav-profile profile"
+            tabindex="0"
+        >
+
+            <div class="user-icon">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div class="pro-pic">
+                <img src="" alt="">
+            </div>
+
+            <span class="name">
+                My Store
+            </span>
+
         </div>
+
     </nav>
 
-    <!-- ══════════ ADD PRODUCT OVERLAY ══════════ -->
+
+    <!-- =====================================================
+         ADD PRODUCT OVERLAY
+         ===================================================== -->
+
     <div class="add-prod-overlay">
+
         <form class="add-prod">
+
+            <!-- Modal Header -->
             <div class="modal-header">
-                <h5><i class="fa-solid fa-plus-circle"></i> Add Product</h5>
-                <button type="button" class="modal-close cancel-btn"><i class="fa-solid fa-x"></i></button>
+
+                <h5>
+                    <i class="fa-solid fa-plus-circle"></i>
+                    Add Product
+                </h5>
+
+                <button
+                    type="button"
+                    class="modal-close cancel-btn"
+                    aria-label="Close"
+                >
+                    <i class="fa-solid fa-x"></i>
+                </button>
+
             </div>
 
+
+            <!-- Product Image -->
             <div class="prod-profile-wrapper">
+
                 <div class="prod-profile">
-                    <div class="prod-icon"><i class="fa-solid fa-image"></i></div>
-                    <img class="prod-pro-pic" src="" alt="" style="display:none;" />
-                </div>
-                <div class="image-buttons">
-                    <div class="camera" title="Choose image"><i class="fa-solid fa-camera"></i></div>
-                    <div class="cancel" style="display:none;" title="Remove image"><i class="fa-solid fa-x"></i></div>
-                </div>
-                <input type="file" accept="image/*" class="file-input" style="display:none;" />
-            </div>
 
-            <div class="inputs">
-                <div class="split-input">
-                    <input type="text" placeholder="Product Name" class="prod-name" />
-                    <input type="number" placeholder="Price" class="prod-price" />
-                </div>
-                <div class="custom-select-wrapper">
-                    <div class="custom-select">
-                        <div class="selected">Select Category <i class="fa-solid fa-chevron-down sel-arrow"></i></div>
-                        <div class="options"></div>
+                    <div class="prod-icon">
+                        <i class="fa-solid fa-image"></i>
                     </div>
+
+                    <img
+                        class="prod-pro-pic"
+                        src=""
+                        alt=""
+                        style="display: none;"
+                    >
+
                 </div>
-                <textarea placeholder="Product Description…" class="prod-description"></textarea>
+
+
+                <!-- Image Controls -->
+                <div class="image-buttons">
+
+                    <div
+                        class="camera"
+                        title="Choose image"
+                    >
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+
+                    <div
+                        class="cancel"
+                        style="display: none;"
+                        title="Remove image"
+                    >
+                        <i class="fa-solid fa-x"></i>
+                    </div>
+
+                </div>
+
+
+                <input
+                    type="file"
+                    accept="image/*"
+                    class="file-input"
+                    style="display: none;"
+                >
+
             </div>
 
-            <div class="add-or-cancel-prod">
-                <button class="add-btn" type="button"><i class="fa-solid fa-check"></i> Add Product</button>
-                <button class="cancel-btn-2 cancel-btn" type="button"><i class="fa-solid fa-x"></i> Cancel</button>
+
+            <!-- Product Inputs -->
+            <div class="inputs">
+
+                <div class="split-input">
+
+                    <input
+                        type="text"
+                        placeholder="Product Name"
+                        class="prod-name"
+                    >
+
+                    <input
+                        type="number"
+                        placeholder="Price"
+                        class="prod-price"
+                    >
+
+                </div>
+
+
+                <!-- Category -->
+                <div class="custom-select-wrapper">
+
+                    <div class="custom-select">
+
+                        <div class="selected">
+                            Select Category
+                            <i class="fa-solid fa-chevron-down sel-arrow"></i>
+                        </div>
+
+                        <div class="options"></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Description -->
+                <textarea
+                    placeholder="Product Description…"
+                    class="prod-description"
+                ></textarea>
+
             </div>
+
+
+            <!-- Actions -->
+            <div class="add-or-cancel-prod">
+
+                <button
+                    class="add-btn"
+                    type="button"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    Add Product
+                </button>
+
+                <button
+                    class="cancel-btn-2 cancel-btn"
+                    type="button"
+                >
+                    <i class="fa-solid fa-x"></i>
+                    Cancel
+                </button>
+
+            </div>
+
         </form>
+
     </div>
 
-    <!-- ══════════ EDIT PRODUCT OVERLAY ══════════ -->
+
+    <!-- =====================================================
+         EDIT PRODUCT OVERLAY
+         ===================================================== -->
+
     <div class="edith-prod-overlay">
+
         <div class="prod-edit">
+
+            <!-- Modal Header -->
             <div class="modal-header">
-                <h5><i class="fa-solid fa-pen"></i> Edit Product</h5>
+
+                <h5>
+                    <i class="fa-solid fa-pen"></i>
+                    Edit Product
+                </h5>
+
             </div>
+
+
+            <!-- Product Image -->
             <div class="edit-img-wrapper">
-                <img src="" alt="" class="prod-image-update" />
-                <input type="file" accept="image/*" class="prod-image-edit-file-input" style="display:none;" />
+
+                <img
+                    src=""
+                    alt=""
+                    class="prod-image-update"
+                >
+
+                <input
+                    type="file"
+                    accept="image/*"
+                    class="prod-image-edit-file-input"
+                    style="display: none;"
+                >
+
+
+                <!-- Image Controls -->
                 <div class="edit-image-button">
-                    <div class="select-image" title="Change image"><i class="fa-solid fa-camera"></i></div>
-                    <div class="cancel-selected-image" title="Remove"><i class="fa-solid fa-x"></i></div>
+
+                    <div
+                        class="select-image"
+                        title="Change image"
+                    >
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+
+                    <div
+                        class="cancel-selected-image"
+                        title="Remove"
+                    >
+                        <i class="fa-solid fa-x"></i>
+                    </div>
+
                 </div>
+
             </div>
+
+
+            <!-- Edit Inputs -->
             <div class="edith-input">
+
                 <div class="edith-split-input">
-                    <input type="text" class="edith-prod-name" placeholder="Product name" />
-                    <input type="number" class="edith-prod-price" placeholder="Price" />
+
+                    <input
+                        type="text"
+                        class="edith-prod-name"
+                        placeholder="Product name"
+                    >
+
+                    <input
+                        type="number"
+                        class="edith-prod-price"
+                        placeholder="Price"
+                    >
+
                 </div>
+
+
                 <div class="edith-prod-category">
                     <p>Category</p>
                 </div>
-                <textarea class="edith-prod-discription" placeholder="Product description…"></textarea>
+
+
+                <textarea
+                    class="edith-prod-discription"
+                    placeholder="Product description…"
+                ></textarea>
+
             </div>
+
+
+            <!-- Actions -->
             <div class="save-or-cancel">
-                <button class="save-edith" type="button"><i class="fa-solid fa-check"></i> Save</button>
-                <button class="cancel-edth" type="button"><i class="fa-solid fa-x"></i> Cancel</button>
+
+                <button
+                    class="save-edith"
+                    type="button"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    Save
+                </button>
+
+                <button
+                    class="cancel-edth"
+                    type="button"
+                >
+                    <i class="fa-solid fa-x"></i>
+                    Cancel
+                </button>
+
             </div>
+
         </div>
+
     </div>
 
-    <!-- ══════════ UPGRADE OVERLAY ══════════ -->
+
+    <!-- =====================================================
+         UPGRADE OVERLAY
+         ===================================================== -->
+
     <div class="upgrade-overlay">
-        <button class="cancel-upgrade"><i class="fa-solid fa-x"></i></button>
+
+        <button
+            type="button"
+            class="cancel-upgrade"
+            aria-label="Close upgrade"
+        >
+            <i class="fa-solid fa-x"></i>
+        </button>
+
+
         <div class="upgrade-modal">
 
+            <!-- Free Plan -->
             <div class="plan-card free-plan">
-                <div class="plan-badge-top">Current Plan</div>
+
+                <div class="plan-badge-top">
+                    Current Plan
+                </div>
+
                 <header>
+
                     <h4>Free</h4>
-                    <p class="plan-price">GH₵ 0</p>
+
+                    <p class="plan-price">
+                        GH₵ 0
+                    </p>
+
                 </header>
+
                 <ul class="plan-features">
-                    <li><i class="fa-solid fa-check"></i> 50 Products</li>
-                    <li><i class="fa-solid fa-check"></i> No Ads</li>
-                    <li><i class="fa-solid fa-times muted"></i> No Inventory</li>
-                    <li><i class="fa-solid fa-times muted"></i> Limited Exposure</li>
-                    <li><i class="fa-solid fa-check"></i> Basic Analytics</li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        50 Products
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        No Ads
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-times muted"></i>
+                        No Inventory
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-times muted"></i>
+                        Limited Exposure
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        Basic Analytics
+                    </li>
+
                 </ul>
+
             </div>
 
+
+            <!-- Plus Plan -->
             <div class="plan-card plus-plan">
+
                 <header>
+
                     <h4>Plus</h4>
-                    <p class="plan-price">GH₵ 200</p>
+
+                    <p class="plan-price">
+                        GH₵ 200
+                    </p>
+
                 </header>
+
                 <ul class="plan-features">
-                    <li><i class="fa-solid fa-check"></i> 500 Products</li>
-                    <li><i class="fa-solid fa-check"></i> 20 Ads</li>
-                    <li><i class="fa-solid fa-check"></i> Inventory (Plus)</li>
-                    <li><i class="fa-solid fa-check"></i> Google Exposure</li>
-                    <li><i class="fa-solid fa-check"></i> Analytics (Plus)</li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        500 Products
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        20 Ads
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        Inventory (Plus)
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        Google Exposure
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        Analytics (Plus)
+                    </li>
+
                 </ul>
-                <button class="plan-btn">Upgrade to Plus</button>
+
+                <button
+                    type="button"
+                    class="plan-btn"
+                >
+                    Upgrade to Plus
+                </button>
+
             </div>
 
+
+            <!-- Pro Plan -->
             <div class="plan-card pro-plan">
-                <div class="plan-badge-top popular">Most Popular</div>
+
+                <div class="plan-badge-top popular">
+                    Most Popular
+                </div>
+
                 <header>
+
                     <h4>Pro</h4>
-                    <p class="plan-price">GH₵ 500</p>
+
+                    <p class="plan-price">
+                        GH₵ 500
+                    </p>
+
                 </header>
+
                 <ul class="plan-features">
-                    <li><i class="fa-solid fa-check"></i> Unlimited Products</li>
-                    <li><i class="fa-solid fa-check"></i> 50 Ads</li>
-                    <li><i class="fa-solid fa-check"></i> Inventory (Pro)</li>
-                    <li><i class="fa-solid fa-check"></i> Google Exposure</li>
-                    <li><i class="fa-solid fa-check"></i> Analytics (Pro)</li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        Unlimited Products
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        50 Ads
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        Inventory (Pro)
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        Google Exposure
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-check"></i>
+                        Analytics (Pro)
+                    </li>
+
                 </ul>
-                <button class="plan-btn">Upgrade to Pro</button>
+
+                <button
+                    type="button"
+                    class="plan-btn"
+                >
+                    Upgrade to Pro
+                </button>
+
             </div>
 
         </div>
+
     </div>
 
-    <!-- ══════════ MAIN ══════════ -->
+
+    <!-- =====================================================
+         MAIN APPLICATION
+         ===================================================== -->
+
     <main>
+
+
+        <!-- =================================================
+             DASHBOARD
+             ================================================= -->
+
         <section class="dash-section">
+
+            <!-- Dashboard Cards -->
             <div class="all-dash">
-                <!-- Total Estimated Revenue -->
+
+
+                <!-- Estimated Revenue -->
                 <div class="dash-card estimated-revenue">
-                    <!-- Refresh button moved to the top right corner -->
-                    <i class="fa-solid fa-rotate refresh" title="Refresh Data"></i>
+
+                    <i
+                        class="fa-solid fa-rotate refresh"
+                        title="Refresh Data"
+                    ></i>
 
                     <div class="card-header">
+
                         <div class="header-title">
-                            <h3>Estimated Revenue</h3>
+
+                            <h3>
+                                Estimated Revenue
+                            </h3>
+
                             <div class="date-range">
+
                                 <div class="date-group">
-                                    <label>From:</label>
-                                    <input type="date" class="date-input from-date">
+
+                                    <label>
+                                        From:
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        class="date-input from-date"
+                                    >
+
                                 </div>
+
+
                                 <div class="date-group">
-                                    <label>To:</label>
-                                    <input type="date" class="date-input to-date">
+
+                                    <label>
+                                        To:
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        class="date-input to-date"
+                                    >
+
                                 </div>
+
                             </div>
+
                         </div>
+
                         <span class="currency-code"></span>
+
                     </div>
+
+
                     <div class="card-body">
+
                         <p class="amount highlight"></p>
+
                     </div>
+
                 </div>
+
 
                 <!-- Actual Revenue -->
                 <div class="dash-card actual-revenue">
+
                     <div class="card-header">
-                        <h3>Actual Revenue</h3>
+
+                        <h3>
+                            Actual Revenue
+                        </h3>
+
                         <span class="currency-code"></span>
+
                     </div>
+
                     <div class="card-body">
+
                         <p class="amount"></p>
+
                     </div>
+
                 </div>
+
 
                 <!-- Pending Orders -->
                 <div class="dash-card pending-orders">
+
                     <div class="card-header">
-                        <h3>Pending Orders</h3>
-                        <i class="fas fa-clock"></i> <!-- Optional icon -->
+
+                        <h3>
+                            Pending Orders
+                        </h3>
+
+                        <i class="fas fa-clock"></i>
+
                     </div>
+
                     <div class="card-body">
+
                         <span class="order-count pending"></span>
+
                         <p class="amount"></p>
+
                     </div>
+
                 </div>
 
-                <!-- Approved Orders -->
+
+                <!-- Rejected Orders -->
                 <div class="dash-card rejected-orders">
+
                     <div class="card-header">
-                        <h3>Rejected Orders</h3>
+
+                        <h3>
+                            Rejected Orders
+                        </h3>
+
                         <i class="fas fa-check-circle"></i>
+
                     </div>
+
                     <div class="card-body">
+
                         <span class="order-count rejected"></span>
+
                         <p class="amount"></p>
+
                     </div>
+
                 </div>
+
             </div>
+
+
+            <!-- Revenue / Orders -->
             <div class="revenu-body">
+
+
+                <!-- Revenue Graph -->
                 <div class="revenu-graph">
+
                     <div class="graph-header">
-                        <h3>Revenue Graph</h3>
+
+                        <h3>
+                            Revenue Graph
+                        </h3>
+
                         <div class="color-coding">
+
                             <div class="legend-item">
-                                <div class="dot approved"></div> <span>Approved</span>
+
+                                <div class="dot approved"></div>
+
+                                <span>
+                                    Approved
+                                </span>
+
                             </div>
+
+
                             <div class="legend-item">
-                                <div class="dot pending"></div> <span>Pending</span>
+
+                                <div class="dot pending"></div>
+
+                                <span>
+                                    Pending
+                                </span>
+
                             </div>
+
+
                             <div class="legend-item">
-                                <div class="dot rejected"></div> <span>Rejected</span>
+
+                                <div class="dot rejected"></div>
+
+                                <span>
+                                    Rejected
+                                </span>
+
                             </div>
+
                         </div>
+
                     </div>
+
 
                     <div class="graph-container">
-
+                        <!-- Graph generated by JavaScript -->
                     </div>
+
                 </div>
 
+
+                <!-- Pending / Rejected Orders -->
                 <div class="pending-rejected-order-list">
 
                     <div class="list-tabs">
+
                         <div class="tab pending-tab active">
-                            <i class="fa-solid fa-clock"></i> Pending Orders
+
+                            <i class="fa-solid fa-clock"></i>
+                            Pending Orders
+
                         </div>
+
+
                         <div class="tab rejected-tab">
-                            <i class="fa-solid fa-circle-xmark"></i> Rejected Orders
+
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            Rejected Orders
+
                         </div>
+
                     </div>
 
+
                     <div class="list-body">
+
                         <div class="list-section rejected-section">
+                            <!-- Rejected orders inserted here -->
                         </div>
 
                         <div class="list-section pending-section">
+                            <!-- Pending orders inserted here -->
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
+
         </section>
-        <!-- Products Section -->
+
+
+        <!-- =================================================
+             PRODUCTS
+             ================================================= -->
+
         <div class="product-section">
+
+            <!-- Product Count -->
             <div class="product-count">
-                <span><i class="fa-solid fa-box"></i> Products</span>
-                <p>0</p>
-            </div>
 
-            <div class="no-product-section">
-                <div class="no-product-icon"><i class="fa-solid fa-box-open"></i></div>
-                <h4>No Products Yet</h4>
-                <p><i class="fa-solid fa-circle-plus"></i> Tap the <strong>+</strong> button to add your first product.
+                <span>
+                    <i class="fa-solid fa-box"></i>
+                    Products
+                </span>
+
+                <p>
+                    0
                 </p>
-                <p><i class="fa-solid fa-wifi"></i> Or check your internet connection.</p>
+
             </div>
 
-            <div class="product-list"></div>
+
+            <!-- Empty Product State -->
+            <div class="no-product-section">
+
+                <div class="no-product-icon">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+
+                <h4>
+                    No Products Yet
+                </h4>
+
+                <p>
+                    <i class="fa-solid fa-circle-plus"></i>
+                    Tap the <strong>+</strong> button to add your first product.
+                </p>
+
+                <p>
+                    <i class="fa-solid fa-wifi"></i>
+                    Or check your internet connection.
+                </p>
+
+            </div>
+
+
+            <!-- Product List -->
+            <div class="product-list">
+                <!-- Products inserted by JavaScript -->
+            </div>
+
+
+            <!-- Add Product -->
             <div class="plus">
-                <div class="plus-btn" title="Add product"><i class="fa-solid fa-plus"></i></div>
-            </div>
-        </div>
 
-        <!-- Stores Section -->
-        <div class="my-store">
-            <section class="stores">
-                <div class="store-count">
-                    <span><i class="fa-solid fa-store"></i> Stores</span>
-                    <p>0</p>
-                </div>
-                <div class="store-container">
-
-                </div>
-                <div class="no-store">
-                    <div class="no-product-section">
-                        <div class="no-product-icon"><i class="fa-solid fa-store"></i></div>
-                        <h4>No Stores Yet</h4>
-                        <p><i class="fa-solid fa-circle-plus"></i> Tap the <strong>+</strong> button to add your first
-                            product.
-                        </p>
-                        <p><i class="fa-solid fa-wifi"></i> Or check your internet connection.</p>
-                    </div>
-                </div>
-                <div class="add-store" title="Press to add a store">
+                <div
+                    class="plus-btn"
+                    title="Add product"
+                >
                     <i class="fa-solid fa-plus"></i>
                 </div>
-            </section>
 
-            <div class="add-store-overlay">
-                <div class="add-store-portal">
-
-                    <!-- Header -->
-                    <div class="portal-header">
-                        <h2>Add Store</h2>
-                        <button class="close-btn-add-store">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-
-                    <!-- Input Fields -->
-                    <div class="input-group">
-                        <i class="fa-solid fa-user"></i>
-                        <input class="store-name" type="text" placeholder="Enter store name">
-                    </div>
-
-                    <div class="input-group">
-                        <i class="fa-solid fa-envelope"></i>
-                        <input class="store-email" type="email" placeholder="Enter store email">
-                    </div>
-
-                    <div class="input-group">
-                        <i class="fa-solid fa-phone"></i>
-                        <input class="store-phone" type="tel" placeholder="Enter store phone">
-                    </div>
-
-                    <div class="input-group location-group">
-                        <i class="fa-solid fa-location-dot location-icon"></i>
-                        <input class="store-location" id="store-location" type="text"
-                            placeholder="Enter store location">
-                        <button type="button" class="pick-location-btn">
-                            <i class="fa-solid fa-crosshairs"></i>
-                        </button>
-                    </div>
-
-                    <!-- Upload Button -->
-                    <div class="upload-store-data-btn next">
-                        <button>
-                            <i class="fa-solid fa-arrow-right"></i>
-                            Next
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-            <div class="add-store-password-overlay">
-                <!-- Store Password portal -->
-                <div class="add-store-password">
-                    <div class="portal-header">
-                        <h2>Add Password</h2>
-                        <button class="close-btn-add-password">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                    <div class="input-group">
-                        <i class="fa-solid fa-user"></i>
-                        <input class="store-password" type="password" placeholder="Enter store password">
-                    </div>
-
-                    <div class="input-group">
-                        <i class="fa-solid fa-envelope"></i>
-                        <input class="store-confirm-password" type="password" placeholder="Confirm password">
-                    </div>
-                    <div class="upload-store-data-btn upload">
-                        <button>
-                            <i class="fa-solid fa-upload"></i>
-                            Upload
-                        </button>
-                    </div>
-                </div>
             </div>
 
-            <div class="edith-store-overlay">
-                <div class="edith-store-portal">
-                    <div><i class="fa-solid fa-xmark"></i></div>
-                    <div class="top">
-                        <h2 class="store-name">KFC Dansoman</h2>
-                        <span class="store-id">jdhjsdhjshjd</span>
-                    </div>
-                    <div class="inputs">
-                        <div class="input-body">
-                            <div class="icon">
-                                <i class="fa-solid fa-envelope"></i>
-                            </div>
-                            <div class="mid">
-                                <span class="old-email-view">kwakudanjoy12@gmail.com</span>
-                                <input type="email" name="" id="" placeholder="Enter new email">
-                            </div>
-                            <div class="actions">
-                                <i class="fa-solid fa-pen edith-email"></i>
-                                <i class="fa-solid fa-upload upload-email"></i>
-                                <i class="fa-solid fa-xmark cancel-store-email-update"></i>
-                            </div>
-                        </div>
-                        <div class="input-body">
-                            <div class="icon">
-                                <i class="fa-solid fa-envelope"></i>
-                            </div>
-                            <div class="mid">
-                                <span class="old-phone-view">+233 0203544784</span>
-                                <input type="tel" name="" id="" placeholder="Enter new email">
-                            </div>
-                            <div class="actions">
-                                <i class="fa-solid fa-pen edith-phone"></i>
-                                <i class="fa-solid fa-upload upload-phone"></i>
-                                <i class="fa-solid fa-xmark cancel-store-phone-update"></i>
-                            </div>
-                        </div>
-                        <div class="input-body">
-                            <div class="icon">
-                                <i class="fa-solid fa-envelope"></i>
-                            </div>
-                            <div class="mid">
-                                <span class="old-location-view">+233 0203544784</span>
-                                <input type="text" name="" id="" placeholder="Enter new email">
-                            </div>
-                            <div class="actions">
-                                <i class="fa-solid fa-pen edith-location"></i>
-                                <i class="fa-solid fa-upload upload-location"></i>
-                                <i class="fa-solid fa-xmark cancel-location-update"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button"><i class="fa-solid fa-upload"></i>Update store data</button>
-                </div>
-            </div>
-            <div class="no-internet-overlay">
-                <!-- No Internet -->
-                <div class="no-internet empty-state">
-                    <div class="empty-icon wifi-icon"><i class="fas fa-wifi"></i></div>
-                    <h3>Connection Lost</h3>
-                    <p>Something went wrong. Please check your internet connection and try again.</p>
-                    <button type="button" class="btn-refresh" onclick="window.location.reload()">
-                        <i class="fa-solid fa-rotate-right"></i> Refresh Page
-                    </button>
-                </div>
-            </div>
         </div>
 
-        <!-- My Profile Section -->
+
+        <!-- =================================================
+             MY PROFILE
+             ================================================= -->
+
         <div class="my-profile">
 
+
+            <!-- Profile Hero -->
             <div class="profile-hero">
-                <div class="edith-user-icon"><i class="fa-solid fa-user"></i></div>
+
+                <!-- Profile Picture -->
                 <div class="profile-pic">
-                    <img src="" alt="Retailer Image" class="cart-retailer__image"
-                        onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png';">
-                    <input type="file" accept="image/*" id="profile-file" />
+
+                    <img
+                        src=""
+                        alt="Retailer Image"
+                        class="cart-retailer__image"
+                        onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png';"
+                    >
+
+                    <input
+                        type="file"
+                        accept="image/*"
+                        id="profile-file"
+                    >
+
                 </div>
+
+
+                <!-- Profile Actions -->
                 <div class="profile-actions">
-                    <div class="select-new-profile" title="Change photo"><i class="fa-solid fa-camera"></i></div>
+
+                    <div
+                        class="select-new-profile"
+                        title="Change photo"
+                    >
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+
                 </div>
+
+
+                <!-- Quick Buttons -->
                 <div class="quick-buttons">
-                    <button type="button" class="upload-new-profile" title="Upload"><i
-                            class="fa-solid fa-upload"></i></button>
-                    <button type="button" class="edith-old-profile" title="Edit"><i
-                            class="fa-solid fa-pen"></i></button>
-                    <button type="button" class="cance-profile-update" title="Cancel"><i
-                            class="fa-solid fa-x"></i></button>
+
+                    <button
+                        type="button"
+                        class="upload-new-profile"
+                        title="Upload"
+                    >
+                        <i class="fa-solid fa-upload"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="edith-old-profile"
+                        title="Edit"
+                    >
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="cance-profile-update"
+                        title="Cancel"
+                    >
+                        <i class="fa-solid fa-x"></i>
+                    </button>
+
                 </div>
+
             </div>
 
+
+            <!-- Account Information -->
             <div class="account-info">
+
                 <p class="display-account-name"></p>
+
                 <p class="display-account-id"></p>
+
                 <div class="plan-badge">
-                    <span class="label">Plan</span>
-                    <span class="value">Free Plan</span>
+
+                    <span class="label">
+                        Plan
+                    </span>
+
+                    <span class="value">
+                        Free Plan
+                    </span>
+
                 </div>
+
             </div>
 
+
+            <!-- Country Information -->
             <div class="account-country-info">
-                <img src="" alt="" class="country-flag" />
+
+                <img
+                    src=""
+                    alt=""
+                    class="country-flag"
+                >
+
                 <p class="country-name"></p>
-                <span class="divider">|</span>
+
+                <span class="divider">
+                    |
+                </span>
+
                 <p class="country-currency"></p>
+
             </div>
 
+
+            <!-- Store Link -->
             <div class="copy-container">
+
                 <i class="fa-solid fa-link"></i>
-                <a href="" class="copy-link" target="_blank"></a>
+
+                <a
+                    href=""
+                    class="copy-link"
+                    target="_blank"
+                ></a>
+
                 <i class="fa-solid fa-copy copy-icon"></i>
+
             </div>
 
+
+            <!-- Profile Fields -->
             <div class="profile-fields">
+
+
                 <!-- Email -->
                 <div class="field-row edit-account-email">
-                    <div class="field-icon"><i class="fa-solid fa-envelope"></i></div>
-                    <div class="field-content">
-                        <label>Email</label>
-                        <p class="display-email"></p>
+
+                    <div class="field-icon">
+                        <i class="fa-solid fa-envelope"></i>
                     </div>
-                    
+
+                    <div class="field-content">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <p class="display-email"></p>
+
+                    </div>
+
                 </div>
+
 
                 <!-- Phone -->
                 <div class="field-row edit-account-phone">
-                    <div class="field-icon"><i class="fa-solid fa-phone"></i></div>
+
+                    <div class="field-icon">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+
                     <div class="field-content">
-                        <label>Phone</label>
+
+                        <label>
+                            Phone
+                        </label>
+
                         <p class="display-phone"></p>
-                        <input type="tel" placeholder="Enter new phone" class="new-phone-input" />
+
+                        <input
+                            type="tel"
+                            placeholder="Enter new phone"
+                            class="new-phone-input"
+                        >
+
                     </div>
+
+
+                    <!-- Phone Actions -->
                     <div class="field-buttons">
-                        <button type="button" class="upload-new-phone" title="Save"><i
-                                class="fa-solid fa-upload"></i></button>
-                        <button type="button" class="edith-old-phone" title="Edit"><i
-                                class="fa-solid fa-pen"></i></button>
-                        <button type="button" class="cancel-phone-update" title="Cancel"><i
-                                class="fa-solid fa-x"></i></button>
+
+                        <button
+                            type="button"
+                            class="upload-new-phone"
+                            title="Save"
+                        >
+                            <i class="fa-solid fa-upload"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="edith-old-phone"
+                            title="Edit"
+                        >
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="cancel-phone-update"
+                            title="Cancel"
+                        >
+                            <i class="fa-solid fa-x"></i>
+                        </button>
+
                     </div>
+
                 </div>
+
             </div>
 
+
+            <!-- Logout -->
             <div class="log-out">
-                <button type="button"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+
+                <button type="button">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Log Out
+
+                </button>
+
             </div>
 
+
+            <!-- Delete Account -->
             <div class="delete-account">
+
                 <header>
-                    <p><i class="fa-solid fa-triangle-exclamation"></i> Delete Account</p>
-                    <span>Once confirmed, everything linked to this account will be permanently deleted.</span>
+
+                    <p>
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Delete Account
+                    </p>
+
+                    <span>
+                        Once confirmed, everything linked to this account
+                        will be permanently deleted.
+                    </span>
+
                 </header>
-                <input type="password" placeholder="Enter your password to confirm" />
-                <button type="button"><i class="fa-solid fa-trash"></i> Delete Account</button>
+
+
+                <input
+                    type="password"
+                    placeholder="Enter your password to confirm"
+                >
+
+
+                <button type="button">
+
+                    <i class="fa-solid fa-trash"></i>
+                    Delete Account
+
+                </button>
+
             </div>
 
+
+            <!-- Upgrade -->
             <div class="upgrade">
-                <div class="upgrade-btn" title="Upgrade plan">
+
+                <div
+                    class="upgrade-btn"
+                    title="Upgrade plan"
+                >
+
                     <i class="fa-solid fa-rocket"></i>
-                    <span>Upgrade Plan</span>
+
+                    <span>
+                        Upgrade Plan
+                    </span>
+
                 </div>
+
             </div>
 
-        </div><!-- /my-profile -->
+        </div>
 
-        <!-- No Orders Found -->
+
+        <!-- =================================================
+             NO ORDERS FOUND
+             ================================================= -->
+
         <div class="no-found-products empty-state">
-            <div class="empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
-            <h3>No Orders Found</h3>
-            <p>No orders have been placed yet. Check back soon!</p>
-            <button type="button" class="btn-browse" onclick="window.location.reload()">
-                <i class="fa-solid fa-rotate-right"></i> Refresh
+
+            <div class="empty-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+
+            <h3>
+                No Orders Found
+            </h3>
+
+            <p>
+                No orders have been placed yet.
+                Check back soon!
+            </p>
+
+            <button
+                type="button"
+                class="btn-browse"
+                id="refresh-orders-btn"
+            >
+                <i class="fa-solid fa-rotate-right"></i>
+                Refresh
             </button>
+
         </div>
 
-        <!-- No Internet -->
+
+        <!-- =================================================
+             NO INTERNET
+             ================================================= -->
+
         <div class="no-internet empty-state">
-            <div class="empty-icon wifi-icon"><i class="fas fa-wifi"></i></div>
-            <h3>Connection Lost</h3>
-            <p>Something went wrong. Please check your internet connection and try again.</p>
-            <button type="button" class="btn-refresh" onclick="window.location.reload()">
-                <i class="fa-solid fa-rotate-right"></i> Refresh Page
+
+            <div class="empty-icon wifi-icon">
+                <i class="fas fa-wifi"></i>
+            </div>
+
+            <h3>
+                Connection Lost
+            </h3>
+
+            <p>
+                Something went wrong.
+                Please check your internet connection and try again.
+            </p>
+
+            <button
+                type="button"
+                class="btn-refresh"
+                id="refresh-main-btn"
+            >
+                <i class="fa-solid fa-rotate-right"></i>
+                Refresh Page
             </button>
+
         </div>
 
-        <!-- Orders Section -->
+
+        <!-- =================================================
+             ORDERS
+             ================================================= -->
+
         <div class="orders-list">
+
+            <!-- Date Range -->
             <div class="orders-date-range">
-                <input type="date" name="" id="">
-                <span>To</span>
-                <input type="date" name="" id="">
+
+                <input
+                    type="date"
+                    class="orders-from-date"
+                >
+
+                <span>
+                    To
+                </span>
+
+                <input
+                    type="date"
+                    class="orders-to-date"
+                >
+
             </div>
+
+
+            <!-- Orders -->
             <div class="order-section">
-
+                <!-- Orders inserted by JavaScript -->
             </div>
-        </div>
 
+        </div>
 
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/intlTelInput.min.js"></script>
-    <script type="module" src="main.js"></script>
+
+    <!-- =====================================================
+         EXTERNAL SCRIPTS
+         ===================================================== -->
+
+    <!-- International Telephone Input -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/intlTelInput.min.js"
+    ></script>
+
+
+    <!-- Main Application -->
+    <script
+        type="module"
+        src="main.js"
+    ></script>
+
 </body>
 
 </html>

@@ -1,65 +1,167 @@
-// ======== IMPORTINGING SERVER URL AND API,
+
+// ============================================================
+// OMART MARKETPLACE
+// Main marketplace frontend logic
+// ============================================================
+
+
+// ============================================================
+// IMPORTS
+// ============================================================
+
 import { CONFIG } from "./config/config.js";
-import { fetchData} from "./fetch_algorithms/algorithms.js";
+import { fetchData } from "./fetch_algorithms/algorithms.js";
 
 
+// ============================================================
+// CONFIGURATION
+// ============================================================
+
+const SERVER_URL = CONFIG.SERVER_URL;
+
+const formatter = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+});
+
+
+// ============================================================
+// DOM ELEMENTS
+// ============================================================
+
+// Header / navigation
 const profile = document.querySelector(".profile");
-const ProfileImage = document.querySelector("#auth > img");
-const UserIcon = document.querySelector(".user");
+const userIcon = document.querySelector(".user");
+const authButton = document.querySelector("#auth");
+
 const searchInput = document.querySelector(".search-input");
 const searchIcon = document.querySelector(".search-icon");
 const keySearch = document.querySelector(".key-search");
-const Main = document.querySelector(".main");
-const Auth = document.querySelector("#auth");
 
-const Loading = document.querySelector("#loading-overlay");
 
-const NoFoundProduct = document.querySelector(".no-found-products");
-const NoInternet = document.querySelector(".no-internet");
-const OrderSuccess = document.querySelector(".success-overlay");
+// Main content
+const main = document.querySelector(".main");
+const loadingOverlay = document.querySelector("#loading-overlay");
+const noFoundProduct = document.querySelector(".no-found-products");
+const noInternet = document.querySelector(".no-internet");
 
-//Buying cart
-const Cart_Overlay = document.querySelector(".cart-overlay"); // whole cart
-const Cart_close = Cart_Overlay.querySelector(".cart-close-btn");
-const Cart_Order_Minus = Cart_Overlay.querySelector(".minus");
-const Cart_Order_Quantity = Cart_Overlay.querySelector(".qty-number");
-const Cart_Order_Add = Cart_Overlay.querySelector(".plus");
-const Cart_Buy_Order = Cart_Overlay.querySelector(".cart-buy-btn");
-const Car_Total_Amount = Cart_Overlay.querySelector(".total-amount");
-let unitPrice = 0; // store this when item loads
-let counryCode = null;
+
+// Toast
 const toast = document.querySelector(".toast");
 const toastIcon = document.querySelector(".toast-icon > i");
 const toastHeader = document.querySelector(".toast-content > h4");
 const toastText = document.querySelector(".toast-text");
 
-const input = document.querySelector(".customer-number-input");
 
-let ipAddress = CONFIG.SERVER_URL;
+// Cart
+const cartOverlay = document.querySelector(".cart-overlay");
+const cartClose = cartOverlay.querySelector(".cart-close-btn");
+
+const cartOrderMinus = cartOverlay.querySelector(".minus");
+const cartOrderQuantity = cartOverlay.querySelector(".qty-number");
+const cartOrderAdd = cartOverlay.querySelector(".plus");
+
+const cartBuyOrder = cartOverlay.querySelector(".cart-buy-btn");
+const cartTotalAmount = cartOverlay.querySelector(".total-amount");
 
 
-// Initially hide elements
-const user = JSON.parse(localStorage.getItem("user") || "null");
+// Checkout
+const paymentOverlay = document.querySelector(".payment-overlay");
+const cancelPurchase = paymentOverlay.querySelector(".cancel-purchase");
+const purchaseButton = paymentOverlay.querySelector(".purchase-btn");
+const customerNumberInput = paymentOverlay.querySelector(
+    ".customer-number-input"
+);
 
-document.addEventListener("DOMContentLoaded", async () => {
+
+// Order success
+const orderSuccess = document.querySelector(".success-overlay");
+const successCloseButton = orderSuccess.querySelector(".success-close-btn");
+const displayOrderId = orderSuccess.querySelector("#display-order-id");
+
+
+// ============================================================
+// APPLICATION STATE
+// ============================================================
+
+let currentUser = JSON.parse(
+    localStorage.getItem("user") || "null"
+);
+
+let searchOpen = false;
+
+let currentProduct = null;
+
+let unitPrice = 0;
+let countryCode = null;
+
+let iti = null;
+
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+
+document.addEventListener("DOMContentLoaded", initializeMarketplace);
+
+
+async function initializeMarketplace() {
+
     toast.classList.add("hide");
-    Loading.style.display = "flex";
-    await Insert_Categories();
-    Loading.style.display = "none";
-    const storedCategories = getLocalCategories();
-    keySearch.firstChild.classList.add("selected");
-  
-    await GetProducts(storedCategories[0]);
-   
-});
 
-function showToast(icon, header, text, iconColor) {
-    toastIcon.className = "toast-icon"; // safe reset
-    toastIcon.className = "";
-    icon.split(" ").forEach(cls => {
-        toastIcon.classList.add(cls);
-    });
+    showLoading(true);
 
+    try {
+        await insertCategories();
+        const categories = getLocalCategories();
+        if (!categories || categories.length === 0) {
+            showNoProducts();
+            return;
+        }
+
+        // Select first category
+        selectCategory(categories[0]);
+        await getProducts(categories[0]);
+
+    } catch (error) {
+        console.error(
+            "Marketplace initialization failed:",
+            error
+        );
+        showInternetError();
+    } finally {
+        showLoading(false);
+
+    }
+
+    initializePhoneInput();
+    setupUserState();
+}
+
+
+// ============================================================
+// LOADING
+// ============================================================
+
+function showLoading(show) {
+
+    loadingOverlay.style.display = show
+        ? "flex"
+        : "none";
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+
+function showToast(
+    icon,
+    header,
+    text,
+    iconColor = "white"
+) {
+
+    toastIcon.className = icon;
     toastIcon.style.color = iconColor;
     toastHeader.textContent = header;
     toastText.textContent = text;
@@ -67,769 +169,1341 @@ function showToast(icon, header, text, iconColor) {
 
     setTimeout(() => {
         toast.classList.add("show");
-    }, 100);
+    }, 50);
 
     setTimeout(() => {
+
         toast.classList.remove("show");
         toast.classList.add("hide");
+
     }, 3000);
 }
 
-async function Load_Image(Url) {
-    const res = await fetch(`${ipAddress}/profile/${Url}`, {
-        headers: {
-            "ngrok-skip-browser-warning": "true"
-        }
-    });
 
-    const blob = await res.blob();
-    const imageUrl = URL.createObjectURL(blob);
-    return imageUrl;
+// ============================================================
+// USER / AUTHENTICATION
+// ============================================================
+
+function setupUserState() {
+    if (!authButton) return;
+
+    const businessLabel =
+        authButton.querySelector(".business-label");
+
+    const businessAction =
+        authButton.querySelector(".business-action");
+
+    if (!businessLabel || !businessAction) return;
+
+
+    businessLabel.textContent = "Business";
+
+    businessAction.textContent = currentUser
+        ? "Open Business Console"
+        : "Sign in / Create account";
 }
 
-function CheckUser() {
-    if (user) Auth.querySelector("span").textContent = "Hi you are Welcome";
-    if (user && user.profilePic) {
-        ProfileImage.src = `${ipAddress}/profile/${User.profilePic}`;
+
+function handleAuthentication() {
+
+    if (currentUser) {
+        window.location.href = "/main/main.html";
     } else {
-        // use correct variable
-        ProfileImage.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // optional fallback
+        window.location.href = "/auth/auth.html";
     }
 }
 
-// 1. Define the formatter once
-const formatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-});
 
-CheckUser();
+// ============================================================
+// CATEGORIES
+// ============================================================
 
-keySearch.addEventListener("click", async (e) => {
-    const Key = e.target.closest(".key");
-    if (!Key) return;
+async function insertCategories() {
 
-    document.querySelectorAll(".key").forEach(el => {
-        el.classList.remove("selected");
-    });
+    const storedCategories = getLocalCategories();
+    let online = true;
 
-    Key.classList.add("selected");
-    const p = Key.querySelector("p");
 
-    Loading.style.display = "flex";
-    await GetProducts(p.textContent);
-    Loading.style.display = "none";
-});
-
-let searchOpen = false;
-
-searchIcon.addEventListener("click", () => {
-
-    if (!searchOpen) {
-        searchInput.style.display = "block";
-        keySearch.style.display = "none";
-        searchInput.focus();
-        searchOpen = true;
-        return;
-    }
-
-    let input = searchInput.value.trim();
-
-    if (input !== "") {
-        MakeSearch(input); // run search
-    } else {
-        searchInput.style.display = "none";
-        keySearch.style.display = "flex";
-        searchInput.value = "";
-        searchOpen = false;
-    }
-});
-
-searchInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        let input = searchInput.value.trim();
-
-        if (input !== "") {
-            MakeSearch(input);
-        }
-    }
-});
-
-Auth.addEventListener("click", () => {
-    //const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-        window.location.href = "/main/main.html"
-        window.history.clear();
-    } else {
-        window.location.href = "/auth/auth.html"
-    }
-});
-
-// search algorithm
-async function MakeSearch(Input) {
-    let Payload = {
-        INSTRUCTION: "SEARCH",
-        input: Input
-    }
-
-    let products = null;
-    Loading.style.display = "flex";
-
-    NoFoundProduct.style.display = "none";
-    NoInternet.style.display = "none";
-    Main.style.display = "none";
+    // --------------------------------------------------------
+    // Check server connection
+    // --------------------------------------------------------
 
     try {
-        products = await fetchData(Payload);
-    } catch (err) {
-        NoInternet.style.display = "flex";
-    }
 
-    if (Array.isArray(products) && products.length > 0) {
-        Loading.style.display = "none";
-        // SUCCESS: We have products
-        Main.innerHTML = "";
-        Main.style.display = "grid";
-        const fragment = document.createDocumentFragment();
-
-        products.forEach(prod => {
-            const ProductCard = document.createElement("div");
-            ProductCard.className = "product-card";
-            ProductCard.dataset.productId = prod.prodID;
-            // Note: Removed the redundant nested div.product-card inside the innerHTML
-            ProductCard.innerHTML = `
-            <div class="product-image">
-                <img src="${ipAddress}/products/${prod.ImageUrl}" alt="image" class="prod-img">
-            </div>
-            <div class="product-info">
-                <div class="retailer">
-                    <img src="${ipAddress}/profile/${prod.profilePic}" 
-                        alt="logo" 
-                        class="retailer_profile_pic"
-                        onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png';">
-                    <div class="user-detail">
-                        <span class="name">${prod.RetailerName}</span>
-                        <span class="retailerID">${prod.RetailerID}</span>
-                    </div>
-                    <div class="view-page">
-                        Visit Store <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    </div>
-                </div>
-                <h4 class="product-name">${prod.Name}</h4>
-                <h3 class="product-price">${prod.currencyCode} : ${formatter.format(prod.Price)}</h3>
-                <p class="product-description">${prod.Description}</p>
-                <div class="prouduct-cart-bottom">
-                    <p class="posted-at">posted ${prod.postedAt}</p>
-                    <button class="cart">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                    </button>
-                </div>
-            </div>`;
-
-            fragment.appendChild(ProductCard);
+        const pingResponse = await fetchData({
+            INSTRUCTION: "PING"
         });
 
-        Main.appendChild(fragment);
+        if (
+            !pingResponse ||
+            pingResponse.status !== "OK"
+        ) {
+            online = false;
+        }
 
-    } else if (Array.isArray(products) && products.length === 0) {
-        // EMPTY: It is an array, but nothing is in it
-        NoFoundProduct.style.display = "flex";
-        Loading.style.display = "none";
-    }
-}
-
-async function Insert_Categories() {
-    const keySearch = document.querySelector(".key-search");
-    const storedCategories = getLocalCategories();
-
-    // Check internet connection by pinging server
-    let online = true;
-    try {
-        const pingResponse = await fetchData({ INSTRUCTION: "PING" });
-        if (!pingResponse || pingResponse.status !== "OK") online = false;
-    } catch {
+    } catch (error) {
         online = false;
     }
 
+
+    // --------------------------------------------------------
+    // Online
+    // --------------------------------------------------------
+
     if (online) {
-        // Online → fetch categories from server
+
         try {
 
-            const data = await fetchData({ INSTRUCTION: "GET-CATEGORIES" });
-            if (data && data.Product_Categories) {
-                displayCategories(data.Product_Categories, keySearch);
-                saveLocalCategories(data.Product_Categories);
+            const response = await fetchData({
+                INSTRUCTION: "GET-CATEGORIES"
+            });
+
+            if (
+                response &&
+                Array.isArray(response.Product_Categories)
+            ) {
+
+                const categories =
+                    response.Product_Categories;
+
+                displayCategories(categories);
+                saveLocalCategories(categories);
+                return categories;
             }
-        } catch (err) {
-            console.error("Failed to fetch categories online:", err);
 
-            // Fallback to localStorage if online fetch fails
-            if (storedCategories) displayCategories(storedCategories, keySearch);
+        } catch (error) {
+
+            console.error(
+                "Failed to fetch categories:",
+                error
+            );
         }
 
-    } else {
-        // Offline → use localStorage
+
+        // Server failed → use cache
+
         if (storedCategories) {
-            displayCategories(storedCategories, keySearch);
-        } else {
-            console.warn("No internet and no local data available");
-            keySearch.innerHTML = `<p>No categories available</p>`;
+
+            displayCategories(storedCategories);
+            return storedCategories;
         }
+
     }
+
+
+    // --------------------------------------------------------
+    // Offline
+    // --------------------------------------------------------
+
+    if (storedCategories) {
+
+        displayCategories(storedCategories);
+        return storedCategories;
+    }
+
+    keySearch.innerHTML =
+        "<p>No categories available</p>";
+
+    return [];
 }
 
-// Helper: display categories in keySearch
-function displayCategories(categories, container) {
-    container.innerHTML = ""; // clear previous
-    categories.forEach(cat => {
-        const div = document.createElement("div");
-        div.classList.add("key");
-        div.innerHTML = `<p>${cat}</p>`;
-        container.appendChild(div);
+
+function displayCategories(categories) {
+
+    keySearch.innerHTML = "";
+
+    const fragment =
+        document.createDocumentFragment();
+
+    categories.forEach(category => {
+        const categoryElement =
+            document.createElement("div");
+
+        categoryElement.className = "key";
+
+        const text =
+            document.createElement("p");
+        text.textContent = category;
+        categoryElement.appendChild(text);
+        fragment.appendChild(categoryElement);
+    });
+    keySearch.appendChild(fragment);
+}
+
+
+function selectCategory(category) {
+
+    const categoryElements =
+        keySearch.querySelectorAll(".key");
+
+    categoryElements.forEach(element => {
+        const text =
+            element.querySelector("p")?.textContent;
+        element.classList.toggle(
+            "selected",
+            text === category
+        );
     });
 }
 
-// Helper: save to localStorage safely
+
 function saveLocalCategories(categories) {
     try {
-        localStorage.setItem("Product-Categories", JSON.stringify(categories));
-    } catch (err) {
-        console.warn("localStorage not available:", err);
+        localStorage.setItem(
+            "Product-Categories",
+            JSON.stringify(categories)
+        );
+
+    } catch (error) {
+        console.warn(
+            "Could not save categories:",
+            error
+        );
     }
 }
 
-// Helper: get categories from localStorage safely
+
 function getLocalCategories() {
+
     try {
-        const stored = localStorage.getItem("Product-Categories");
-        return stored ? JSON.parse(stored) : null;
-    } catch {
+
+        const stored =
+            localStorage.getItem(
+                "Product-Categories"
+            );
+
+        return stored
+            ? JSON.parse(stored)
+            : null;
+
+    } catch (error) {
+
+        console.warn(
+            "Could not read categories:",
+            error
+        );
+
         return null;
     }
 }
 
-async function GetProducts(KeyWord1) {
-    const Payload = {
+
+// ============================================================
+// PRODUCTS
+// ============================================================
+
+async function getProducts(keyword) {
+
+    hideContentStates();
+
+    const payload = {
         INSTRUCTION: "GET-PRODUCT",
-        KeySearch: KeyWord1
+        KeySearch: keyword
     };
 
-    // await if Get is async
-    // 1. First, hide all states to "reset" the view
-    NoFoundProduct.style.display = "none";
-    NoInternet.style.display = "none";
-    Main.style.display = "none";
 
-    let products = null;
+    let products;
+
 
     try {
-        products = await fetchData(Payload);
 
-    } catch (err) {
-        NoInternet.style.display = "flex";
+        products = await fetchData(payload);
+
+    } catch (error) {
+
+        console.error(
+            "Failed to get products:",
+            error
+        );
+
+        showInternetError();
+
+        return;
     }
 
-    if (Array.isArray(products) && products.length > 0) {
-        // SUCCESS: We have products
-        Main.innerHTML = "";
-        Main.style.display = "grid";
-        const fragment = document.createDocumentFragment();
 
-        products.forEach(prod => {
-            const ProductCard = document.createElement("div");
-            ProductCard.className = "product-card";
-            ProductCard.dataset.productId = prod.prodID;
-            // Note: Removed the redundant nested div.product-card inside the innerHTML
-            ProductCard.innerHTML = `
-            <div class="product-image">
-                <img src="${ipAddress}/products/${prod.ImageUrl}" alt="image" class="prod-img">
-            </div>
-            <div class="product-info">
-                <div class="retailer">
-                    <img src="${ipAddress}/profile/${prod.profilePic}" 
-                        alt="logo" 
-                        class="retailer_profile_pic"
-                        onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png';">
-                    <div class="user-detail">
-                        <span class="name">${prod.RetailerName}</span>
-                        <span class="retailerID">${prod.RetailerID}</span>
-                    </div>
-                    <div class="view-page">
-                        Visit Store <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    </div>
-                </div>
-                <h4 class="product-name">${prod.Name}</h4>
-                <h3 class="product-price">${prod.currencyCode} ${formatter.format(prod.Price)}</h3>
-                <p class="product-description">${prod.Description}</p>
-                <div class="prouduct-cart-bottom">
-                    <p class="posted-at">posted ${prod.postedAt}</p>
-                    <button class="cart">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                    </button>
-                </div>
-            </div>`;
-            fragment.appendChild(ProductCard);
+    if (
+        Array.isArray(products) &&
+        products.length > 0
+    ) {
+
+        renderProducts(products);
+        return;
+    }
+
+    if (
+        Array.isArray(products) &&
+        products.length === 0
+    ) {
+
+        showNoProducts();
+        return;
+    }
+
+    showInternetError();
+}
+
+
+// ============================================================
+// SEARCH
+// ============================================================
+
+async function makeSearch(keyword) {
+    hideContentStates();
+    showLoading(true);
+
+    try {
+
+        const products = await fetchData({
+            INSTRUCTION: "SEARCH",
+            input: keyword
         });
 
-        Main.appendChild(fragment);
 
-    } else if (Array.isArray(products) && products.length === 0) {
-        // EMPTY: It is an array, but nothing is in it
-        NoFoundProduct.style.display = "flex";
+        if (
+            Array.isArray(products) &&
+            products.length > 0
+        ) {
+
+            renderProducts(products);
+            return;
+        }
+
+
+        if (
+            Array.isArray(products) &&
+            products.length === 0
+        ) {
+
+            showNoProducts();
+            return;
+        }
+
+
+        showInternetError();
+
+    } catch (error) {
+
+        console.error(
+            "Search failed:",
+            error
+        );
+
+        showInternetError();
+
+    } finally {
+        showLoading(false);
     }
 }
 
-//algorithm to check purchase price
-function ValidatePrice(inputValue) {
-    const MAX_INT = "999999999999999999"; // 18 digits
 
-    inputValue = inputValue.trim();
+// ============================================================
+// PRODUCT RENDERING
+// ============================================================
 
-    // 2. Split integer and decimal
-    const parts = inputValue.split(".");
-    const intPart = parts[0];
+function renderProducts(products) {
 
-    // 3. Reject if input has MORE digits than MAX_INT
-    if (intPart.length > MAX_INT.length) {
+    main.innerHTML = "";
+    const fragment =
+        document.createDocumentFragment();
+
+    products.forEach(product => {
+        const productCard =
+            createProductCard(product);
+        fragment.appendChild(productCard);
+
+    });
+
+
+    main.appendChild(fragment);
+    main.style.display = "grid";
+    noFoundProduct.style.display = "none";
+    noInternet.style.display = "none";
+}
+
+
+function createProductCard(product) {
+    const card =
+        document.createElement("div");
+    card.className = "product-card";
+    card.dataset.productId =
+        product.prodID;
+
+    card.innerHTML = `
+        <div class="product-image">
+
+            <img
+                src="${SERVER_URL}/products/${product.ImageUrl}"
+                alt="${escapeHTML(product.Name)}"
+                class="prod-img"
+                loading="lazy"
+            >
+
+        </div>
+
+        <div class="product-info">
+
+            <div class="retailer">
+
+                <img
+                    src="${SERVER_URL}/profile/${product.profilePic}"
+                    alt="${escapeHTML(product.RetailerName)}"
+                    loading="lazy"
+                    class="retailer_profile_pic"
+                    onerror="
+                        this.onerror = null;
+                        this.src =
+                        'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                    "
+                >
+
+
+                <div class="user-detail">
+
+                    <span class="name">
+                        ${escapeHTML(product.RetailerName)}
+                    </span>
+
+                    <span class="retailerID">
+                        ${escapeHTML(product.RetailerID)}
+                    </span>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="view-page"
+                >
+
+                    Visit Store
+
+                    <i
+                        class="fa-solid fa-arrow-up-right-from-square"
+                    ></i>
+
+                </button>
+
+            </div>
+
+            <h4 class="product-name">
+                ${escapeHTML(product.Name)}
+            </h4>
+
+
+            <h3 class="product-price">
+
+                ${escapeHTML(product.currencyCode)}
+                ${formatter.format(product.Price)}
+
+            </h3>
+
+
+            <p class="product-description">
+
+                ${escapeHTML(product.Description)}
+
+            </p>
+
+
+            <div class="prouduct-cart-bottom">
+
+                <p class="posted-at">
+                    posted ${escapeHTML(product.postedAt)}
+                </p>
+
+
+                <button
+                    type="button"
+                    class="cart"
+                    aria-label="Add ${escapeHTML(product.Name)} to cart"
+                >
+
+                    <i
+                        class="fa-solid fa-cart-shopping"
+                    ></i>
+
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+
+    return card;
+}
+
+
+// ============================================================
+// SIMPLE HTML ESCAPE
+// Prevent product data from injecting HTML
+// ============================================================
+
+function escapeHTML(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+// ============================================================
+// CONTENT STATES
+// ============================================================
+
+function hideContentStates() {
+
+    main.style.display = "none";
+
+    noFoundProduct.style.display = "none";
+
+    noInternet.style.display = "none";
+}
+
+
+function showNoProducts() {
+
+    main.style.display = "none";
+
+    noInternet.style.display = "none";
+
+    noFoundProduct.style.display = "flex";
+}
+
+
+function showInternetError() {
+
+    main.style.display = "none";
+
+    noFoundProduct.style.display = "none";
+
+    noInternet.style.display = "flex";
+}
+
+
+// ============================================================
+// CART
+// ============================================================
+
+async function openCart(productCard) {
+
+    const productId =
+        productCard.dataset.productId;
+
+    const productName =
+        productCard.querySelector(
+            ".product-name"
+        ).textContent;
+
+    const productPriceText =
+        productCard.querySelector(
+            ".product-price"
+        ).textContent.trim();
+
+
+    const productDescription =
+        productCard.querySelector(
+            ".product-description"
+        ).textContent;
+
+    const retailerName =
+        productCard.querySelector(
+            ".name"
+        ).textContent;
+
+    const retailerId =
+        productCard.querySelector(
+            ".retailerID"
+        ).textContent;
+
+
+    const productImage =
+        productCard.querySelector(
+            ".prod-img"
+        ).src;
+
+    const retailerProfile =
+        productCard.querySelector(
+            ".retailer_profile_pic"
+        ).src;
+
+
+    // --------------------------------------------------------
+    // Extract currency and price
+    // --------------------------------------------------------
+
+    const priceParts =
+        productPriceText.split(/\s+/);
+
+    countryCode = priceParts[0];
+
+    const rawPrice =
+        priceParts.slice(1).join("");
+
+
+    unitPrice =
+        parseFloat(
+            rawPrice.replace(/,/g, "")
+        );
+
+
+    if (Number.isNaN(unitPrice)) {
+
         showToast(
             "fa-solid fa-money-bill",
-            "Total purchase",
-            "Your purchase ammount is too large , Try reducing your puchase quatity",
+            "Product Price",
+            "Unable to read product price",
+            "red"
+        );
+
+        return;
+    }
+
+
+    currentProduct = {
+        id: productId,
+        name: productName,
+        price: unitPrice,
+        currency: countryCode,
+        description: productDescription,
+        retailerName,
+        retailerId,
+        image: productImage,
+        retailerProfile
+    };
+
+
+    // --------------------------------------------------------
+    // Get retailer information
+    // --------------------------------------------------------
+
+    const payload = {
+        INSTRUCTION:
+            "GET-RETAILER-EMAIL & PHONE",
+
+        RetailerID: retailerId,
+
+        productId
+    };
+
+
+    showLoading(true);
+
+
+    try {
+
+        const result =
+            await fetchData(payload);
+
+
+        if (!result) {
+
+            throw new Error(
+                "No retailer information returned"
+            );
+        }
+
+
+        populateCart(result);
+
+        cartOverlay.style.display = "flex";
+
+    } catch (error) {
+
+        console.error(
+            "Failed to open cart:",
+            error
+        );
+
+        showToast(
+            "fa-solid fa-exclamation",
+            "Error",
+            "Sorry, an error occurred",
+            "red"
+        );
+
+    } finally {
+
+        showLoading(false);
+
+    }
+}
+
+
+// ============================================================
+// CART UI
+// ============================================================
+
+function populateCart(retailer) {
+
+    cartOverlay.querySelector(
+        ".cart-retailer__image"
+    ).src = currentProduct.retailerProfile;
+
+
+    cartOverlay.querySelector(
+        ".cart-product__image"
+    ).src = currentProduct.image;
+
+
+    cartOverlay.querySelector(
+        ".cart-product__name"
+    ).textContent = currentProduct.name;
+
+
+    cartOverlay.querySelector(
+        ".cart-product__price"
+    ).textContent =
+        `${currentProduct.currency} ${formatter.format(currentProduct.price)}`;
+
+
+    cartOverlay.querySelector(
+        ".cart-product__description"
+    ).textContent =
+        currentProduct.description;
+
+
+    cartOverlay.querySelector(
+        ".cart-retailer__name"
+    ).textContent =
+        currentProduct.retailerName;
+
+
+    cartOverlay.querySelector(
+        ".cart-retailer__email"
+    ).textContent =
+        retailer.Email;
+
+
+    cartOverlay.querySelector(
+        ".cart-retailer__phone"
+    ).textContent =
+        retailer.Phone;
+
+
+    cartOrderQuantity.textContent = "1";
+
+
+    cartTotalAmount.textContent =
+        `${currentProduct.currency} ${formatter.format(currentProduct.price)}`;
+}
+
+
+function closeCart() {
+
+    cartOverlay.style.display = "none";
+}
+
+
+function changeQuantity(amount) {
+
+    if (!currentProduct) return;
+
+
+    let quantity =
+        parseInt(
+            cartOrderQuantity.textContent,
+            10
+        );
+
+
+    quantity =
+        Math.max(
+            1,
+            quantity + amount
+        );
+
+
+    cartOrderQuantity.textContent =
+        quantity;
+
+
+    updateCartTotal(quantity);
+}
+
+
+function updateCartTotal(quantity) {
+
+    const total =
+        currentProduct.price * quantity;
+
+
+    cartTotalAmount.textContent =
+        `${currentProduct.currency} ${formatter.format(total)}`;
+}
+
+
+// ============================================================
+// CHECKOUT
+// ============================================================
+
+function openPayment() {
+
+    if (!currentProduct) return;
+
+
+    customerNumberInput.value = "";
+
+
+    cartOverlay.style.display = "none";
+
+    paymentOverlay.style.display = "flex";
+}
+
+
+function closePayment() {
+
+    paymentOverlay.style.display = "none";
+
+    cartOverlay.style.display = "flex";
+}
+
+
+// ============================================================
+// PRICE VALIDATION
+// ============================================================
+
+function validatePrice(value) {
+
+    const MAX_INTEGER =
+        "999999999999999999";
+
+
+    const cleanValue =
+        String(value)
+            .trim()
+            .replace(/,/g, "");
+
+
+    const parts =
+        cleanValue.split(".");
+
+
+    const integerPart =
+        parts[0];
+
+
+    if (
+        integerPart.length >
+        MAX_INTEGER.length
+    ) {
+
+        showToast(
+            "fa-solid fa-money-bill",
+            "Total Purchase",
+            "Your purchase amount is too large. Try reducing your purchase quantity.",
             "#e53935"
         );
+
         return false;
     }
 
-    // 4. If same length, compare lexicographically (alphabetical string check)
-    if (intPart.length === MAX_INT.length && intPart > MAX_INT) {
+
+    if (
+        integerPart.length ===
+        MAX_INTEGER.length &&
+        integerPart > MAX_INTEGER
+    ) {
+
         showToast(
             "fa-solid fa-money-bill",
-            "Total purchase",
-            "Your purchase ammount is too large , Try reducing your puchase quatity",
+            "Total Purchase",
+            "Your purchase amount is too large. Try reducing your purchase quantity.",
             "#e53935"
         );
+
         return false;
     }
+
 
     return true;
 }
 
 
-Main.addEventListener("click", async e => {
-    // check if a cart button was clicked
-    if (e.target.closest(".cart")) {
-        const productCard = e.target.closest(".product-card"); // this specific product
-        const productName = productCard.querySelector(".product-name").textContent;
+// ============================================================
+// PLACE ORDER
+// ============================================================
 
-        const priceString = productCard.querySelector(".product-price").textContent.split(" ")[1];// 1. Get the raw string piece: "1,250.00"
-        counryCode = productCard.querySelector(".product-price").textContent.split(" ")[0];
+async function placeOrder() {
 
-        const cleanNumericString = priceString.replace(/,/g, ""); // 2. LOGIC FIX: Strip out commas so JavaScript reads it as "1250.00"
-        unitPrice = parseFloat(cleanNumericString); // 3. Convert to a true Number float
-        const productPrice = formatter.format(unitPrice); // 4. Now the formatter will work perfectly without NaN
+    if (!currentProduct) return;
 
-        const productDescription = productCard.querySelector(".product-description").textContent;
-        const retailerName = productCard.querySelector(".name").textContent;
-        const retailerID = productCard.querySelector(".retailerID").textContent;
-        // ✅ Get product image URL
-        const productImage = productCard.querySelector(".prod-img").src;
-        const Retailer_Profile_Pic = productCard.querySelector(".retailer_profile_pic").src;
 
-        let ProductID = productCard.dataset.productId;
+    const quantity =
+        parseInt(
+            cartOrderQuantity.textContent,
+            10
+        );
 
-        let Payload = {
-            INSTRUCTION: "GET-RETAILER-EMAIL & PHONE",
-            RetailerID: retailerID,
-            productId: ProductID
-        }
 
-        try {
-            Loading.style.display = "flex";
-            let Result = await fetchData(Payload);
-            if (Result) {
-                Loading.style.display = "none";
+    const total =
+        currentProduct.price * quantity;
 
-                // populate your cart overlay
-                Cart_Overlay.querySelector(".cart-retailer__image").src = Retailer_Profile_Pic;
-                Cart_Overlay.querySelector(".cart-product__image").src = productImage;
-                Cart_Overlay.querySelector(".cart-product__name").textContent = productName;
-                Cart_Overlay.querySelector(".cart-product__price").textContent = counryCode + " " + productPrice;
-                Cart_Overlay.querySelector(".cart-product__description").textContent = productDescription;
-                Cart_Overlay.querySelector(".cart-retailer__name").textContent = retailerName;
 
-                Cart_Overlay.querySelector(".cart-retailer__email").textContent = Result["Email"];
-                Cart_Overlay.querySelector(".cart-retailer__phone").textContent = Result["Phone"];
+    // --------------------------------------------------------
+    // Validate total
+    // --------------------------------------------------------
 
-                // show the overlay
-                Cart_Overlay.style.display = "flex";
+    if (
+        !validatePrice(
+            formatter.format(total)
+        )
+    ) {
 
-                // optionally reset quantity to 1
-                Cart_Overlay.querySelector(".qty-number").textContent = "1";
-                Car_Total_Amount.textContent = counryCode + " " + productPrice;
-
-                Cart_Overlay.querySelector(".cart-buy-btn").onclick = () => {
-
-                    let quantity = parseInt(Cart_Overlay.querySelector(".qty-number").textContent);
-
-                    const Purchase_Overlay = document.querySelector(".payment-overlay");
-                    const Customer_Numer_Input = Purchase_Overlay.querySelector(".customer-number-input");
-
-                    const Purchase_Btn = Purchase_Overlay.querySelector(".purchase-btn");
-
-                    const Cancel_Purchase = Purchase_Overlay.querySelector(".cancel-purchase");
-                    Purchase_Overlay.querySelector(".customer-number-input").value = null;
-
-                    Cart_Overlay.style.display = "none";
-                    Purchase_Overlay.style.display = "flex";
-
-                    Cancel_Purchase.onclick = () => {
-                        Cart_Overlay.style.display = "flex";
-                        Purchase_Overlay.style.display = "none";
-                    };
-
-
-                    Purchase_Btn.addEventListener("click", async () => {
-                        
-                        let totlaAmount = Car_Total_Amount.textContent.split(" ")[1];
-                        if (!ValidatePrice(totlaAmount));
-
-                        let Phone = iti.getNumber();
-                        
-                        if (!iti.isValidNumber()) {
-
-                            showToast(
-                                "fa-solid fa-phone",
-                                "Invalid Number",
-                                "The number you entered is invalid",
-                                "red");
-                            return;
-                        }
-
-                        let Payload = {
-                            INSTRUCTION: "PLACE-ORDER",
-                            ProductId: ProductID,
-                            Quantity: quantity,
-                            CustomerPhone: Phone,
-                            ProductName: productName,
-                            ProductPrice: unitPrice
-                        }
-
-                        let Result = null;
-
-                        Loading.style.display = "flex";
-                        try {
-                            Result = await fetchData(Payload);
-                        } catch (err) {
-                            showToast("fa-solid fa-shopping-cart", "Oder Placement", "Error ocured", "red");
-                        }
-
-                        if (Result && Result.status === "OK") {
-                            Loading.style.display = "none";
-                            Purchase_Overlay.style.display = "none";
-                            OrderSuccess.style.display = "flex";
-                            OrderSuccess.querySelector("#display-order-id").textContent = "#" + Result["orderID"];
-                        }
-                        // handle purchase
-                    });
-                };
-            }
-        } catch (err) {
-            alert(err);
-            showToast(
-                "fa-solid fa-exclamation",
-                "Error",
-                "Sorry error occurred",
-                "red"
-            );
-            Loading.style.display = "none";
-        }
-
-        //alert(retailerID);
-
-    } else if (e.target.closest(".view-page")) {
-        const productCard = e.target.closest(".product-card");
-        const AccountOverlay = document.querySelector(".account-overlay");
-
-        let Retailer_ID = productCard.querySelector(".retailerID").textContent;
-        let Retailer_Name = productCard.querySelector(".name").textContent;
-
-        let Payload = {
-            INSTRUCTION: "GET-PROD-BASE-ON-ID",
-            Retailer_ID: Retailer_ID
-        };
-
-        let Result = null;
-
-        Loading.style.display = "flex";
-        try {
-            Result = await fetchData(Payload);
-        } catch (err) {
-            showToast(
-                "fa-solid fa-wifi",
-                "Connection Error",
-                "Sorry error occurred",
-                "red"
-            );
-        }
-
-        if (Result) {
-            Loading.style.display = "none";
-
-            let Account_Info = Result["Account_Info"];
-            let Account_Products = Result["Account_Products"];
-
-            if (Array.isArray(Account_Products) && Account_Products.length !== 0) {
-                AccountOverlay.querySelector(".view-products").innerHTML = "";
-
-                const fragment = document.createDocumentFragment();
-
-                Account_Products.forEach(product => {
-                    const ProductCard = document.createElement("div");
-                    ProductCard.className = "a-product";
-                    ProductCard.dataset.productId = product.Id;
-
-                    ProductCard.innerHTML = `
-                    <img src="${ipAddress}/products/${product.Url}" alt="">
-                    <p class="view-prod-name">${product.name}</p>
-                    <p class="view-prod-price">${product.currencyCode} ${formatter.format(product.price)}</p>
-                    <p class="view-prod-description">${product.description}</p>
-                    <div class="prouduct-cart-bottom">
-                       <p class="posted-at">Posted ${product.postedAt}</p>
-                       <div class="order"><i class="fa-solid fa-shopping-cart"></i></div>
-                    </div>
-                `;
-
-                    fragment.appendChild(ProductCard);
-                });
-
-
-
-                AccountOverlay.querySelector(".view-products").appendChild(fragment);
-                AccountOverlay.querySelector(".account-pro-pic").style.display = "flex";
-                if (Account_Info && Account_Info.ProfilePic) {
-
-                    AccountOverlay.querySelector(".account-pro-pic>img").style.display = "flex";
-                    AccountOverlay.querySelector(".account-pro-pic>img").src =
-                        `${ipAddress}/profile/${Account_Info.ProfilePic}`;
-                    AccountOverlay.querySelector(".account-user").style.display = "none";
-                }
-
-                AccountOverlay.querySelector(".my-account-name").textContent = Retailer_Name;
-                AccountOverlay.querySelector(".my-account-id").textContent = Retailer_ID;
-                AccountOverlay.querySelector(".my-account-email").textContent = Account_Info.Email;
-                AccountOverlay.querySelector(".my-account-phone").textContent = Account_Info.Phone;
-
-                AccountOverlay.style.display = "flex";
-
-                AccountOverlay.querySelector(".to-bottom > .fa-phone").addEventListener("click", () => {
-                    let Phone = Account_Info.Phone;
-                    window.location.href = `tel:${Phone}`;
-                });
-
-                AccountOverlay.querySelector(".view-products").addEventListener("click", async e => {
-                    if (e.target.closest(".order")) {
-
-                        const productCard = e.target.closest(".a-product");
-
-                        if (!productCard) {
-                            console.warn("Product card not found");
-                            return;
-                        }
-
-                        // 🔥 SAFE EXTRACTION
-                        const productName = productCard.querySelector(".view-prod-name")?.textContent || "";
-
-                        const priceString = productCard.querySelector(".view-prod-price").textContent.split(" ")[1]; // 1. Get the raw string piece: "1,250.00"
-                        counryCode = productCard.querySelector(".view-prod-price").textContent.split(" ")[0];
-
-
-                        const cleanNumericString = priceString.replace(/,/g, ""); // 2. LOGIC FIX: Strip out commas so JavaScript reads it as "1250.00"
-                        unitPrice = parseFloat(cleanNumericString); // 3. Convert to a true Number float
-
-                        const productPrice = formatter.format(unitPrice); // 4. Now the formatter will work perfectly without NaN
-
-                        const productDescription = productCard.querySelector(".view-prod-description")?.textContent || "";
-                        const productImage = productCard.querySelector(".a-product > img")?.src || "";
-
-
-                        const ProductID = productCard.dataset.productId;
-
-                        if (!ProductID) {
-                            console.warn("Missing product ID");
-                            return;
-                        }
-
-                        // 🔥 Populate UI safely
-                        const profileImg = Cart_Overlay.querySelector(".cart-retailer__image");
-                        const profilePicData = Account_Info.ProfilePic;
-
-                        // Check if profilePic is valid and not the string "null"
-                        if (profilePicData && profilePicData !== "null" && profilePicData !== "undefined") {
-                            profileImg.src = `${ipAddress}/profile/${profilePicData}`;
-                        } else {
-                            // If no data, go straight to the fallback icon
-                            profileImg.src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-                        }
-
-                        Cart_Overlay.querySelector(".cart-product__image").src = productImage;
-                        Cart_Overlay.querySelector(".cart-product__name").textContent = productName;
-                        Cart_Overlay.querySelector(".cart-product__price").textContent = counryCode + " " + productPrice;
-                        Cart_Overlay.querySelector(".cart-product__description").textContent = productDescription;
-
-                        Cart_Overlay.querySelector(".cart-retailer__name").textContent = Retailer_Name;
-                        Cart_Overlay.querySelector(".cart-retailer__email").textContent = Account_Info.Email;
-                        Cart_Overlay.querySelector(".cart-retailer__phone").textContent = Account_Info.Phone;
-                        Cart_Overlay.style.zIndex = "10000";
-
-                        let Payload = {
-                            INSTRUCTION: "INFLATE-TRY-TO-BUY",
-                            productID: ProductID
-                        }
-
-                        let Result = null;
-                        try {
-                            Loading.style.display = "flex";
-                            Loading.style.zIndex = "10100";
-                            Result = await fetchData(Payload);
-                            Loading.style.display = "none";
-                            Loading.style.zIndex = "9999";
-                        } catch (err) {
-                            showToast(
-                                "fa-solid fa-exclamation",
-                                "Error",
-                                "Sorry error occurred",
-                                "red"
-                            );
-                            return;
-                        }
-
-                        if (Result && Result.status === "OK") {
-                            Cart_Overlay.style.display = "flex";
-                        }
-
-                        // 🔥 Reset values
-                        Cart_Overlay.querySelector(".qty-number").textContent = "1";
-                        Car_Total_Amount.textContent = counryCode + " " + productPrice;
-
-                        const Purchase_Overlay = document.querySelector(".payment-overlay");
-                        const Purchase_Btn = Purchase_Overlay.querySelector(".purchase-btn");
-                        const Cancel_Purchase = Purchase_Overlay.querySelector(".cancel-purchase");
-
-                        // 🔥 REMOVE OLD EVENT (VERY IMPORTANT)
-                        Purchase_Btn.onclick = null;
-
-                        Cart_Overlay.querySelector(".cart-buy-btn").onclick = () => {
-
-                            let quantity = parseInt(
-                                Cart_Overlay.querySelector(".qty-number").textContent
-                            ) || 1;
-
-                            Purchase_Overlay.style.display = "flex";
-                            Purchase_Overlay.style.zIndex = "10000";
-                            Cart_Overlay.style.display = "none";
-
-                            Cancel_Purchase.onclick = () => {
-                                Cart_Overlay.style.display = "flex";
-                                Purchase_Overlay.style.display = "none";
-                            };
-
-                            Purchase_Btn.onclick = async () => {
-
-                                if (!iti.isValidNumber()) {
-                                    alert("Please enter a valid phone number");
-                                    return;
-                                }
-
-                                let Phone = iti.getNumber();
-
-                                let Payload = {
-                                    INSTRUCTION: "PLACE-ORDER",
-                                    ProductId: ProductID,
-                                    Quantity: quantity,
-                                    CustomerPhone: Phone,
-                                    ProductName: productName,
-                                    ProductPrice: unitPrice
-                                };
-
-                                try {
-                                    Loading.style.display = "flex";
-
-                                    let Result = await fetchData(Payload);
-
-                                    Loading.style.display = "none";
-
-                                    if (Result && Result.status === "OK") {
-                                        Purchase_Overlay.style.display = "none";
-                                        OrderSuccess.style.display = "flex";
-                                        OrderSuccess.style.zIndex = "10000";
-                                        OrderSuccess.querySelector("#display-order-id").textContent = "#" + Result["orderID"];
-                                    }
-
-                                } catch (err) {
-                                    Loading.style.display = "none";
-                                    showToast(
-                                        "fa-solid fa-exclamation",
-                                        "Error",
-                                        "Error Occured",
-                                        "red"
-                                    );
-                                }
-                            };
-                        };
-                    }
-                });
-            }
-        }
-
-        AccountOverlay.querySelector(".cancel-product-view").addEventListener("click", () => {
-            AccountOverlay.style.display = "none";
-        })
+        return;
     }
-});
 
-OrderSuccess.querySelector(".success-close-btn").addEventListener("click", () => {
-    OrderSuccess.style.display = "none";
-});
 
-// cart execution
-Cart_close.addEventListener("click", () => {
-    Cart_Overlay.style.display = "none";
-});
+    // --------------------------------------------------------
+    // Validate phone number
+    // --------------------------------------------------------
 
-Cart_Order_Minus.addEventListener("click", () => {
-    let Orderquantity = parseInt(Cart_Order_Quantity.textContent.trim());
-    if (Orderquantity > 1) {
-        Orderquantity--;
-        Cart_Order_Quantity.textContent = Orderquantity;
-        let total = unitPrice * Orderquantity;
-        Car_Total_Amount.textContent = `${counryCode} ${formatter.format(total)}`;
+    if (!iti) {
+
+        showToast(
+            "fa-solid fa-phone",
+            "Phone Number",
+            "Phone input is not ready yet.",
+            "red"
+        );
+
+        return;
     }
-});
-
-Cart_Order_Add.addEventListener("click", () => {
-    let Orderquantity = parseInt(Cart_Order_Quantity.textContent.trim());
-    Orderquantity++;
-    Cart_Order_Quantity.textContent = Orderquantity;
-    let total = unitPrice * Orderquantity;
-    Car_Total_Amount.textContent = `${counryCode} ${formatter.format(total)}`;
-});
 
 
-const iti = window.intlTelInput(input, {
-    initialCountry: "auto",
-    geoIpLookup: function (success, failure) {
-        // ipinfo.io is more reliable and supports a fallback natively
-        fetch("https://ipinfo.io")
-            .then(res => {
-                if (!res.ok) throw new Error("API error");
-                return res.json();
-            })
-            .then(data => success(data.country)) // ipinfo uses 'country' instead of 'country_code'
-            .catch(() => success("us")); // Fallback to 'us' if the request fails
-    },
-    separateDialCode: true,
-    useFullscreenPopup: false,
-    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js"
-});
+    if (!iti.isValidNumber()) {
 
+        showToast(
+            "fa-solid fa-phone",
+            "Invalid Number",
+            "The number you entered is invalid.",
+            "red"
+        );
+
+        return;
+    }
+
+
+    const phone =
+        iti.getNumber();
+
+
+    // --------------------------------------------------------
+    // Create payload
+    // --------------------------------------------------------
+
+    const payload = {
+
+        INSTRUCTION:
+            "PLACE-ORDER",
+
+        ProductId:
+            currentProduct.id,
+
+        Quantity:
+            quantity,
+
+        CustomerPhone:
+            phone,
+
+        ProductName:
+            currentProduct.name,
+
+        ProductPrice:
+            currentProduct.price
+    };
+
+
+    showLoading(true);
+
+
+    try {
+
+        const result =
+            await fetchData(payload);
+
+
+        if (
+            result &&
+            result.status === "OK"
+        ) {
+
+            paymentOverlay.style.display =
+                "none";
+
+
+            displayOrderId.textContent =
+                "#" + result.orderID;
+
+
+            orderSuccess.style.display =
+                "flex";
+
+
+            return;
+        }
+
+
+        showToast(
+            "fa-solid fa-shopping-cart",
+            "Order Placement",
+            "Unable to place your order.",
+            "red"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Order placement failed:",
+            error
+        );
+
+        showToast(
+            "fa-solid fa-shopping-cart",
+            "Order Placement",
+            "An error occurred while placing your order.",
+            "red"
+        );
+
+    } finally {
+
+        showLoading(false);
+
+    }
+}
+
+
+// ============================================================
+// PHONE INPUT
+// ============================================================
+
+function initializePhoneInput() {
+
+    if (
+        !window.intlTelInput ||
+        !customerNumberInput
+    ) {
+
+        console.warn(
+            "intl-tel-input is not available."
+        );
+
+        return;
+    }
+
+
+    /*
+        Use Ghana as the default instead of making
+        a browser request to ipinfo.io.
+
+        This avoids the CORS problem you encountered.
+    */
+
+    iti = window.intlTelInput(
+        customerNumberInput,
+        {
+            initialCountry: "gh",
+
+            separateDialCode: true,
+
+            useFullscreenPopup: false,
+
+            utilsScript:
+                "https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.5/build/js/utils.js"
+        }
+    );
+}
+
+
+// ============================================================
+// SEARCH UI
+// ============================================================
+
+function toggleSearch() {
+
+    if (!searchOpen) {
+
+        searchInput.style.display =
+            "block";
+
+        keySearch.style.display =
+            "none";
+
+        searchInput.focus();
+
+        searchOpen = true;
+
+        return;
+    }
+
+
+    const keyword =
+        searchInput.value.trim();
+
+
+    if (keyword !== "") {
+
+        makeSearch(keyword);
+
+        return;
+    }
+
+
+    closeSearch();
+}
+
+
+function closeSearch() {
+
+    searchInput.style.display =
+        "none";
+
+    keySearch.style.display =
+        "flex";
+
+    searchInput.value = "";
+
+    searchOpen = false;
+}
+
+
+// ============================================================
+// CATEGORY CLICK
+// ============================================================
+
+async function handleCategoryClick(event) {
+
+    const category =
+        event.target.closest(".key");
+
+
+    if (!category) return;
+
+
+    const keyword =
+        category.querySelector("p")?.textContent;
+
+
+    if (!keyword) return;
+
+
+    selectCategory(keyword);
+
+
+    showLoading(true);
+
+
+    try {
+
+        await getProducts(keyword);
+
+    } finally {
+
+        showLoading(false);
+
+    }
+}
+
+
+// ============================================================
+// HORIZONTAL CATEGORY SCROLL
+// ============================================================
+
+function handleCategoryWheel(event) {
+
+    event.preventDefault();
+
+
+    keySearch.scrollBy({
+        left: event.deltaY,
+        behavior: "smooth"
+    });
+}
+
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+
+keySearch.addEventListener(
+    "click",
+    handleCategoryClick
+);
+
+
+keySearch.addEventListener(
+    "wheel",
+    handleCategoryWheel
+);
+
+
+searchIcon.addEventListener(
+    "click",
+    toggleSearch
+);
+
+
+searchInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key !== "Enter") {
+            return;
+        }
+
+
+        const keyword =
+            searchInput.value.trim();
+
+
+        if (keyword !== "") {
+
+            makeSearch(keyword);
+
+        }
+
+    }
+);
+
+
+authButton.addEventListener(
+    "click",
+    handleAuthentication
+);
+
+
+// ============================================================
+// PRODUCT AREA CLICK DELEGATION
+// ============================================================
+
+main.addEventListener(
+    "click",
+    async event => {
+
+        // ----------------------------------------------------
+        // Cart button
+        // ----------------------------------------------------
+
+        const cartButton =
+            event.target.closest(".cart");
+
+
+        if (cartButton) {
+
+            const productCard =
+                cartButton.closest(".product-card");
+
+
+            if (productCard) {
+
+                await openCart(productCard);
+
+            }
+
+            return;
+        }
+
+
+        // ----------------------------------------------------
+        // Visit store
+        // ----------------------------------------------------
+
+        const storeButton =
+            event.target.closest(".view-page");
+
+
+        if (storeButton) {
+
+            const productCard =
+                storeButton.closest(".product-card");
+
+
+            if (!productCard) return;
+
+
+            const retailerId =
+                productCard.querySelector(
+                    ".retailerID"
+                )?.textContent;
+
+
+            if (!retailerId) return;
+
+
+            window.open(
+                `${SERVER_URL}/retailer/${encodeURIComponent(retailerId)}`,
+                "_blank",
+                "noopener,noreferrer"
+            );
+        }
+
+    }
+);
+
+
+// ============================================================
+// CART EVENTS
+// ============================================================
+
+cartClose.addEventListener(
+    "click",
+    closeCart
+);
+
+
+cartOrderMinus.addEventListener(
+    "click",
+    () => changeQuantity(-1)
+);
+
+
+cartOrderAdd.addEventListener(
+    "click",
+    () => changeQuantity(1)
+);
+
+
+cartBuyOrder.addEventListener(
+    "click",
+    openPayment
+);
+
+
+// ============================================================
+// PAYMENT EVENTS
+// ============================================================
+
+cancelPurchase.addEventListener(
+    "click",
+    closePayment
+);
+
+
+purchaseButton.addEventListener(
+    "click",
+    placeOrder
+);
+
+
+// ============================================================
+// SUCCESS SCREEN
+// ============================================================
+
+successCloseButton.addEventListener(
+    "click",
+    () => {
+
+        orderSuccess.style.display =
+            "none";
+
+    }
+);
 
