@@ -1432,7 +1432,7 @@ main.addEventListener(
             const retailerId =
                 productCard.querySelector(
                     ".retailerID"
-                )?.textContent;
+                )?.textContent.trim();
 
 
             if (!retailerId) return;
